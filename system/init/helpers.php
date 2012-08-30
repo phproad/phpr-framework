@@ -1,0 +1,5 @@
+<?php
+
+/**
+ * PHPR Global helpers
+ */

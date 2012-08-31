@@ -77,7 +77,7 @@ class Phpr_Inflector
      * @param string $word English noun to singularize
      * @return string Singular noun.
      */
-    function singularize($word)
+    public static function singularize($word)
     {
         $singular = array (
         '/(quiz)zes$/i' => '\\1',
@@ -155,7 +155,7 @@ class Phpr_Inflector
      * @param string $word
      * @return string Pluralized string when number of items is greater than 1
      */
-    function conditional_plural($numer_of_records, $word)
+    public static function conditional_plural($numer_of_records, $word)
     {
         return $numer_of_records > 1 ? Phpr_Inflector::pluralize($word) : $word;
     }
@@ -176,7 +176,7 @@ class Phpr_Inflector
      * the words in the title.
      * @return string Text formatted as title
      */
-    function titleize($word, $uppercase = '')
+    public static function titleize($word, $uppercase = '')
     {
         $uppercase = $uppercase == 'first' ? 'ucfirst' : 'ucwords';
         return $uppercase(Phpr_Inflector::humanize(Phpr_Inflector::underscore($word)));
@@ -192,7 +192,7 @@ class Phpr_Inflector
      * @param string $word Word to convert to camel case
      * @return string UpperCamelCasedWord
      */
-    function camelize($word)
+    public static function camelize($word)
     {
         if (preg_match_all('/\/(.?)/',$word,$got))
         {
@@ -216,7 +216,7 @@ class Phpr_Inflector
      * @param string $word Word to underscore
      * @return string Underscored word
      */
-    function underscore($word)
+    public static function underscore($word)
     {
         return  strtolower(preg_replace('/[^A-Z^a-z^0-9^\/]+/','_',
         preg_replace('/([a-z\d])([A-Z])/','\1_\2',
@@ -239,7 +239,7 @@ class Phpr_Inflector
      * instead of just the first one.
      * @return string Human-readable word
      */
-    function humanize($word, $uppercase = '')
+    public static function humanize($word, $uppercase = '')
     {
         $uppercase = $uppercase == 'all' ? 'ucwords' : 'ucfirst';
         return $uppercase(str_replace('_',' ',preg_replace('/_id$/', '',$word)));
@@ -255,7 +255,7 @@ class Phpr_Inflector
      * @param string $word Word to lowerCamelCase
      * @return string Returns a lowerCamelCasedWord
      */
-    function variablize($word)
+    public static function variablize($word)
     {
         $word = Phpr_Inflector::camelize($word);
         return strtolower($word[0]).substr($word,1);
@@ -270,7 +270,7 @@ class Phpr_Inflector
      * @param string $class_name Class name for getting related table_name.
      * @return string plural_table_name
      */
-    function tableize($class_name)
+    public static function tableize($class_name)
     {
         return Phpr_Inflector::pluralize(Phpr_Inflector::underscore($class_name));
     }
@@ -284,7 +284,7 @@ class Phpr_Inflector
      * @param string $table_name Table name for getting related ClassName.
      * @return string SingularClassName
      */
-    function classify($table_name)
+    public static function classify($table_name)
     {
         return Phpr_Inflector::camelize(Phpr_Inflector::singularize($table_name));
     }
@@ -311,7 +311,7 @@ class Phpr_Inflector
      * @param integer $number Number to get its ordinal value
      * @return string Ordinal representation of given string.
      */
-    function ordinalize($number)
+    public static function ordinalize($number)
     {
         if (in_array(($number % 100),range(11,13)))
         {
@@ -335,13 +335,13 @@ class Phpr_Inflector
         }
     }
 
-    function demodulize($module_name)
+    public static function demodulize($module_name)
     {
         $module_name = preg_replace('/^.*::/','',$module_name);
         return Phpr_Inflector::humanize(Phpr_Inflector::underscore($module_name));
     }
 
-    function modulize($module_description)
+    public static function modulize($module_description)
     {
         return Phpr_Inflector::camelize(Phpr_Inflector::singularize($module_description));
     }
@@ -350,7 +350,7 @@ class Phpr_Inflector
      * Transforms a string to its unaccented version. 
      * This might be useful for generating "friendly" URLs
      */
-    function unaccent($text)
+    public static function unaccent($text)
     {
         $map = array(
             'À'=>'A', 'Á'=>'A', 'Â'=>'A', 'Ã'=>'A', 'Ä'=>'A', 'Å'=>'A', 'Æ'=>'A', 'Ç'=>'C', 
@@ -364,7 +364,7 @@ class Phpr_Inflector
         return str_replace(array_keys($map), array_values($map), $text);
     }
     
-    function urlize($text)
+    public static function urlize($text)
     {
         return trim(Phpr_Inflector::underscore(Phpr_Inflector::unaccent($text)),'_');
     }
@@ -376,8 +376,8 @@ class Phpr_Inflector
      * @param string $class_name
      * @return string
      */
-    function foreign_key($class_name, $separate_class_name_and_id_with_underscore = true)
+    public static function foreign_key($class_name, $primary_key = 'id', $separate_class_name_and_id_with_underscore = true)
     {
-        return Phpr_Inflector::underscore(Phpr_Inflector::demodulize($class_name)).($separate_class_name_and_id_with_underscore ? "_id" : "id");
+        return Phpr_Inflector::underscore(Phpr_Inflector::demodulize($class_name)).($separate_class_name_and_id_with_underscore ? "_" . $primary_key : $primary_key);
     }
 }

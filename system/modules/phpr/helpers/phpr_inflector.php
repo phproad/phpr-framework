@@ -290,20 +290,6 @@ class Phpr_Inflector
     }
 
     /**
-     * Creates a URI slug from a given string.
-     * 
-     * Converts "Home Page" to "home-page"
-     *
-     * @param string $string
-     * @param string $separator
-     * @return string
-     */     
-    public static function slugify($string, $separator = '-') 
-    {
-        return strtolower(preg_replace(array('/[^-a-zA-Z0-9\s]/', '/[\s]/'), array('', $separator), $string));
-    }
-
-    /**
      * Converts number to its ordinal English form.
      * 
      * This method converts 13 to 13th, 2 to 2nd ...
@@ -364,9 +350,18 @@ class Phpr_Inflector
         return str_replace(array_keys($map), array_values($map), $text);
     }
     
-    public static function urlize($text)
+    /**
+     * Creates a URI slug from a given string.
+     * 
+     * Converts "Home Page" to "home-page"
+     *
+     * @param string $text
+     * @param string $separator
+     * @return string
+     */       
+    public static function slugify($text, $separator = '_')
     {
-        return trim(Phpr_Inflector::underscore(Phpr_Inflector::unaccent($text)),'_');
+        return trim(Phpr_Inflector::underscore(Phpr_Inflector::unaccent($text)), $separator);
     }
     
     /**

@@ -1,5 +1,0 @@
-<?php
-
-/**
- * PHPR Class Loader
- */

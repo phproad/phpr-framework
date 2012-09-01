@@ -1,0 +1,58 @@
+<? 
+    $column_definition = $form_field->get_col_definition();
+    $options = $this->form_field_get_options($form_field->db_name, $this->view_data['form_model']); 
+    $db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
+    $field_id = $this->form_get_element_id($form_model_class.'_'.$db_name);
+?>
+<select autocomplete="off" <? if ($form_field->disabled) echo 'disabled="disabled"' ?> id="<?=$field_id ?>" name="<?=$form_model_class ?>[<?=$db_name ?>]">
+    <? if ($form_field->empty_option !== null): ?>
+        <option value=""><?=h($form_field->empty_option) ?></option>
+    <? endif ?>
+        <option value="-1"><?=h("<create new ".strtolower($column_definition->display_name).">") ?></option>
+    
+    <? 
+        $fieldName = $form_field->db_name;
+        foreach ($options as $value=>$name): 
+            $level = 0;
+            if (is_array($name))
+            {
+                if (!array_key_exists('level', $name))
+                {
+                    $keys = array_keys($name);
+                    $name = !count($keys) ? $value : $keys[0];
+                } else
+                {
+                    $level = $name['level'];
+                    $name = $name[0];
+                }
+            }
+    ?>
+        <option <?=Phpr_Form::option_state($value, $form_model->$db_name) ?> value="<?=h($value) ?>"><?=str_repeat('&nbsp;&nbsp;&nbsp;', $level) ?><?=$form_field->options_html_encode ? h($name) : $name ?></option>
+    <? endforeach ?>
+</select>
+
+
+<script>
+    jQuery(document).ready(function($) {
+        assign_dropdown_create_<?=$field_id ?>();
+    });
+
+    function assign_dropdown_create_<?=$field_id ?>()
+    {
+        var list = jQuery('#<?=$field_id ?>');
+        if (list.length > 0)
+        {
+            list.change(function() {
+                if (jQuery(this).val() == -1)
+                new PopupForm('<?=$this->get_event_handler('onDropdownCreateFormLoad') ?>', 
+                    {
+                        ajaxFields: {
+                            model_class: '<?=$column_definition->reference_class_name ?>', 
+                            field_name: '<?=$form_field->db_name?>', 
+                            db_name: '<?=$db_name?>'
+                    }
+                });
+            });
+        }       
+    }
+</script>

@@ -1,0 +1,51 @@
+<?php
+    $fields = $form_field->render_options['fields'];
+    $value = $form_model->display_field($form_field->db_name);
+    $field_id = $this->form_get_element_id($form_model_class.'_'.$form_field->db_name);
+?>
+
+<div id="multi_textarea<?=$field_id?>">
+    <div class="multi_textarea_shell" style="display:none">
+        <ul class="formElements">
+        <? foreach ($fields as $name => $params): ?>
+            <li class="field <?=$params['type']?> <?=(isset($params['align']))?$params['align']:'full'?>" style="margin-bottom:5px">
+            <label><?=$params['label']?></label>
+            <? switch ($params['type']):
+                case frm_text: ?>
+                    <textarea class="multi_textarea_field small" data-object-name="<?=$name?>"></textarea>
+                <? break ?>
+
+                <? case frm_datetime: ?>
+
+                    <? $input_id = "multi_textarea_datepicker".$field_id; ?>
+                    <div class="datePickerHolder">
+                        <input value="" class="date multi_textarea_field" type="text" id="<?=$input_id ?>" name="" data-object-name="<?=$name?>" />
+                        <script type='text/javascript'><?=Phpr_Html::calendar($input_id); ?></script>
+                        <div class="clear"></div>
+                    </div>
+
+                <? break ?>
+
+                <? case db_number:
+                   case db_float:
+                   case db_varchar: ?>
+                    <input autocomplete="off" value="" class="<?=$params['type'] ?> multi_textarea_field" type="text" data-object-name="<?=$name?>" />
+                <? break ?>
+
+            <? endswitch ?>
+            </li>
+        <? endforeach ?>
+        </ul>
+        <div class="clear"></div>
+        <div class="icon delete"><a href="javascript:;" onclick="jQuery(this).closest('.multi_textarea_object').remove(); multi_textarea_change('<?=$field_id?>'); return false;">Remove</a></div>
+    </div>
+    <p class="icon add float_right" style="margin-top:-18px !important"><a href="javascript:;" onclick="multi_textarea_add_field('<?=$field_id?>')">Add <?=h($form_field->get_col_definition()->display_name) ?></a></p>
+    <div class="clear"></div>
+</div>
+<textarea style="display:none" autocomplete="off" <? if ($form_field->disabled) echo 'disabled="disabled"' ?> class="<?=$form_field->size ?>" id="<?=$field_id?>" name="<?=$form_model_class ?>[<?=$form_field->db_name ?>]"><? if (!$form_field->hideContent): ?><?=h($form_model->display_field($form_field->db_name)) ?><? endif ?></textarea>
+
+<script>
+    jQuery(document).ready(function($) {
+        multi_textarea_init('<?=$field_id?>', '<?=addslashes($value)?>');
+    });
+</script>

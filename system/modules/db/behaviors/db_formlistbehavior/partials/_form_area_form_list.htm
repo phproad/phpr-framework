@@ -1,0 +1,45 @@
+<?
+    $form_list_name = $this->form_list_get_active();
+    $form_list_form_id = $this->form_list_get_id($form_list_name);
+    $form_list_container_id = $this->form_list_get_id($form_list_name);
+?>
+
+<div id="<?=$form_list_container_id?>">
+    <?
+        $list_options = $this->form_list_get_options($form_list_name);
+    ?>
+    <?=$this->listRender($list_options) ?>
+</div>
+
+<div class="clear"></div>
+<input type="hidden" name="form_list_name" value="<?=$form_list_name?>" />
+
+<? if ($list_options['list_control_panel']) { ?>
+<script type='text/javascript'>
+    jQuery(document).ready(function() {
+        var list_tab_container = jQuery('#<?=$form_list_container_id ?>');
+        var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
+        if (list_tab)
+        {
+            list_tab.addEvent('onTabClick', function() {
+
+                var toolbar = list_tab_container
+                                .find('.scrollable_control_panel:first')
+                                .not('.scrollable_cp_loaded')
+                                .addClass('scrollable_cp_loaded');
+
+                if (toolbar.length > 0)
+                    new Backend_ScrollabeToolbar(toolbar.get(0));
+            });
+        }
+    });
+    
+    // When the container gets updated, we need to refresh the logic above
+    function <?=$form_list_container_id?>_init() {
+        var list_tab_container = jQuery('#<?=$form_list_container_id ?>');
+        var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
+        if (list_tab)
+            list_tab.fireEvent('onTabClick');
+    }
+</script>
+<? } ?>

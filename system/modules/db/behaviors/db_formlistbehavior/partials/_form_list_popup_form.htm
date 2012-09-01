@@ -1,0 +1,31 @@
+<?
+    $form_list_container_id = 'form_list_'.$form_list_name;
+?>
+<div id="form_list_popup_form">
+    <h2><?=($new_record_flag) ? 'New' : 'Update'?> <?=$manage_popup_title?></h2>
+    <div class="content">
+        <div class="form-600">      
+            <?=Phpr_Form::openTag(array('id'=>'form_list_manage_element')) ?>
+                <? if (!isset($fatalError)): ?>
+                    <? $this->formRender($model) ?>
+
+                    <?=admin_ajax_button(($new_record_flag) ? 'Add' : 'Save', $insert_action, array('class'=>"positive"), "update: '".$form_list_container_id."', loadIndicator: {injectInElement: true}, onSuccess: cancelPopup, onAfterUpdate: ".$form_list_container_id."_init") ?>
+                    <?=admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+
+                    <?=(!$new_record_flag) 
+                        ? admin_ajax_button('Delete', $delete_action, array('class'=>"right negative"), "confirm: 'Do you really want to delete this ".strtolower($manage_popup_title)."?', update: '".$form_list_container_id."', loadIndicator: {injectInElement: true}, onSuccess: cancelPopup, onAfterUpdate: ".$form_list_container_id."_init") 
+                        : '' ?>
+
+                    <input type="hidden" name="primary_id" value="<?=$model->id?>" id="primary_id" />
+                    <input type="hidden" name="form_list_name" value="<?=$form_list_name?>" />
+
+                    <div class="clear"></div>
+                <? else: ?>
+                    <?=flash() ?>
+                    <?=admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+                    <div class="clear"></div>
+                <? endif ?>
+            </form>
+        </div>
+    </div>
+</div>

@@ -83,11 +83,11 @@ class Db_FormListBehavior extends Phpr_ControllerBehavior
     {
         parent::__construct($controller);
 
-        $controller->formRegisterViewPath(PATH_SYSTEM.'/modules/db/behaviors/db_formlistbehavior/partials');
+        $controller->form_register_view_path(PATH_SYSTEM.'/modules/db/behaviors/db_formlistbehavior/partials');
 
-        $this->addEventHandler('on_form_list_manage_form');
-        $this->addEventHandler('on_form_list_manage_update');
-        $this->addEventHandler('on_form_list_manage_delete');
+        $this->add_event_handler('on_form_list_manage_form');
+        $this->add_event_handler('on_form_list_manage_update');
+        $this->add_event_handler('on_form_list_manage_delete');
 
         $this->form_list_apply_defaults();
         $this->form_list_set_relations();
@@ -113,7 +113,7 @@ class Db_FormListBehavior extends Phpr_ControllerBehavior
 
             if ($this->form_lists[$name]['manage_popup'])
             {
-                $this->form_lists[$name]['record_onclick'] = "new PopupForm('".$this->_controller->getEventHandler('on_form_list_manage_form')."', { ajaxFields: {primary_id: '%s', form_list_name: '".$name."' } }); return false;";
+                $this->form_lists[$name]['record_onclick'] = "new PopupForm('".$this->_controller->get_event_handler('on_form_list_manage_form')."', { ajaxFields: {primary_id: '%s', form_list_name: '".$name."' } }); return false;";
             }
         }
     }
@@ -286,16 +286,16 @@ class Db_FormListBehavior extends Phpr_ControllerBehavior
                 $model = $model->find($model_id);
 
             $model->define_form_fields($model_context);
-            $this->viewData['model'] = $model;
-            $this->viewData['form_list_name'] = $list_name;
-            $this->viewData['new_record_flag'] = !($model_id);
-            $this->viewData['insert_action'] = $this->_controller->getEventHandler('on_form_list_manage_update');
-            $this->viewData['delete_action'] = $this->_controller->getEventHandler('on_form_list_manage_delete');
-            $this->viewData['manage_popup_title'] = $this->form_lists[$list_name]['manage_popup_title'];
+            $this->view_data['model'] = $model;
+            $this->view_data['form_list_name'] = $list_name;
+            $this->view_data['new_record_flag'] = !($model_id);
+            $this->view_data['insert_action'] = $this->_controller->get_event_handler('on_form_list_manage_update');
+            $this->view_data['delete_action'] = $this->_controller->get_event_handler('on_form_list_manage_delete');
+            $this->view_data['manage_popup_title'] = $this->form_lists[$list_name]['manage_popup_title'];
         }
         catch (Exception $ex)
         {
-            $this->_controller->handlePageError($ex);
+            $this->_controller->handle_page_error($ex);
         }
 
         $this->renderPartial('form_list_popup_form');

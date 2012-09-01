@@ -44,7 +44,7 @@ class Phpr_Extension extends Phpr_ExtensionBase
         }
     }
 
-    public function extend_with($extension_name, $is_recurring)
+    public function extend_with($extension_name, $is_recurring = true)
     {
         if (!strlen($extension_name))
             return $this;

@@ -131,8 +131,6 @@ class Phpr_Autoloader
         $dir = dirname($path);
         $base = basename($path);
 
-        echo $path . " <BR >";
-
         if (!isset($this->cache[$dir]))
         {
             $this->cache[$dir] = (is_dir($dir)) 

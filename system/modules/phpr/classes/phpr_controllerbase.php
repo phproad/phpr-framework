@@ -20,4 +20,9 @@ abstract class Phpr_ControllerBase extends Phpr_Extendable
 
     }
 
+    public function render_partial($view, $params = array())
+    {
+        
+    }
+
 }

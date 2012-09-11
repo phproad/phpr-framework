@@ -22,7 +22,7 @@ require_once('autoloader.php');
 
 Phpr::$loader = new Phpr_Autoloader();
 
-spl_autoload_register(function() {
+spl_autoload_register(function($name) {
     Phpr::$loader->load($name);
 });
 

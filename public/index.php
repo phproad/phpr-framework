@@ -55,12 +55,12 @@ $public_folder = 'public';
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
 define('PHPR_EXT', '.'.pathinfo(__FILE__, PATHINFO_EXTENSION));
 define('PATH_BOOT', __FILE__);
-define('PATH_SYSTEM', realpath(dirname(__FILE__)).'/'.$system_folder);
-define('PATH_APP', realpath(dirname(__FILE__)).'/'.$app_folder);
-define('PATH_PUBLIC', realpath(dirname(__FILE__)).'/'.$public_folder);
+define('PATH_SYSTEM', realpath(dirname(dirname(__FILE__))).'/'.$system_folder);
+define('PATH_APP', realpath(dirname(dirname(__FILE__))).'/'.$app_folder);
+define('PATH_PUBLIC', realpath(dirname(dirname(__FILE__))).'/'.$public_folder);
 
 // ------------------------------------------------------------------------
 // Load PHPR
 // ------------------------------------------------------------------------
 
-require_once('system/init/phpr.php');
+require_once('../system/init/phpr.php');

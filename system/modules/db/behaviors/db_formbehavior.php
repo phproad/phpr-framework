@@ -69,7 +69,7 @@ class Db_FormBehavior extends Phpr_ControllerBehavior
             $this->_controller->handle_page_error($ex);
         }
 
-        $this->renderPartial('form_dropdown_create');
+        $this->render_partial('form_dropdown_create');
     }
 
     public function on_dropdown_create_submit($id=null)

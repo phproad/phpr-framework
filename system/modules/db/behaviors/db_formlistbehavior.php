@@ -155,7 +155,7 @@ class Db_FormListBehavior extends Phpr_ControllerBehavior
 
     public function form_list_render($name)
     {
-        $this->renderPartial('form_list_container', array(
+        $this->render_partial('form_list_container', array(
             'form_list_name'=>$name
         ));
     }
@@ -298,7 +298,7 @@ class Db_FormListBehavior extends Phpr_ControllerBehavior
             $this->_controller->handle_page_error($ex);
         }
 
-        $this->renderPartial('form_list_popup_form');
+        $this->render_partial('form_list_popup_form');
     }
 
     public function on_form_list_manage_update($master_object_id=null)

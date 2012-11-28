@@ -10,12 +10,13 @@
 error_reporting(E_ALL);
 
 /**
- * Magic Quotes 
+ * Extra Config Settings
  * ----------------------------------------------------------
- * In case you are using a PHP version before 5.3.0
+ * For example to support PHP versions before 5.3.0
  */
 
 ini_set('magic_quotes_runtime', 0);
+ini_set('auto_detect_line_endings', true);
 
 /**
  * Native timezone

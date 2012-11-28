@@ -2,28 +2,33 @@
 
 /**
  * PHPR Core class
+ * 
+ * This class provides access to the PHPR core objects.
  */
 
 class Phpr 
 {
 
-    // Classloader
+    // Phpr_ClassLoader
     public static $class_loader;
 
 
-    // Config
+    // Phpr_Config
     public static $config;
+
+    // Phpr_Response
+    public static $response;
 
 }
 
 
-// Init auto loader
-require_once('autoloader.php');
+// Init class loader
+require_once('classloader.php');
 
-Phpr::$loader = new Phpr_Autoloader();
+Phpr::$class_loader = new Phpr_ClassLoader();
 
 spl_autoload_register(function($name) {
-    Phpr::$loader->load($name);
+    Phpr::$class_loader->load($name);
 });
 
 // Init others

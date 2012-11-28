@@ -11,8 +11,8 @@ chdir(dirname(__FILE__));
 
 $APP_CONF = array();
 
-$Phpr_InitOnly = true;
+$PHPR_INIT_ONLY = true;
 
-include 'public/index.php';
+include 'index.php';
 
 Phpr_Cron::execute_cron();

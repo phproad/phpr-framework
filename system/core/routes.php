@@ -4,6 +4,15 @@
  * PHPR Router
  */
 
+// Define backend URI
+// 
+
+$backend_url = (isset($CONFIG) && isset($CONFIG['BACKEND_URL'])) ? $CONFIG['BACKEND_URL'] : '/admin';
+
+// Ensure backend URI does not start with a slash
+if (substr($backend_url, 0, 1) == '/')
+    $backend_url = substr($backend_url, 1);
+        
 // Admin routes
 // 
 

@@ -10,6 +10,14 @@
 error_reporting(E_ALL);
 
 /**
+ * Magic Quotes 
+ * ----------------------------------------------------------
+ * In case you are using a PHP version before 5.3.0
+ */
+
+ini_set('magic_quotes_runtime', 0);
+
+/**
  * Native timezone
  * ----------------------------------------------------------
  * Sets the base timezone to manipulate time. Default: GMT
@@ -65,4 +73,4 @@ define('PATH_PUBLIC', realpath(dirname(dirname(__FILE__))).'/'.$public_folder);
 // Load PHPR
 // ------------------------------------------------------------------------
 
-require_once(PATH_SYSTEM.'/init/phpr.php');
+require_once(PATH_SYSTEM.DS.'core'.DS.'init.php');

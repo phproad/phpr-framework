@@ -7,4 +7,8 @@ class Phpr_Response
     {
     }
 
+    public static function process_resource_request()
+    {
+    }
+
 }

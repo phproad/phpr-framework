@@ -7,8 +7,8 @@
 class Phpr 
 {
 
-    // Autoloader
-    public static $loader;
+    // Classloader
+    public static $class_loader;
 
 
     // Config

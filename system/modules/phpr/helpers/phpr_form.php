@@ -14,13 +14,20 @@ class Phpr_Form
      */
     public static function open_tag($attributes = array()) 
     {
-        $defined_url = Phpr_Html::encode(rawurldecode(strip_tags(root_url(Phpr::$request->get_current_uri()))));
+        $default_url = Phpr_Html::encode(rawurldecode(strip_tags(root_url(Phpr::$request->get_current_uri()))));
 
-        if (($pos = mb_strpos($defined_url, '|')) !== false)
-            $defined_url = mb_substr($defined_url, 0, $pos);
+        if (($pos = mb_strpos($default_url, '|')) !== false)
+            $default_url = mb_substr($default_url, 0, $pos);
+
+        $default_attributes = array(
+            'action' => $default_url, 
+            'method' => 'post', 
+            'id' => 'FormElement', 
+            'onsubmit' => 'return false;'
+        );
 
         $result = "<form ";
-        $result .= Phpr_Html::formatAttributes($attributes, array("action"=>$defined_url, "method"=>"post", "id"=>"FormElement", "onsubmit"=>"return false;"));
+        $result .= Phpr_Html::format_attributes($attributes, $default_attributes);
         $result .= ">\n";
 
         return $result;
@@ -116,7 +123,7 @@ class Phpr_Form
             $attributes = array_merge($extra, $attributes);
             $extra = '';
         }
-        return "<input ".Phpr_Html::formatAttributes($attributes)." ".$extra." />";
+        return "<input ".Phpr_Html::format_attributes($attributes)." ".$extra." />";
     }
 
     /**
@@ -259,7 +266,7 @@ class Phpr_Form
             $extra = '';
         }
 
-        return "<textarea ".Phpr_Html::formatAttributes($attributes)." ".$extra.">".$value."</textarea>";
+        return "<textarea ".Phpr_Html::format_attributes($attributes)." ".$extra.">".$value."</textarea>";
     }
 
     /**
@@ -280,7 +287,7 @@ class Phpr_Form
             $selected = array($_POST[$name]);
 
         if (is_array($extra)) 
-            $extra = Phpr_Html::formatAttributes($extra);
+            $extra = Phpr_Html::format_attributes($extra);
         else if ($extra != '')
             $extra = ' '.$extra;
 
@@ -331,7 +338,7 @@ class Phpr_Form
             $extra = '';
         }
 
-        return "<button ".Phpr_Html::formatAttributes($attributes)." ".$extra.">".$text."</button>";
+        return "<button ".Phpr_Html::format_attributes($attributes)." ".$extra.">".$text."</button>";
     }
 
     /**
@@ -347,7 +354,7 @@ class Phpr_Form
         $for = ($id != '') ? ' for="'.$id.'" ' : '';
 
         if (is_array($extra)) 
-            $extra = Phpr_Html::formatAttributes($extra);
+            $extra = Phpr_Html::format_attributes($extra);
         else if ($extra != '')
             $extra = ' '.$extra;
 

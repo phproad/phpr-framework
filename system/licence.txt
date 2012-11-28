@@ -1,4 +1,4 @@
-Copyright (c) 2012, Responsiv, Inc.
+Copyright (c) 2012, Responsiv Internet.
 All rights reserved.
 
 This license is a legal agreement between you and Responsiv Inc. for the use
@@ -27,7 +27,7 @@ the following conditions are met:
 
 6. Products derived from the Software may not be called "PHPR",
    nor may "PHPR" appear in their name, without prior written
-   permission from Responsiv, Inc.
+   permission from Responsiv Internet.
 
 
 INDEMNITY

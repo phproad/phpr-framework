@@ -46,6 +46,7 @@ $public_folder = 'public';
  * Application Constants
  * ----------------------------------------------------------
  * DS          - Directory separator shorthand
+ * PHPR_VERSION- Library version
  * PHPR_EXT    - File extensions (eg: .php)
  * PATH_BOOT   - Path to bootstrap location
  * PATH_SYSTEM - Path to the PHPR system directory
@@ -53,7 +54,8 @@ $public_folder = 'public';
  */
 
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
-define('PHPR_EXT', '.'.pathinfo(__FILE__, PATHINFO_EXTENSION));
+define('PHPR_VERSION', '2.0.0');
+define('PHPR_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
 define('PATH_BOOT', __FILE__);
 define('PATH_SYSTEM', realpath(dirname(dirname(__FILE__))).'/'.$system_folder);
 define('PATH_APP', realpath(dirname(dirname(__FILE__))).'/'.$app_folder);
@@ -63,4 +65,4 @@ define('PATH_PUBLIC', realpath(dirname(dirname(__FILE__))).'/'.$public_folder);
 // Load PHPR
 // ------------------------------------------------------------------------
 
-require_once('../system/init/phpr.php');
+require_once(PATH_SYSTEM.'/init/phpr.php');

@@ -66,9 +66,9 @@ defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
 define('PHPR_VERSION', '2.0.0');
 define('PHPR_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
 define('PATH_BOOT', __FILE__);
-define('PATH_SYSTEM', realpath(dirname(dirname(__FILE__))).'/'.$system_folder);
-define('PATH_APP', realpath(dirname(dirname(__FILE__))).'/'.$app_folder);
-define('PATH_PUBLIC', realpath(dirname(dirname(__FILE__))).'/'.$public_folder);
+define('PATH_SYSTEM', realpath(dirname(dirname(__FILE__))).DS.$system_folder);
+define('PATH_APP', realpath(dirname(dirname(__FILE__))).DS.$app_folder);
+define('PATH_PUBLIC', realpath(dirname(dirname(__FILE__))).DS.$public_folder);
 
 // ------------------------------------------------------------------------
 // Load PHPR

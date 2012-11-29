@@ -93,7 +93,7 @@ class File_Directory
             $dir_path = $path.DS.$file;
 
             if (!is_link($dir_path) && is_dir($dir_path)) 
-                self::delete_recursive($dir_path) 
+                self::delete_recursive($dir_path);
             else
                 @unlink($dir_path);
         }
@@ -122,6 +122,16 @@ class File_Directory
 
         $dir_obj->close();
         
+        return $result;
+    }
+
+    public static function find_public_path($path)
+    {
+        $result = null;
+
+        if (strpos($path, PATH_PUBLIC) === 0)
+            $result = str_replace("\\", "/", substr($path, strlen(PATH_PUBLIC)));
+
         return $result;
     }
 

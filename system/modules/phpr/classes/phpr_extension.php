@@ -117,7 +117,15 @@ class Phpr_Extension extends Phpr_Extension_Base
         {
             $extension_object = $this->extension_data['methods'][$name];
             if (method_exists($extension_object, $name))
-                return call_user_func_array(array($extension_object, $method_name), $params);
+                return call_user_func_array(array($extension_object, $name), $params);
+        }
+
+        if (isset($this->extension_data['dynamic_methods'][$name]))
+        {
+            $extension_object = $this->extension_data['dynamic_methods'][$name][0];
+            $actual_name = $this->extension_data['dynamic_methods'][$name][1];
+            if (method_exists($extension_object, $actual_object))
+                return call_user_func_array(array($extension_object, $actual_name), $params);
         }
 
         throw new Exception('Class '. get_class($this) .' does not have a method definition for ' . $name);

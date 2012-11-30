@@ -81,12 +81,13 @@ class Phpr_Form
     /**
      * Form widget
      */
+    
     public static function widget($model, $field_name, $options=array())
     {
         if (!array_key_exists('class', $options))
             throw new Phpr_ApplicationException("Missing widget class from Phpr_Form::widget(), please define 'class' in the third parameter");
 
-        $class = $options['class'];
+        extract($options);
 
         if (is_string($model))
             $model = new $model();

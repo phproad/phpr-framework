@@ -16,7 +16,7 @@
 // { }
 // 
 
-class Phpr_Extension extends Phpr_ExtensionBase 
+class Phpr_Extension extends Phpr_Extension_Base 
 {
 
     // Equivilent of "use", define this attribute instead
@@ -29,8 +29,11 @@ class Phpr_Extension extends Phpr_ExtensionBase
     // 
     public $implement;
 
-    protected $extension_data_extensions = array();
-    protected $extension_data_methods = array();
+    protected $extension_data = array(
+        'extensions' => array(),
+        'methods' => array(),
+        'dynamic_methods' => array()
+    );
 
     public function __construct()
     {
@@ -49,10 +52,10 @@ class Phpr_Extension extends Phpr_ExtensionBase
         if (!strlen($extension_name))
             return $this;
 
-        if (array_key_exists($extension_name, $this->extension_data_extensions))
+        if (array_key_exists($extension_name, $this->extension_data['extensions']))
             throw new Exception('Class '. get_class($this) .' has already been extended with '. $extension_name);
 
-        $this->extension_data_extensions[$extension_name] = $extension_object = new $extension_name($this);
+        $this->extension_data['extensions'][$extension_name] = $extension_object = new $extension_name($this);
         $this->extension_extract_methods($extension_name, $extension_object);
 
         if ($is_recurring && is_subclass_of($extension_object, 'Phpr_Extension'))
@@ -67,16 +70,24 @@ class Phpr_Extension extends Phpr_ExtensionBase
             if ($method_name == '__construct' || $extension_object->extension_is_hidden_method($method_name))
                 continue;
 
-            $this->extension_data_methods[$method_name] = $extension_name;
+            $this->extension_data['methods'][$method_name] = $extension_name;
         }
     }
+
+    public function add_dynamic_method($extension, $dynamic_name, $actual_name) 
+    {
+        $this->extension_data['dynamic_methods'][$dynamic_name] = array($extension, $actual_name);
+    }
+
+    // Magic
+    // 
 
     public function __get($name) 
     {
         if (property_exists($this, $name))
             return $this->{$name};
 
-        foreach ($this->extension_data_extensions as $extension_object)
+        foreach ($this->extension_data['extensions'] as $extension_object)
         {
             if (property_exists($extension_object, $name))
                 return $extension_object->{$name};
@@ -88,7 +99,7 @@ class Phpr_Extension extends Phpr_ExtensionBase
         if (property_exists($this, $name))
             return $this->{$name} = $value;
 
-        foreach ($this->extension_data_extensions as $extension_object)
+        foreach ($this->extension_data['extensions'] as $extension_object)
         {
             if (!isset($extension_object->{$name}))
                 continue;
@@ -102,9 +113,9 @@ class Phpr_Extension extends Phpr_ExtensionBase
         if (method_exists($this, $name))
             return call_user_func_array(array($this, $name), $params);
 
-        if (isset($this->extension_data_methods[$name]))
+        if (isset($this->extension_data['methods'][$name]))
         {
-            $extension_object = $this->extension_data_methods[$name];
+            $extension_object = $this->extension_data['methods'][$name];
             if (method_exists($extension_object, $name))
                 return call_user_func_array(array($extension_object, $method_name), $params);
         }

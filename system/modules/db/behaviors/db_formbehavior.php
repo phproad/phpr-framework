@@ -1,6 +1,6 @@
 <?php
 
-class Db_FormBehavior extends Phpr_ControllerBehavior
+class Db_FormBehavior extends Phpr_Controller_Behavior
 {
     public $form_file_model_class = 'Db_File';
 

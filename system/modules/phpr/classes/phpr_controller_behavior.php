@@ -1,6 +1,6 @@
 <?php
 
-class Phpr_ControllerBehavior extends Phpr_Extension
+class Phpr_Controller_Behavior extends Phpr_Extension
 {
 
     protected $_controller;
@@ -18,7 +18,7 @@ class Phpr_ControllerBehavior extends Phpr_Extension
 
     protected function add_event_handler($name)
     {
-
+        $this->_controller->add_dynamic_method($this, $this->_controller->get_event_handler($name), $name);
     }
 
     protected function render_partial($name, $params = array())

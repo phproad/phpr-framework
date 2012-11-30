@@ -1,6 +1,6 @@
 <?php
 
-class Db_ListBehavior extends Phpr_ControllerBehavior
+class Db_ListBehavior extends Phpr_Controller_Behavior
 {
     public function __construct($controller)
     {

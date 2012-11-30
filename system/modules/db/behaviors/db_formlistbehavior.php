@@ -46,7 +46,7 @@
  *
  */
 
-class Db_FormListBehavior extends Phpr_ControllerBehavior
+class Db_FormListBehavior extends Phpr_Controller_Behavior
 {
     public $form_lists = array();
     public $form_list_active = null;

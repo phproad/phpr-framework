@@ -1,6 +1,6 @@
 <?php
 
-class Phpr_ExtensionBase
+class Phpr_Extension_Base
 {
 
     protected $extension_hidden_fields = array();

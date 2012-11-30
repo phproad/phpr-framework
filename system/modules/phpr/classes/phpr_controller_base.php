@@ -1,6 +1,6 @@
 <?php
 
-abstract class Phpr_ControllerBase extends Phpr_Extendable
+abstract class Phpr_Controller_Base extends Phpr_Extendable
 {
 
     public $view_data = array();

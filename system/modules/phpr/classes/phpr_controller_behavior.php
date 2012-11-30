@@ -1,6 +1,6 @@
 <?php
 
-class Phpr_Controller_Behavior extends Phpr_Extension
+class Phpr_Controller_Behavior extends Phpr_Extension_Base
 {
 
     protected $_controller;

@@ -168,7 +168,7 @@ class Phpr_Extension extends Phpr_Extension_Base
             $extension_object = $this->extension_data['dynamic_methods'][$name][0];
             $actual_name = $this->extension_data['dynamic_methods'][$name][1];
 
-            if (method_exists($extension_object, $actual_object))
+            if (method_exists($extension_object, $actual_name))
                 return call_user_func_array(array($extension_object, $actual_name), $params);
         }
 

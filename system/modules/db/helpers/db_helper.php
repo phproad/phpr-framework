@@ -239,7 +239,7 @@ class Db_Helper
     {
         $counter = 1;
         $table_name = $model->table_name;
-        $column_value = preg_replace('/'.$separator.'[0-9]+$/', '', trim($column_value));        
+        $column_value = preg_replace('/'.preg_quote($separator).'[0-9]+$/', '', trim($column_value));        
         $original_value = $column_value;
 
         $query = $case_sensitive 

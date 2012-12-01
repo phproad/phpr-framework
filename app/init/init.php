@@ -1,8 +1,5 @@
 <?php
 
-// Define constants
-define('PATH_MODULES', PATH_APP."/modules");
-
 if (!isset($PHPR_NO_SESSION) || !$PHPR_NO_SESSION)
 {
     // Override CMS security object

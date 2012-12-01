@@ -8,8 +8,6 @@
  */
 class Phpr_ClassLoader 
 {
-    const module_directory = 'modules';
-
     private $paths;
     private $auto_init = null;
     private $cache;
@@ -111,7 +109,7 @@ class Phpr_ClassLoader
             foreach ($this->paths['module'] as $path)
             {
                 $full_path = $module_path . DS 
-                    . self::module_directory . DS 
+                    . PHPR_MODULES . DS 
                     . $module_name . DS 
                     . $path . DS 
                     . $file_name;

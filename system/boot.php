@@ -52,6 +52,14 @@ $app_folder = 'app';
 $public_folder = 'public';
 
 /**
+ * Modules Name
+ * ----------------------------------------------------------
+ * Name of modules folder. Used in various places.
+ */
+
+$modules_name = 'modules';
+
+/**
  * Application Constants
  * ----------------------------------------------------------
  * DS          - Directory separator shorthand
@@ -65,6 +73,7 @@ $public_folder = 'public';
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
 define('PHPR_VERSION', '2.0.0');
 define('PHPR_EXT', pathinfo(__FILE__, PATHINFO_EXTENSION));
+define('PHPR_MODULES', $modules_name);
 define('PATH_BOOT', __FILE__);
 define('PATH_SYSTEM', realpath(dirname(dirname(__FILE__))).DS.$system_folder);
 define('PATH_APP', realpath(dirname(dirname(__FILE__))).DS.$app_folder);

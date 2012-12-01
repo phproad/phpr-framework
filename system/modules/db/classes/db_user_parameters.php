@@ -2,14 +2,14 @@
 
 class Db_User_Parameters
 {
-    private static $_cache = null;
+    protected static $cache = null;
 
     private static function init_cache()
     {
-        if (self::$_cache != null)
+        if (self::$cache != null)
             return;
 
-        self::$_cache = array();
+        self::$cache = array();
 
         $records = Db_DbHelper::objectArray('select * from userparams');
         foreach ($records as $param)
@@ -17,10 +17,10 @@ class Db_User_Parameters
             $name = $param->name;
             $user_id = $param->user_id;
 
-            if (!isset(self::$_cache[$user_id]))
-                self::$_cache[$user_id] = array();
+            if (!isset(self::$cache[$user_id]))
+                self::$cache[$user_id] = array();
 
-            self::$_cache[$user_id][$name] = $param->value;
+            self::$cache[$user_id][$name] = $param->value;
         }
     }
 
@@ -46,10 +46,10 @@ class Db_User_Parameters
             $user_id = $user->id;
         }
 
-        if (!isset(self::$_cache[$user_id]) || !isset(self::$_cache[$user_id][$name]))
+        if (!isset(self::$cache[$user_id]) || !isset(self::$cache[$user_id][$name]))
             return $default;
 
-        return unserialize(self::$_cache[$user_id][$name]);
+        return unserialize(self::$cache[$user_id][$name]);
     }
 
     public static function set($name, $value, $user_id = null)
@@ -75,7 +75,7 @@ class Db_User_Parameters
 
         $value = serialize($value);
 
-        self::$_cache[$user_id][$name] = $value;
+        self::$cache[$user_id][$name] = $value;
         
         $bind = array(
             'user_id' => $user_id, 

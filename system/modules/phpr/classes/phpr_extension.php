@@ -66,7 +66,7 @@ class Phpr_Extension extends Phpr_Extension_Base
         if (!strlen($extension_name))
             return $this;
 
-        if (array_key_exists($extension_name, $this->extension_data['extensions']))
+        if (isset($this->extension_data['extensions'][$extension_name]))
             throw new Exception('Class '. get_class($this) .' has already been extended with '. $extension_name);
 
         $this->extension_data['extensions'][$extension_name] = $extension_object = new $extension_name($this);
@@ -106,7 +106,7 @@ class Phpr_Extension extends Phpr_Extension_Base
 
     public function get_extension($name) 
     {
-        return (array_key_exists($name, $this->extension_data['extensions'])) 
+        return (isset($this->extension_data['extensions'][$name])) 
             ? $this->extension_data['extensions'][$name]
             : null;
     }

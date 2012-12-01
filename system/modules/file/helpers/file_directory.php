@@ -18,8 +18,8 @@ class File_Directory
 
     public static function copy($source, $destination, &$options = array())
     {
-        $ignore_files = array_key_exists('ignore', $options) ? $options['ignore'] : array();
-        $overwrite_files = array_key_exists('overwrite', $options) ? $options['overwrite'] : true;
+        $ignore_files = isset($options['ignore']) ? $options['ignore'] : array();
+        $overwrite_files = isset($options['overwrite']) ? $options['overwrite'] : true;
 
         if (is_dir($source))
         {

@@ -19,7 +19,7 @@ class Phpr_Html
     {
         foreach ($defaults as $attr_name=>$attr_value)
         {
-            if (!array_key_exists($attr_name, $attributes))
+            if (!isset($attributes[$attr_name]))
                 $attributes[$attr_name] = $defaults[$attr_name];
         }
 

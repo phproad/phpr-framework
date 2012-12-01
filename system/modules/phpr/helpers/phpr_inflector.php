@@ -371,10 +371,7 @@ class Phpr_Inflector
 
     protected static function get_cached_value($function, $argument)
     {
-        if (!array_key_exists($function, self::$cache))
-            return null;
-            
-        if (!array_key_exists($argument, self::$cache[$function]))
+        if (!isset(self::$cache[$function]) || !isset(self::$cache[$function][$argument]))
             return null;
             
         return self::$cache[$function][$argument];
@@ -382,7 +379,7 @@ class Phpr_Inflector
     
     protected static function add_cache($function, $argument, $value)
     {
-        if (!array_key_exists($function, self::$cache))
+        if (!isset(self::$cache[$function]))
             self::$cache[$function] = array();
             
         return self::$cache[$function][$argument] = $value;

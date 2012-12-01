@@ -2,14 +2,14 @@
 
 class Db_Module_Parameters
 {
-    private static $_cache = null;
+    protected static $cache = null;
 
     private static function init_cache()
     {
-        if (self::$_cache != null)
+        if (self::$cache != null)
             return;
 
-        self::$_cache = array();
+        self::$cache = array();
 
         $records = Db_DbHelper::objectArray('select * from moduleparams');
         foreach ($records as $param)
@@ -17,10 +17,10 @@ class Db_Module_Parameters
             $name = $param->name;
             $module_id = $param->module_id;
 
-            if (!isset(self::$_cache[$module_id]))
-                self::$_cache[$module_id] = array();
+            if (!isset(self::$cache[$module_id]))
+                self::$cache[$module_id] = array();
 
-            self::$_cache[$module_id][$name] = $param->value;
+            self::$cache[$module_id][$name] = $param->value;
         }
     }
 
@@ -28,12 +28,12 @@ class Db_Module_Parameters
     {
         self::init_cache();
 
-        if (!isset(self::$_cache[$module_id]) || !isset(self::$_cache[$module_id][$name]))
+        if (!isset(self::$cache[$module_id]) || !isset(self::$cache[$module_id][$name]))
             return $default;
 
         try
         {
-            return @unserialize(self::$_cache[$module_id][$name]);
+            return @unserialize(self::$cache[$module_id][$name]);
         }
         catch (Exception $ex)
         {
@@ -47,7 +47,7 @@ class Db_Module_Parameters
         
         $value = serialize($value);
 
-        self::$_cache[$module_id][$name] = $value;
+        self::$cache[$module_id][$name] = $value;
         
         $bind = array(
             'module_id' => $module_id,

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * PHPR Deprecate class 
+ * PHPR Deprecate class
+ *  
  * Used for deprecating methods internally
  */
-
 class Phpr_Deprecate 
 {
     public function set_function($function_name, $replacement = null) 

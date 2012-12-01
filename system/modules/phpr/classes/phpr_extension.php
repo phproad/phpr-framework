@@ -1,6 +1,8 @@
 <?php
 
 /**
+ * PHPR Extension class
+ * 
  * This is an attempt to spoof "Traits" in PHP 5.3
  */
 

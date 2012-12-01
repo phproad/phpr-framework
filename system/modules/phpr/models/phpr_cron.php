@@ -1,7 +1,10 @@
 <?php
 
 /**
- * PHPR Cron table and worker class
+ * PHPR Cron class
+ * 
+ * Used for managing scheduled events and house keeping
+ * via a regular table and worker jobs
  */
 
 class Phpr_Cron
@@ -80,7 +83,7 @@ class Phpr_Cron
 
     private static function execute_crontabs()
     {
-        $modules = Phpr_ModuleManager::find_modules();
+        $modules = Phpr_Module_Manager::find_modules();
         foreach ($modules as $module)
         {
             $module_id = $module->get_id();

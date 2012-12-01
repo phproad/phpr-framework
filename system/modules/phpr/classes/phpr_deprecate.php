@@ -10,9 +10,9 @@ class Phpr_Deprecate
     public function set_class($class_name, $replacement = null) 
     {
         if ($replacement)
-            $message = $class_name.' is a deprecated file. Please use '.$replacement.' instead.';
+            $message = 'Class '.$class_name.' is a deprecated. Please use class '.$replacement.' instead';
         else
-            $message = $class_name.' is a deprecated file. Sorry, there is no alternative.';
+            $message = 'Class '.$class_name.' is a deprecated. Sorry, there is no alternative';
         
         try 
         {
@@ -27,9 +27,9 @@ class Phpr_Deprecate
     public function set_function($func_name, $replacement = null) 
     {
         if ($replacement)
-            $message = $func_name.' is deprecated. Please use '.$replacement.' instead.';
+            $message = 'Function '.$func_name.' is deprecated. Please use '.$replacement.' instead';
         else
-            $message = $func_name.' is deprecated. Sorry, there is no alternative.';
+            $message = 'Function '.$func_name.' is deprecated. Sorry, there is no alternative';
 
         try 
         {
@@ -41,12 +41,12 @@ class Phpr_Deprecate
         }
     }
     
-    public function set_argument($arg_name, $argument_name, $replacement = null) 
+    public function set_argument($func_name, $arg_name, $replacement = null) 
     {
         if ($replacement)
-            $message = $arg_name.' was called with an argument that is deprecated: '.$argument_name.'. Please use '.$replacement.' instead.';
+            $message = 'Function '.$func_name.' was called with an argument that is deprecated: '.$arg_name.'. Please use '.$replacement.' instead';
         else
-            $message = $arg_name.' was called with an argument that is deprecated: '.$argument_name.'. Sorry, there is no alternative.';
+            $message = 'Function '.$func_name.' was called with an argument that is deprecated: '.$arg_name.'. Sorry, there is no alternative';
         
         try 
         {

@@ -70,9 +70,9 @@ class Phpr_DeprecateException extends Phpr_Exception
             return;
 
         $this->prev_trace = $prev_trace = (object)$trace[1];
-        $this->class_name = $prev_trace->class;
-        $this->code_file = $prev_trace->file;
-        $this->code_line = $prev_trace->line;
+        $this->class_name = isset($prev_trace->class) ? $prev_trace->class : null;
+        $this->code_file = isset($prev_trace->file) ? $prev_trace->file : null;
+        $this->code_line = isset($prev_trace->line) ? $prev_trace->line : null;
 
         parent::__construct($message, $code);
     }

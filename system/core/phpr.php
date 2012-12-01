@@ -14,7 +14,7 @@ class Phpr
     // Phpr_ClassLoader
     public static $class_loader;
 
-    // Phpr_ErrorLog
+    // Phpr_Error_Log
     public static $error_log;
 
     // Phpr_TraceLog

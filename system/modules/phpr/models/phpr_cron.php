@@ -48,7 +48,7 @@ class Phpr_Cron
     }
 
     // Usage: 
-    //   Phpr_Cron::queue_job('User_Model:static_method', array('param1', 'param2', 'param3'));
+    //   Phpr_Cron::queue_job('User_Model::static_method', array('param1', 'param2', 'param3'));
     // Executes: 
     //   User_Model::static_method('param1', 'param2', 'param3');
     public static function queue_job($handler_name, $param_data=array())
@@ -72,7 +72,7 @@ class Phpr_Cron
             Db_DbHelper::query('delete from core_cron_jobs where id=:id limit 1', array('id'=>$job->id));
 
             $params = $job->param_data ? unserialize($job->param_data) : array();
-            $parts = explode(":", $job->handler_name);
+            $parts = explode('::', $job->handler_name);
             if (count($parts) < 1)
                 continue;
 

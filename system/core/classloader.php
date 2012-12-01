@@ -63,11 +63,11 @@ class Phpr_ClassLoader
      */
     private function load_local($class)
     {
-        $file_name = strtolower($class) . '.' . PHPR_EXT;
+        $file_name = strtolower($class).'.'.PHPR_EXT;
 
         foreach ($this->paths['library'] as $path)
         {
-            $full_path = $path . DS . $file_name;
+            $full_path = $path.DS.$file_name;
 
             if (!$this->file_exists($full_path))
                 continue;
@@ -94,7 +94,7 @@ class Phpr_ClassLoader
         global $CONFIG;
         $disabled_modules = isset($CONFIG['DISABLE_MODULES']) ? $CONFIG['DISABLE_MODULES'] : array();
 
-        $file_name = strtolower($class) . '.' . PHPR_EXT;
+        $file_name = strtolower($class).'.'.PHPR_EXT;
         $underscore_pos = strpos($class, '_');
         $module_name = strtolower(($underscore_pos) 
             ? substr($class, 0, $underscore_pos)
@@ -108,10 +108,10 @@ class Phpr_ClassLoader
         {
             foreach ($this->paths['module'] as $path)
             {
-                $full_path = $module_path . DS 
-                    . PHPR_MODULES . DS 
-                    . $module_name . DS 
-                    . $path . DS 
+                $full_path = $module_path.DS 
+                    . PHPR_MODULES.DS 
+                    . $module_name.DS 
+                    . $path.DS 
                     . $file_name;
 
                 if (!$this->file_exists($full_path))
@@ -140,8 +140,8 @@ class Phpr_ClassLoader
     {
         foreach ($this->paths['application'] as $path) 
         {
-            $controller_path = ($controller_directory != null) ? $path . DS . $controller_directory : $path . DS . 'controllers';
-            $controller_path = realpath($controller_path . DS . strtolower($class_name) . '.' . PHPR_EXT);
+            $controller_path = ($controller_directory != null) ? $path.DS.$controller_directory : $path.DS.'controllers';
+            $controller_path = realpath($controller_path.DS.strtolower($class_name).'.'.PHPR_EXT);
 
             if (!strlen($controller_path))
                 continue;
@@ -231,7 +231,7 @@ class Phpr_ClassLoader
         global $CONFIG;
 
         foreach ($this->paths['application'] as $application_path) {
-            $real_path = realpath($application_path . '/' . $path);
+            $real_path = realpath($application_path.DS.$path);
 
             if($real_path && file_exists($real_path))
                 return $real_path;
@@ -253,7 +253,7 @@ class Phpr_ClassLoader
         $paths = array();
 
         foreach ($this->paths['application'] as $application_path) {
-            $real_path = realpath($application_path . '/' . $path);
+            $real_path = realpath($application_path.DS.$path);
 
             if($real_path && file_exists($real_path))
                 $paths[] = $real_path;
@@ -284,7 +284,7 @@ class Phpr_ClassLoader
         } 
         catch (exception $ex) 
         {
-            echo $file_path . '  ' . $ex->getMessage();
+            echo $file_path.' '.$ex->getMessage();
         }
 
         return in_array($base, $this->cache[$dir]);

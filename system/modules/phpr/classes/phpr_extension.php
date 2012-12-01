@@ -95,7 +95,7 @@ class Phpr_Extension extends Phpr_Extension_Base
 
     public function is_extended_with($name) 
     {
-        foreach ($this->extensible_data['extensions'] as $class_name => $extension)
+        foreach ($this->extension_data['extensions'] as $class_name => $extension)
         {
             if ($class_name == $name)
                 return true;
@@ -106,16 +106,16 @@ class Phpr_Extension extends Phpr_Extension_Base
 
     public function get_extension($name) 
     {
-        return (array_key_exists($name, $this->extensible_data['extensions'])) 
-            ? $this->extensible_data['extensions'][$name]
+        return (array_key_exists($name, $this->extension_data['extensions'])) 
+            ? $this->extension_data['extensions'][$name]
             : null;
     }
 
     public function method_exists($name) 
     {
         return (method_exists($this, $name) 
-            || isset($this->extensible_data['methods'][$method_name]) 
-            || isset($this->extensible_data['dynamic_methods'][$method_name]));        
+            || isset($this->extension_data['methods'][$name]) 
+            || isset($this->extension_data['dynamic_methods'][$name]));        
     }
 
     // Magic

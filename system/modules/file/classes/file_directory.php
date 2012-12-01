@@ -125,14 +125,4 @@ class File_Directory
         return $result;
     }
 
-    public static function find_public_path($path)
-    {
-        $result = null;
-
-        if (strpos($path, PATH_PUBLIC) === 0)
-            $result = str_replace("\\", "/", substr($path, strlen(PATH_PUBLIC)));
-
-        return $result;
-    }
-
 }

@@ -10,8 +10,8 @@
  *   $CONFIG["TRACE_LOG"]["BLOG"] = PATH_APP."/logs/blog.txt";
  *   $CONFIG["TRACE_LOG"]["DEBUG"] = PATH_APP."/logs/debug.txt";
  * 
- * The second-level key determines the listener name. Use the listener names to write tracing message
- * to different files: 
+ * The second-level key determines the listener name. Use the listener names to write tracing
+ * messages to different files: 
  * 
  *   Phpr::$trace_log->write('My traceable message', 'BLOG');
  *   trace_log('My traceable message', 'BLOG');

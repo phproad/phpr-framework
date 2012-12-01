@@ -12,7 +12,10 @@ class Phpr_Cron
 
     public static function update_interval($code)
     {
-        $bind = array('record_code'=>$code, 'now'=>Phpr_DateTime::now()->toSqlDateTime());
+        $bind = array(
+            'record_code' => $code, 
+            'now' => Phpr_DateTime::now()->toSqlDateTime()
+        );
         Db_DbHelper::query('insert into core_cron_table (record_code, updated_at) values (:record_code, now()) on duplicate key update updated_at =:now', $bind);
     }
 

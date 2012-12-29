@@ -7,8 +7,8 @@
 
 class Db_ActivityModel
 {
-
-    protected $collection = array();
+    protected $collection = array(); // Empty model collection
+    protected $tags = array(); // Used for tagging models, returned as $model->tag_name
     protected $remove_duplicates = false;
 
     protected $limit_count = null;
@@ -18,6 +18,8 @@ class Db_ActivityModel
     protected $order_timestamp = array('created_at,updated_at'); // This is used to override timestamp_at
     protected $order_direction = 'DESC';
 
+    protected $_counter = 0;
+
     public static function create()
     {
         return new self();
@@ -26,9 +28,11 @@ class Db_ActivityModel
     /**
      * Add a ActiveRecord model before find_all()
      */
-    public function add($record)
+    public function add($record, $tag = null)
     {
-        $this->collection[] = clone $record;
+        $counter = ++$this->_counter;
+        $this->collection[$counter] = clone $record;
+        $this->tags[$counter] = $tag;
     }
 
     /**
@@ -37,13 +41,19 @@ class Db_ActivityModel
     public function build_sql()
     {
         $sql = array();
-        foreach ($this->collection as $key=>$record)
+        $count = 0;
+        foreach ($this->collection as $key => $record)
         {
-            if ($key!=0)
+            if ($count++ != 0)
                 $sql[] = ($this->remove_duplicates) ? "UNION" : "UNION ALL";
-            
+         
+            // Pass Class name
             $record_obj = $record->from($record->table_name, 'id', true);
             $record_obj->select("(SELECT '".get_class($record)."') as class_name");
+
+            // Pass Tag name
+            $tag_name = $this->tags[$key];
+            $record_obj->select("(SELECT '".$tag_name."') as tag_name");
 
             if ($this->order_use_timestamp)
                 $record_obj->select('ifnull('.$record->table_name.'.updated_at, '.$record->table_name.'.created_at) as timestamp_at');
@@ -72,9 +82,10 @@ class Db_ActivityModel
         $sql = array();
 
         $sql[] = "SELECT COUNT(*) AS total FROM (";
-        foreach ($this->collection as $key=>$record)
+        $count = 0;
+        foreach ($this->collection as $record)
         {
-            if ($key!=0)
+            if ($count++ != 0)
                 $sql[] = ($this->remove_duplicates) ? "UNION" : "UNION ALL";
             
             $record_obj = $record->from($record->table_name, 'id', true);
@@ -90,7 +101,7 @@ class Db_ActivityModel
     public function find_all()
     {
         // Build lean SQL statement
-        $collection = Db_DbHelper::objectArray($this->build_sql());
+        $collection = Db_Helper::object_array($this->build_sql());
 
         // Build a collection of class_names and the id we need
         $mixed_array = array();
@@ -99,7 +110,7 @@ class Db_ActivityModel
             $mixed_array[$record->class_name][] = $record->id;
         }
 
-        // Run lean query to populate our data collections
+        // Eager load our data collection
         $collection_array = array();
         foreach ($mixed_array as $class_name => $ids)
         {
@@ -107,12 +118,18 @@ class Db_ActivityModel
             $collection_array[$class_name] = $obj->where('id in (?)', array($ids))->find_all();
         }
 
-        // Now slot our data objects into a final array
+        // Now load our data objects into a final array
         $data_array = array();
         foreach ($collection as $record)
         {
             $class_name = $record->class_name;
-            $data_array[] = $collection_array[$class_name]->find($record->id);
+            $obj = $collection_array[$class_name]->find($record->id);
+            $obj->class_name = $class_name;
+            
+            $tag_name = (isset($record->tag_name)) ? $record->tag_name : null;
+            $obj->tag_name = $tag_name;
+            
+            $data_array[] = $obj;
         }
 
         return new Db_DataCollection($data_array);
@@ -135,7 +152,7 @@ class Db_ActivityModel
 
     public function requestRowCount()
     {
-        return Db_DbHelper::scalar($this->count_sql());
+        return Db_Helper::scalar($this->count_sql());
     }
 
     public function order($timestamp = null, $direction = null)

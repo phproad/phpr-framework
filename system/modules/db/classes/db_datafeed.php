@@ -5,7 +5,7 @@
  * paginate them and return as one data set.
  */
 
-class Db_ActivityModel
+class Db_DataFeed
 {
     protected $collection = array(); // Empty model collection
     protected $tags = array(); // Used for tagging models, returned as $model->tag_name
@@ -18,8 +18,6 @@ class Db_ActivityModel
     protected $order_timestamp = array('created_at,updated_at'); // This is used to override timestamp_at
     protected $order_direction = 'DESC';
 
-    protected $_counter = 0;
-
     public static function create()
     {
         return new self();
@@ -30,9 +28,8 @@ class Db_ActivityModel
      */
     public function add($record, $tag = null)
     {
-        $counter = ++$this->_counter;
-        $this->collection[$counter] = clone $record;
-        $this->tags[$counter] = $tag;
+        $this->collection[] = clone $record;
+        $this->tags[] = $tag;
     }
 
     /**
@@ -122,10 +119,12 @@ class Db_ActivityModel
         $data_array = array();
         foreach ($collection as $record)
         {
+            // Set Class name
             $class_name = $record->class_name;
             $obj = $collection_array[$class_name]->find($record->id);
             $obj->class_name = $class_name;
             
+            // Set Tag name
             $tag_name = (isset($record->tag_name)) ? $record->tag_name : null;
             $obj->tag_name = $tag_name;
             

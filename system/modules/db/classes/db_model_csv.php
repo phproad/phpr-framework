@@ -1,11 +1,11 @@
 <?php
 
 /*
- * Db_CsvModel extension
+ * Db_Model_Csv extension
  * - Import / Export functions
  */
 
-class Db_CsvModel extends Phpr_Extension_Base
+class Db_Model_Csv extends Phpr_Extension_Base
 {
     private $_model_class;
     private $_model;
@@ -20,7 +20,7 @@ class Db_CsvModel extends Phpr_Extension_Base
         $this->_columns = (isset($model->csv_columns)) ? $model->csv_columns : null;
     }
 
-    // First parameter cannot be an array otherwise it messes up Extensibiilty
+    // First parameter cannot be an array otherwise it messes up Extensibilty
     public function csv_import_record($columns_override = null, $row_data)
     {
         $columns = $this->csv_get_columns();
@@ -63,7 +63,7 @@ class Db_CsvModel extends Phpr_Extension_Base
             foreach ($columns_override as $column_name)
             {
                 if (!array_key_exists($column_name, $columns))
-                    throw new Phpr_ApplicationException(sprintf('Column %s not found in the product column set.', $column_name));
+                    throw new Phpr_ApplicationException(sprintf('Column %s not found in the column set', $column_name));
                     
                 $columns_updated[$column_name] = $columns[$column_name];
             }

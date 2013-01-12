@@ -15,16 +15,17 @@ class Db_Model_Dynamic extends Phpr_Extension_Base
 {
 
     protected $_model;
+    protected $_field_name = "config_data";
+    
     public $added_dynamic_fields = array();
     public $added_dynamic_columns = array();
-    public $dynamic_model_field = "config_data";
 
     public function __construct($model)
     {
         $this->_model = $model;
 
         if (isset($model->dynamic_model_field))
-            $this->dynamic_model_field = $model->dynamic_model_field;
+            $this->_field_name = $model->dynamic_model_field;
 
         $this->_model->add_event('onAfterLoad', $this, 'load_dynamic_data');
         $this->_model->add_event('onBeforeUpdate', $this, 'set_dynamic_data');
@@ -53,17 +54,17 @@ class Db_Model_Dynamic extends Phpr_Extension_Base
         {
             $value = serialize($this->_model->{$field_id});
             $field_element = $document->addChild('field');
-            Phpr_Xml::create_dom_element($document, $field_element, 'id', $field_id);
-            Phpr_Xml::create_dom_element($document, $field_element, 'value', $value, true);            
+            Phpr_Xml::create_node($document, $field_element, 'id', $field_id);
+            Phpr_Xml::create_node($document, $field_element, 'value', $value, true);            
         }
 
-        $dynamic_field = $this->dynamic_model_field;
+        $dynamic_field = $this->_field_name;
         $this->_model->{$dynamic_field} = $document->asXML();
     }
 
     public function load_dynamic_data()
     {
-        $dynamic_field = $this->dynamic_model_field;
+        $dynamic_field = $this->_field_name;
 
         if (!strlen($this->_model->{$dynamic_field}))
             return;

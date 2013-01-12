@@ -5,30 +5,35 @@
  *
  * This class contains functions for working with XML
  */
+
 class Phpr_Xml
 {
-    public static function create_dom_element($document, $parent, $name, $value = null, $cdata = false)
+    public static function create_node($document, $parent=null, $field, $value = null, $use_cdata = false)
     {
         $cdata_value = $value;
-        if ($cdata)
+        if ($use_cdata)
             $value = null;
+
+        if ($parent === null)
+            $parent = $document;
 
         if ($document instanceof SimpleXMLElement)
         {
-            $element = $parent->addChild($name, $value);
+            $element = $parent->addChild($field, $value);
         }
         else
         {
-            $element = $document->createElement($name, $value);
+            $element = $document->createElement($field, $value);
             $parent->appendChild($element);
         }
 
-        if ($cdata)
+        if ($use_cdata)
             return self::create_cdata($document, $element, $cdata_value);
         
         return $element;
     }
 
+    // Wrap a node's value with a CDATA block
     public static function create_cdata($document, $parent, $value)
     {
         if ($document instanceof SimpleXMLElement)
@@ -42,7 +47,25 @@ class Phpr_Xml
         
         return $element;
     }
+    
+    // Plain array is a single dimension array
+    public static function from_plain_array($params = array(), $root_node='data', $use_cdata = false)
+    {
+        $xml_string = '<'.$root_node.'></'.$root_node.'>';
+        $document = new SimpleXMLElement($xml_string);
 
+        if (!is_array($params))
+            return $document;
+
+        foreach ($params as $field=>$value)
+        {
+            self::create_node($document, null, $field, $value, $use_cdata);
+        }
+
+        return $document;
+    }
+
+    // Plain array is a single dimension array
     public static function to_plain_array($document, $use_parent_keys = false)
     {
         $result = array();
@@ -50,7 +73,51 @@ class Phpr_Xml
         
         return $result;
     }
-    
+
+    // Takes an XML object and makes it purrty
+    public static function beautify_xml($xml) 
+    {       
+        $level = 4;  
+        $indent = 0;
+        $pretty = array();  
+
+        if ($xml instanceof SimpleXMLElement)
+            $xml = $xml->asXML();
+
+        if (!is_string($xml))
+            return null;
+
+        $xml = explode("\n", preg_replace('/>\s*</', ">\n<", $xml));  
+
+        if (count($xml) && preg_match('/^<\?\s*xml/', $xml[0])) 
+            $pretty[] = array_shift($xml);  
+
+        foreach ($xml as $el) 
+        {
+            if (preg_match('/^<([\w])+[^>\/]*>$/U', $el)) 
+            {  
+                $pretty[] = str_repeat(' ', $indent) . $el;  
+                $indent += $level;  
+            } 
+            else 
+            {  
+                if (preg_match('/^<\/.+>$/', $el)) 
+                    $indent -= $level;
+
+                if ($indent < 0) 
+                    $indent += $level;  
+
+                $pretty[] = str_repeat(' ', $indent) . $el;  
+            }  
+        }
+
+        $xml_string = implode("\n", $pretty);     
+        return $xml_string;  
+    }    
+
+    // Internals
+    // 
+
     protected static function node_to_array($node, &$result, $parent_path, $use_parent_keys)
     {
         foreach ($node->childNodes as $child)
@@ -81,8 +148,10 @@ class Phpr_Xml
                 $node_path = substr($node_path, 1);
             
             if ($child instanceof DOMCdataSection)
+            {
                 $result[$node_path] = $child->wholeText;
-            elseif ($child instanceof DOMText)
+            }
+            else if ($child instanceof DOMText)
             {
                 if (!($child->parentNode->childNodes->length > 1))
                     $result[$node_path] = $child->wholeText;
@@ -91,5 +160,5 @@ class Phpr_Xml
                 self::node_to_array($child, $result, $node_path, $use_parent_keys);
         }
     }
-}
 
+}

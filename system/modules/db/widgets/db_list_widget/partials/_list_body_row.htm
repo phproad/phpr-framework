@@ -1,0 +1,66 @@
+<?
+	$url = $widget->list_format_record_url($row);
+	$onClick = $widget->list_format_record_onclick($row);
+	$cellOnClick = $widget->list_format_cell_onclick($row);
+?>
+
+<tr class="<?= Phpr_Html::zebra($widget->get_id()) ?>">
+	<?
+		$body_cb_option_set = $widget->custom_body_cells;
+		if ($widget->custom_body_cells !== false || $body_cb_option_set)
+		{
+			if (!$body_cb_option_set && strlen($widget->custom_body_cells))
+				$widget->render_partial($widget->custom_body_cells, array('model'=>$row), true, true);
+			elseif ($widget->custom_body_cells)
+				$widget->render_partial($widget->custom_body_cells, array('model'=>$row), true, true);
+		}
+	?>
+
+	<? foreach ($list_columns as $index=>$column): 
+		$cell_onclick_handler = null;
+		if ($url && $widget->handle_row_click)
+			$cell_onclick_handler = "if (event.which != 2) window.location.href = '".$url."'";
+			
+		if ($onClick)
+			$cell_onclick_handler = $cellOnClick.'; '.$cell_onclick_handler;
+			
+		if ($cell_onclick_handler)
+			$cell_onclick_handler = 'onclick="'.$cell_onclick_handler.'"';
+	?>
+		<td class="<?= $widget->list_cell_class($column) ?> <?= $url ? 'link' : null ?> <?=($column->listNoTitle)?'no-title':''?>" <?= $cell_onclick_handler ?>>
+			<?
+				if ($widget->cell_partial !== false)
+				{
+					if (!strlen($widget->cell_partial))
+						$widget->render_partial('list_cell_partial', array('model'=>$row, 'index'=>$index, 'column'=>$column, 'url'=>$url), false);
+					else
+						$widget->render_partial($widget->cell_partial, array('model'=>$row, 'index'=>$index, 'column'=>$column, 'url'=>$url), true, true);
+				}
+			?>
+		
+			<? if ($url): ?><a <?= $onClick ?> href="<?= $url.'?'.uniqid() ?>"><? endif ?>
+			<? if ($column->type !== db_bool): ?>
+				<?= h($row->displayField($column->dbName, 'list')) ?>
+			<? else: ?>
+				<? $widget->render_partial('list_bool_column', array('value'=>$row->{$column->dbName})); ?>
+			<? endif ?>
+			<? if ($url): ?></a><? endif ?>
+		</td>
+	<? endforeach ?>
+	<? if ($widget->is_editable && $widget->show_delete_icon): ?>
+		<td class="iconCell last">
+			<a onclick="return $(this).getForm().sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
+				extraFields: { 
+					<?=$widget->get_event_handler_data('on_form_delete')?>, 
+					primary_id: <?=$row->id?>
+				}, 
+				confirm: 'Do you really want to delete this <?=strtolower($widget->form_title)?>?', 
+				update: '<?=$widget->get_id()?>', 
+				loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1},
+				onSuccess: cancelPopup, 
+				onAfterUpdate: <?=$widget->get_id()?>_init
+			});" title="Delete event" class="icon delete" href="#">Delete</a>
+		</td>
+	<? endif ?>
+</tr>
+

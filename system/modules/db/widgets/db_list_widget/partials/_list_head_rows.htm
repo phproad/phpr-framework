@@ -1,0 +1,40 @@
+<tr>
+	<?
+		$head_cb_option_set = $widget->custom_head_cells;
+
+		if ($widget->custom_head_cells !== false || $head_cb_option_set)
+		{	
+			if (!$head_cb_option_set && strlen($widget->custom_head_cells))
+				$this->renderPartial($widget->custom_head_cells, null, true, true);
+			elseif ($widget->custom_head_cells)
+				$this->renderPartial($widget->custom_head_cells, null, true, true);
+		}
+	?>
+	
+	<? foreach ($list_columns as $column): ?>
+		<th class="<?= $widget->list_cell_class($column) ?> <?=($column->isCustom || $widget->no_interaction || $widget->no_sorting || $column->noSorting)?'noSort':''?> <?=($column->listNoTitle)?'no-title':''?>" <? if($column->listNoTitle): ?>title="<?= strlen(trim($column->listTitle)) ? h($column->listTitle) : h($column->displayName) ?>"<? endif ?>>
+			<? if (!$column->isCustom && !$widget->no_interaction && !$widget->no_sorting && !$column->noSorting): ?>
+				<a href="#" onclick="return $(this).getForm().sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
+					extraFields: {
+						<?=$widget->get_event_handler_data('on_list_column_click')?>, 
+						columnName: '<?= $column->dbName ?>'
+					}, 
+					update: '<?= $widget->get_id() ?>', 
+					loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1, show: false}, 
+					onBeforePost: LightLoadingIndicator.show.pass('Loading...'), 
+					onComplete: LightLoadingIndicator.hide, 
+					onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}
+				});">
+			<? endif ?>
+			<? if ($column->listNoTitle): ?>
+				&nbsp;
+			<? else: ?>
+				<?= strlen(trim($column->listTitle)) ? h($column->listTitle) : h($column->displayName) ?>
+			<? endif ?>
+			<? if (!$column->isCustom && !$widget->no_interaction && !$widget->no_sorting && !$column->noSorting): ?></a><? endif ?>
+		</th>
+	<? endforeach ?>
+	<? if ($widget->is_editable && $widget->show_delete_icon): ?>
+		<th class="noSort">&nbsp;</th>
+	<? endif ?>
+</tr>

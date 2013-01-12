@@ -1,0 +1,138 @@
+<div id="<?=$widget->get_element_id('container')?>">
+	<? if ($widget->control_panel): ?>
+		<div class="scrollable_control_panel">
+			<div class="scroll_controls">
+				<div class="scroll_left hidden">&lt;</div>
+				<div class="scroll_area">
+					<? $widget->render_partial($widget->control_panel); ?>
+					<div class="clear"></div>
+				</div>
+				<div class="scroll_right hidden">&gt;</div>
+				<div class="clear"></div>
+			</div>
+	<? endif ?>
+
+	<? if (!$widget->no_interaction || $widget->search_enabled): ?>
+		<div class="listSettings">
+			<div class="clear"></div>
+			<? if ($widget->search_enabled): ?>
+				<?
+					$searchCtrlId = $widget->get_element_id('search_control');
+					$searchFieldId = $widget->get_element_id('search_field');
+					
+					$searchActive = strlen($search_string);
+				?>
+
+				<div class="listSearchArea">
+					<div class="searchControl <?= $searchActive ? null : 'inactive' ?>" id="<?= h($searchCtrlId) ?>">
+						<span class="left">Search</span>
+						<input type="text" name="search_field" placeholder="<?= h($widget->search_prompt) ?>" value="<?= $searchActive ? h($search_string) : null ?>" id="<?= h($searchFieldId) ?>" />
+						<span class="right">Cancel</span>
+					</div>
+				</div>
+
+				<script type="text/javascript">
+					<?
+						$form_id = $widget->get_form_id();
+						$list_form = $widget->no_form ? '$(\''.$searchCtrlId.'\').getForm()' : '$(\''.$form_id.'\')';
+					?>
+					var searchHandler = new SearchControlHandler('<?= h($searchCtrlId) ?>', {'default_text': '<?= $widget->search_prompt ?>'});
+
+					searchHandler.addEvent('send', function(){
+						return <?= $list_form ?>.sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
+							update: '<?= $widget->get_id() ?>', 
+							extraFields: {
+								<?=$widget->get_event_handler_data('on_list_search')?>, 
+								'search_string': $('<?= $searchFieldId ?>').get('value')
+							}, 
+							onFailure: popupAjaxError, 
+							onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
+							loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
+						});
+					});
+					searchHandler.addEvent('cancel', function(){
+						return <?= $list_form ?>.sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
+							update: '<?= $widget->get_id() ?>', 
+							extraFields: {
+								<?=$widget->get_event_handler_data('on_list_search_cancel')?>
+							},
+							onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
+							loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
+						});
+					});
+					
+				</script>
+			<? endif ?>
+			<div class="clear"></div>
+		</div>
+		<div class="clear"></div>
+	<? endif ?>
+
+	<? if ($widget->control_panel): ?>
+		</div>
+	<? endif ?>
+
+	<? 
+		if ($widget->top_partial)
+			$widget->render_partial($widget->top_partial);
+	?>
+
+	<? if (!$widget->no_interaction && !$widget->no_form): ?>
+		<?= Phpr_Form::open_tag(array('id'=>$widget->get_form_id())) ?>
+	<? endif ?>
+
+		<div id="<?= $widget->get_id() ?>" class="listContainer">
+			<? 
+				if (!$widget->custom_partial)
+					$widget->render_partial('list'); 
+				else
+					$widget->render_partial($widget->custom_partial); 
+			?>
+		</div>
+	<? if (!$widget->no_interaction && !$widget->no_form): ?>
+		</form>
+	<? endif ?>
+
+	<? if (!$widget->no_js_declarations): ?>
+		<script>
+			function listWidgetReload(show_load_indicator) {
+				return $('<?= $widget->get_form_id() ?>').sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
+					extraFields: { <?=$widget->get_event_handler_data('on_list_reload')?> },
+					update: '<?= $widget->get_id() ?>', 
+					onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
+					onBeforePost: LightLoadingIndicator.show.pass('Loading...'), 
+					onComplete: LightLoadingIndicator.hide, 
+					loadIndicator: {show: false, injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
+				});
+			}
+
+			<? if ($widget->control_panel): ?>
+			        jQuery(document).ready(function() {
+			            var list_tab_container = jQuery('#<?=$widget->get_element_id('container')?>');
+			            var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
+			            if (list_tab)
+			            {
+			                list_tab.addEvent('onTabClick', function() {
+
+			                    var toolbar = list_tab_container
+			                                    .find('.scrollable_control_panel:first')
+			                                    .not('.scrollable_cp_loaded')
+			                                    .addClass('scrollable_cp_loaded');
+
+			                    if (toolbar.length > 0)
+			                        new Backend_ScrollabeToolbar(toolbar.get(0));
+			                });
+			            }
+			        });
+
+			        // When the container gets updated, we need to refresh the logic above
+			        function <?=$widget->get_id()?>_init() {
+			            var list_tab_container = jQuery('#<?= $widget->get_id() ?>');
+			            var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
+			            if (list_tab)
+			                list_tab.fireEvent('onTabClick');
+			        }        
+			<? endif ?>	
+		</script>
+	<? endif ?>
+</div>

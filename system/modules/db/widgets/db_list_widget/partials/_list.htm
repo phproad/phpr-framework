@@ -1,0 +1,24 @@
+<table class="simpleList">
+	<thead class="sortable">
+		<? $widget->render_partial('list_head_rows') ?>
+	</thead>
+	<tbody id="<?= $widget->get_element_id('body')?>">
+		<? if ((is_object($data) && !$data->count) || (is_array($data) && !$data)): ?>
+			<tr class="noData">
+				<td colspan="<?= $list_column_count+5 ?>"><?= h($widget->no_data_message) ?></td>
+			</tr>
+		<? else: ?>
+			<? $widget->render_partial('list_body_rows') ?>
+		<? endif ?>
+	</tbody>
+</table>
+
+<? if (!$widget->no_interaction && $list_total_row_count > 0 && !$widget->no_pagination): ?>
+	<?= Phpr_Html::ajaxPagination($list_pagination,
+		"$(this).getForm().sendPhpr('".$this->getEventHandler('onFormWidgetEvent')."', {extraFields: {".$widget->get_event_handler_data('on_list_prev_page')."}, update: '".$widget->get_id() ."', loadIndicator: {element: '".$widget->get_id()."', hideOnSuccess: 1, src: '".$widget->load_indicator."', show: false}, onBeforePost: LightLoadingIndicator.show.pass('Loading...'), onComplete: LightLoadingIndicator.hide, onSuccess: function(){\$('".$widget->get_id()."').fireEvent('listUpdated')}});",
+		"$(this).getForm().sendPhpr('".$this->getEventHandler('onFormWidgetEvent')."', {extraFields: {".$widget->get_event_handler_data('on_list_next_page')."}, update: '".$widget->get_id() ."', loadIndicator: {element: '".$widget->get_id()."', show: false, hideOnSuccess: 1, src: '".$widget->load_indicator."'}, onBeforePost: LightLoadingIndicator.show.pass('Loading...'), onComplete: LightLoadingIndicator.hide, onSuccess: function(){\$('".$widget->get_id()."').fireEvent('listUpdated')}});",
+		"$(this).getForm().sendPhpr('".$this->getEventHandler('onFormWidgetEvent')."', {extraFields: {".$widget->get_event_handler_data('on_list_set_page').", pageIndex: %s}, update: '".$widget->get_id() ."', loadIndicator: {show: false, element: '".$widget->get_id()."', hideOnSuccess: 1, src: '".$widget->load_indicator."'}, onBeforePost: LightLoadingIndicator.show.pass('Loading...'), onComplete: LightLoadingIndicator.hide, onSuccess: function(){\$('".$widget->get_id()."').fireEvent('listUpdated')}});"
+	) ?>
+<? endif ?>
+<input type="hidden" class="load_indicator" value="<?= $widget->load_indicator ?>"/>
+<script type="text/javascript">realignPopups();</script>

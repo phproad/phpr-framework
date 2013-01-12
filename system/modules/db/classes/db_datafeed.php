@@ -7,8 +7,11 @@
 
 class Db_DataFeed
 {
+    public $context_var = 'context_name';
+    public $classname_var = 'class_name';
+
     protected $collection = array(); // Empty model collection
-    protected $tags = array(); // Used for tagging models, returned as $model->tag_name
+    protected $context_list = array(); // Used for "tagging" models, returned as $model->context_name
     protected $remove_duplicates = false;
 
     protected $limit_count = null;
@@ -18,6 +21,8 @@ class Db_DataFeed
     protected $order_timestamp = array('created_at,updated_at'); // This is used to override timestamp_at
     protected $order_direction = 'DESC';
 
+    public $aliases = array();
+
     public static function create()
     {
         return new self();
@@ -26,10 +31,10 @@ class Db_DataFeed
     /**
      * Add a ActiveRecord model before find_all()
      */
-    public function add($record, $tag = null)
+    public function add($record, $context = null)
     {
         $this->collection[] = clone $record;
-        $this->tags[] = $tag;
+        $this->context_list[] = $context;
     }
 
     /**
@@ -46,11 +51,15 @@ class Db_DataFeed
          
             // Pass Class name
             $record_obj = $record->from($record->table_name, 'id', true);
-            $record_obj->select("(SELECT '".get_class($record)."') as class_name");
+            $record_obj->select("(SELECT '".get_class($record)."') as ".$this->classname_var);
 
-            // Pass Tag name
-            $tag_name = $this->tags[$key];
-            $record_obj->select("(SELECT '".$tag_name."') as tag_name");
+            // Pass Context name
+            $context_name = $this->context_list[$key];
+            $record_obj->select("(SELECT '".$context_name."') as ".$this->context_var);
+
+            // Pass Aliases
+            foreach ($this->aliases as $alias_name => $alias_string)
+                $record_obj->select($alias_string." as ".$alias_name);
 
             if ($this->order_use_timestamp)
                 $record_obj->select('ifnull('.$record->table_name.'.updated_at, '.$record->table_name.'.created_at) as timestamp_at');
@@ -67,11 +76,17 @@ class Db_DataFeed
             $sql[] = "ORDER BY ".implode(' '.$this->order_direction.', ', $this->order_timestamp). ' '. $this->order_direction;
 
         if ($this->limit_count !== null && $this->limit_offset !== null)
-            $sql[] = "LIMIT ".$this->limit_offset.",".$this->limit_count;
+            $sql[] = "LIMIT ".$this->limit_offset.", ".$this->limit_count;
 
         $sql = implode(' ', $sql);
 
         return $sql;
+    }
+
+    public function set_alias($name, $query)
+    {
+        $this->aliases[$name] = $query;
+        return $this;
     }
 
     public function count_sql()
@@ -104,7 +119,8 @@ class Db_DataFeed
         $mixed_array = array();
         foreach ($collection as $record)
         {
-            $mixed_array[$record->class_name][] = $record->id;
+            $class_name = $record->{$this->classname_var}; 
+            $mixed_array[$class_name][] = $record->id;
         }
 
         // Eager load our data collection
@@ -120,13 +136,13 @@ class Db_DataFeed
         foreach ($collection as $record)
         {
             // Set Class name
-            $class_name = $record->class_name;
+            $class_name = $record->{$this->classname_var};
             $obj = $collection_array[$class_name]->find($record->id);
-            $obj->class_name = $class_name;
+            $obj->{$this->classname_var} = $class_name;
             
-            // Set Tag name
-            $tag_name = (isset($record->tag_name)) ? $record->tag_name : null;
-            $obj->tag_name = $tag_name;
+            // Set Context name
+            $context_name = $record->{$this->context_var};
+            $obj->{$this->context_var} = $context_name;
             
             $data_array[] = $obj;
         }

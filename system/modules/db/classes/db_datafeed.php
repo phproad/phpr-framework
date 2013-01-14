@@ -12,16 +12,27 @@ class Db_DataFeed
 
     protected $collection = array(); // Empty model collection
     protected $context_list = array(); // Used for "tagging" models, returned as $model->context_name
-    protected $remove_duplicates = false;
+    protected $order_list = array(); // Used for applying sort rules to each model
+    public $select_list = array(); // Used to pass a common alias and use it as a condition
+    public $having_list = array(); // Used to pass a common condition
 
+    protected $remove_duplicates = false;
     protected $limit_count = null;
     protected $limit_offset = null;
 
-    protected $order_use_timestamp = true; // Merge created_at and updated_at as timestamp_at
-    protected $order_timestamp = array('created_at,updated_at'); // This is used to override timestamp_at
+    protected $use_custom_timestamp = false; // (Used internally) Merge created_at and updated_at as timestamp_at
+    protected $order_timestamp = null;
     protected $order_direction = 'DESC';
 
-    public $aliases = array();
+    // Example:
+    // 
+    //   $feed->select('1 + 2 as answer');
+    //   $feed->having('answer = 3');
+    //   
+    //   OR
+    //
+    //   $model->having('answer = 3');
+    //   $feed->add($model, 'tag_name', '@sent_at');
 
     public static function create()
     {
@@ -31,10 +42,11 @@ class Db_DataFeed
     /**
      * Add a ActiveRecord model before find_all()
      */
-    public function add($record, $context = null)
+    public function add($record, $context_name = null, $order_by_field = null)
     {
         $this->collection[] = clone $record;
-        $this->context_list[] = $context;
+        $this->context_list[] = $context_name;
+        $this->order_list[] = $order_by_field;
     }
 
     /**
@@ -57,23 +69,26 @@ class Db_DataFeed
             $context_name = $this->context_list[$key];
             $record_obj->select("(SELECT '".$context_name."') as ".$this->context_var);
 
-            // Pass Aliases
-            foreach ($this->aliases as $alias_name => $alias_string)
-                $record_obj->select($alias_string." as ".$alias_name);
+            // Pass Select aliases
+            foreach ($this->select_list as $select_string)
+                $record_obj->select($select_string);
 
-            if ($this->order_use_timestamp)
-                $record_obj->select('ifnull('.$record->table_name.'.updated_at, '.$record->table_name.'.created_at) as timestamp_at');
+            // Apply Having conditions
+            foreach ($this->having_list as $having_string)
+                $record_obj->having($having_string);
+
+            // Ordering
+            if ($this->use_custom_timestamp)
+                $record_obj->select(str_replace('@', $record->table_name.'.', $this->order_timestamp).' as timestamp_at');
+            else if ($this->order_list[$key] !== null)
+                $record_obj->select(str_replace('@', $record->table_name.'.', $this->order_list[$key]).' as timestamp_at');
             else
-                $record_obj->select($record->table_name, implode(',',$this->order_timestamp));
+                $record_obj->select('ifnull('.$record->table_name.'.updated_at, '.$record->table_name.'.created_at) as timestamp_at');
 
             $sql[] = "(".$record_obj->build_sql().")";
-
         }
 
-        if ($this->order_use_timestamp)
-            $sql[] = "ORDER BY timestamp_at ". $this->order_direction;
-        else
-            $sql[] = "ORDER BY ".implode(' '.$this->order_direction.', ', $this->order_timestamp). ' '. $this->order_direction;
+        $sql[] = "ORDER BY timestamp_at ". $this->order_direction;
 
         if ($this->limit_count !== null && $this->limit_offset !== null)
             $sql[] = "LIMIT ".$this->limit_offset.", ".$this->limit_count;
@@ -81,12 +96,6 @@ class Db_DataFeed
         $sql = implode(' ', $sql);
 
         return $sql;
-    }
-
-    public function set_alias($name, $query)
-    {
-        $this->aliases[$name] = $query;
-        return $this;
     }
 
     public function count_sql()
@@ -150,10 +159,6 @@ class Db_DataFeed
         return new Db_DataCollection($data_array);
     }
 
-    /**
-     * Service methods
-     */
-
     public function paginate($page_index, $records_per_page)
     {
         $pagination = new Phpr_Pagination($records_per_page);
@@ -170,21 +175,33 @@ class Db_DataFeed
         return Db_Helper::scalar($this->count_sql());
     }
 
-    public function order($timestamp = null, $direction = null)
+    public function select($query)
+    {
+        $this->select_list[] = $query;
+        return $this;
+    }
+
+    public function having($query)
+    {
+        $this->having_list[] = $query;
+        return $this;
+    }
+
+    public function order($order_by_field = null, $direction = null)
     {
         if (is_null($timestamp) && is_null($direction)) 
             return $this;
 
-        $this->order_use_timestamp = false;
+        $this->use_custom_timestamp = true;
 
-        if ($timestamp=='timestamp_at')
-            $this->order_use_timestamp = true;
-        else if (is_string($timestamp))
-            $this->order_timestamp = explode(',', $timestamp);
+        if ($order_by_field == 'timestamp_at' || $order_by_field === null)
+            $this->use_custom_timestamp = false;
         else 
             $this->order_timestamp = $timestamp;
 
-        $this->order_direction = ($direction) ? $direction : $this->order_direction;
+        $this->order_direction = ($direction) 
+            ? $direction 
+            : $this->order_direction;
 
         return $this;
     }

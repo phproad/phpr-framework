@@ -59,46 +59,40 @@ class File_Directory
 
     public static function delete($path)
     {
-        if (is_dir($path)) 
+        if (!is_dir($path)) 
             return false;
-    
-        $dir_obj = dir($path);
 
-        while (($file = $dir_obj->read()) !== false) 
+        $iterator = new DirectoryIterator($path);
+        foreach ($iterator as $file) 
         {
-            if ($file == '.' || $file == '..')
+            if ($file->isDot() || $file->isDir())
                 continue;
-                
-            @unlink($path.'/'.$file);
+
+            @unlink($file->getPathname());
         }
-
-        $dir_obj->close();
-
+        
         @rmdir($path);
         return true;
     }
 
     public static function delete_recursive($path) 
     {
-        if (is_dir($path)) 
+        if (!is_dir($path)) 
             return false;
 
-        $dir_obj = dir($path);
-        
-        while (($file = $dir_obj->read()) !== false) 
+        $iterator = new DirectoryIterator($path);
+        foreach ($iterator as $file) 
         {
-            if ($file == '.' || $file == '..')
+            if ($file->isDot())
                 continue;
 
-            $dir_path = $path.DS.$file;
+            $dir_path = $file->getPathname();
 
-            if (!is_link($dir_path) && is_dir($dir_path)) 
+            if (!is_link($dir_path) && $file->isDir()) 
                 self::delete_recursive($dir_path);
             else
                 @unlink($dir_path);
         }
-
-        $dir_obj->close();
         
         @rmdir($path);
         return true;
@@ -108,21 +102,16 @@ class File_Directory
     {
         $result = array();
         
-        if (is_dir($path)) 
+        if (!is_dir($path)) 
             return $result;
 
-        $dir_obj = dir($path);
-
-        while (($file = $dir_obj->read()) !== false) 
+        $iterator = new DirectoryIterator($path);
+        foreach ($iterator as $file) 
         {
-            $dir_path = $path . $file;
-            if (is_dir($dir_path) && $file != '.')
-                $result[] = $dir_path;
+            if ($file->isDir())
+                $result[] = $file->getPathname();
         }
-
-        $dir_obj->close();
         
         return $result;
     }
-
 }

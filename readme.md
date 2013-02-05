@@ -13,6 +13,10 @@ PHPR is a OOP MVC web application framework.
 * Server: `Apache 2.0`, or `Nginx`.
 * Interpreter: `PHP 5.2.5`
 
+## PHP configuration
+
+* short_open_tag (<? ?>) enabled.
+
 ## Getting started
 
 Please see the documentation. Please see the `examples` directory.

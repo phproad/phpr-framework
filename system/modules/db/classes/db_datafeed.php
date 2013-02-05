@@ -13,8 +13,8 @@ class Db_DataFeed
     protected $collection = array(); // Empty model collection
     protected $context_list = array(); // Used for "tagging" models, returned as $model->context_name
     protected $order_list = array(); // Used for applying sort rules to each model
-    public $select_list = array(); // Used to pass a common alias and use it as a condition
-    public $having_list = array(); // Used to pass a common condition
+    protected $select_list = array(); // Used to pass a common alias and use it as a condition
+    protected $having_list = array(); // Used to pass a common condition
 
     protected $remove_duplicates = false;
     protected $limit_count = null;
@@ -47,6 +47,7 @@ class Db_DataFeed
         $this->collection[] = clone $record;
         $this->context_list[] = $context_name;
         $this->order_list[] = $order_by_field;
+        return $this;
     }
 
     /**
@@ -189,7 +190,7 @@ class Db_DataFeed
 
     public function order($order_by_field = null, $direction = null)
     {
-        if (is_null($timestamp) && is_null($direction)) 
+        if (is_null($order_by_field) && is_null($direction)) 
             return $this;
 
         $this->use_custom_timestamp = true;

@@ -15,7 +15,7 @@ PHPR is a OOP MVC web application framework.
 
 ## PHP configuration
 
-* short_open_tag (<? ?>) enabled.
+* short_open_tag `(<? ?>)` enabled.
 
 ## Getting started
 

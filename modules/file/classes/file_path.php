@@ -4,7 +4,7 @@ class File_Path
 {
     // Returns a public path from an absolute one
     // eg: /home/mysite/public_html/welcome -> /welcome
-    public static function find_public_path($path)
+    public static function get_public_path($path)
     {
         $result = null;
 
@@ -15,7 +15,7 @@ class File_Path
     }
 
     // Finds the path to a class
-    public static function find_path_to_class($class_name)
+    public static function get_path_to_class($class_name)
     {
         $class_info = new ReflectionClass($class_name);
         return dirname($class_info->getFileName());

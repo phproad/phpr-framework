@@ -1,0 +1,35 @@
+<div id="formlist_form">
+	<h2>Add <?=$form_title?></h2>
+	<div class="form-700">
+		<?= Phpr_Form::openTag(array('id'=>'formlist_manage_element')) ?>
+			<? if (!isset($fatalError)): ?>
+				<input type="hidden" name="edit_session_key" value="<?=post('edit_session_key')?>" />
+				<div class="content">
+					<div class="formFlash"></div>
+
+					<div class="embeddedList search700">
+						<?= $widget->render_finder() ?>
+					</div>				
+				</div>
+				<div class="footer">
+					<?= admin_ajax_button('Add selected', $this->getEventHandler('onFormWidgetEvent'), array('class'=>'default'), "
+						extraFields: { ".$widget->get_event_handler_data('on_form_add')." }, 
+						update: '".$widget->get_id($widget->column_name)."', 
+						loadIndicator: {injectInElement: true}, 
+						onSuccess: cancelPopup, 
+						onAfterUpdate: ".$widget->get_id($widget->column_name)."_init
+					") ?>
+
+					<?= admin_button('Close', array('onclick'=>'return cancelPopup()')) ?>
+				</div>
+			<? else: ?>
+				<div class="content">
+					<?= flash() ?>
+				</div>
+				<div class="footer">
+					<?= admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+				</div>
+			<? endif ?>
+		</form>
+	</div>
+</div>

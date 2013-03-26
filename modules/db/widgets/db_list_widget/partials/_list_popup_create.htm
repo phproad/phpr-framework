@@ -1,0 +1,41 @@
+<div id="listwidget_popup">
+	<h2><?=($new_record_flag) ? 'New' : 'Update'?> <?=$form_title?></h2>
+	<div class="form-600">
+		<?= Phpr_Form::open_tag(array('id'=>'list_manage_element')) ?>
+			<? if (!isset($fatalError)): ?>
+				<input type="hidden" name="primary_id" value="<?=$model->id?>" id="primary_id" />
+				<div class="content">
+					<? $this->form_render($model) ?>
+				</div>
+				<div class="footer">
+					<?= admin_ajax_button(($new_record_flag) ? 'Add' : 'Save', $this->get_event_handler('on_form_widget_event'), array('class'=>"positive"), "
+							extraFields: { ".$widget->get_event_handler_data('on_form_update')." }, 
+							update: '".$widget->get_id()."', 
+							loadIndicator: {injectInElement: true}, 
+							onSuccess: cancelPopup, 
+							onAfterUpdate: ".$widget->get_id()."_init
+						") ?>
+					<?= admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+
+					<?= (!$new_record_flag)
+						? admin_ajax_button('Delete', $this->get_event_handler('on_form_widget_event'), array('class'=>"right negative"), "
+							extraFields: { ".$widget->get_event_handler_data('on_form_delete')." }, 
+							confirm: 'Do you really want to delete this ".strtolower($form_title)."?', 
+							update: '".$widget->get_id()."', 
+							loadIndicator: {injectInElement: true}, 
+							onSuccess: cancelPopup, 
+							onAfterUpdate: ".$widget->get_id()."_init
+						")
+						: '' ?>
+				</div>
+			<? else: ?>
+				<div class="content">
+					<?= flash() ?>
+				</div>
+				<div class="footer">
+					<?= admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+				</div>
+			<? endif ?>
+		</form>
+	</div>
+</div>

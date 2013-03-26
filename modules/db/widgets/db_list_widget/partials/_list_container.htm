@@ -1,92 +1,99 @@
+<?
+	$show_toolbar = $widget->control_panel || (!$widget->no_interaction || $widget->search_enabled);
+?>
 <div id="<?=$widget->get_element_id('container')?>">
+	<? if ($show_toolbar): ?>
+	<div class="navbar list-toolbar">
+		<div class="navbar-inner">
+	<? endif ?>
 	<? if ($widget->control_panel): ?>
-		<div class="scrollable_control_panel">
-			<div class="scroll_controls">
-				<div class="scroll_left hidden">&lt;</div>
-				<div class="scroll_area">
-					<? $widget->render_partial($widget->control_panel); ?>
-					<div class="clear"></div>
+
+				<div class="container">
+
+				<!-- Main toolbar -->
+				<div class="nav-collapse">
+					<? $widget->display_partial($widget->control_panel); ?>
 				</div>
-				<div class="scroll_right hidden">&gt;</div>
-				<div class="clear"></div>
-			</div>
 	<? endif ?>
 
 	<? if (!$widget->no_interaction || $widget->search_enabled): ?>
-		<div class="listSettings">
-			<div class="clear"></div>
-			<? if ($widget->search_enabled): ?>
-				<?
-					$searchCtrlId = $widget->get_element_id('search_control');
-					$searchFieldId = $widget->get_element_id('search_field');
-					
-					$searchActive = strlen($search_string);
-				?>
 
-				<div class="listSearchArea">
-					<div class="searchControl <?= $searchActive ? null : 'inactive' ?>" id="<?= h($searchCtrlId) ?>">
-						<span class="left">Search</span>
-						<input type="text" name="search_field" placeholder="<?= h($widget->search_prompt) ?>" value="<?= $searchActive ? h($search_string) : null ?>" id="<?= h($searchFieldId) ?>" />
-						<span class="right">Cancel</span>
-					</div>
-				</div>
-
-				<script type="text/javascript">
+				<? if ($widget->search_enabled): ?>
 					<?
-						$form_id = $widget->get_form_id();
-						$list_form = $widget->no_form ? '$(\''.$searchCtrlId.'\').getForm()' : '$(\''.$form_id.'\')';
+						$search_control_id = $widget->get_element_id('search_control');
+						$search_field_id = $widget->get_element_id('search_field');
+						
+						$search_active = strlen($search_string);
 					?>
-					var searchHandler = new SearchControlHandler('<?= h($searchCtrlId) ?>', {'default_text': '<?= $widget->search_prompt ?>'});
 
-					searchHandler.addEvent('send', function(){
-						return <?= $list_form ?>.sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
-							update: '<?= $widget->get_id() ?>', 
-							extraFields: {
-								<?=$widget->get_event_handler_data('on_list_search')?>, 
-								'search_string': $('<?= $searchFieldId ?>').get('value')
-							}, 
-							onFailure: popupAjaxError, 
-							onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
-							loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
-						});
-					});
-					searchHandler.addEvent('cancel', function(){
-						return <?= $list_form ?>.sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
-							update: '<?= $widget->get_id() ?>', 
-							extraFields: {
-								<?=$widget->get_event_handler_data('on_list_search_cancel')?>
-							},
-							onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
-							loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
-						});
-					});
+					<!-- List search -->
+					<div class="navbar-form list-search <?=$search_active ? null : 'inactive' ?>" id="<?=h($search_control_id) ?>">
+						<i class="icon-search"></i>
+						<input type="text" name="search_field" placeholder="<?= h($widget->search_prompt) ?>" value="<?= $search_active ? h($search_string) : null ?>" id="<?= h($search_field_id) ?>" />
+						<i class="icon-remove search-cancel"></i>
+					</div>
 					
-				</script>
-			<? endif ?>
-			<div class="clear"></div>
-		</div>
-		<div class="clear"></div>
-	<? endif ?>
+					<script type="text/javascript">
+						<?
+							$form_id = $widget->get_form_id();
+							$list_form = $widget->no_form ? '$(\''.$search_control_id.'\').getForm()' : '$(\''.$form_id.'\')';
+						?>
+						var searchHandler = new SearchControlHandler('<?= h($search_control_id) ?>', {'default_text': '<?= $widget->search_prompt ?>'});
 
+						searchHandler.addEvent('send', function(){
+							return <?= $list_form ?>.sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
+								update: '<?= $widget->get_id() ?>', 
+								extraFields: {
+									<?=$widget->get_event_handler_data('on_list_search')?>, 
+									'search_string': $('<?= $search_field_id ?>').get('value')
+								}, 
+								onFailure: popupAjaxError, 
+								onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
+								loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
+							});
+						});
+						searchHandler.addEvent('cancel', function(){
+							return <?= $list_form ?>.sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
+								update: '<?= $widget->get_id() ?>', 
+								extraFields: {
+									<?=$widget->get_event_handler_data('on_list_search_cancel')?>
+								},
+								onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
+								loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
+							});
+						});
+						
+					</script>
+				<? endif ?>
+
+	<? endif ?>
 	<? if ($widget->control_panel): ?>
+			</div>
+	<? endif ?>
+	<? if ($show_toolbar): ?>
 		</div>
+	</div>
 	<? endif ?>
 
 	<? 
 		if ($widget->top_partial)
-			$widget->render_partial($widget->top_partial);
+			$widget->display_partial($widget->top_partial);
 	?>
 
 	<? if (!$widget->no_interaction && !$widget->no_form): ?>
 		<?= Phpr_Form::open_tag(array('id'=>$widget->get_form_id())) ?>
 	<? endif ?>
 
-		<div id="<?= $widget->get_id() ?>" class="listContainer">
+		<? if ($widget->finder_mode): ?>
+			<input type="hidden" name="finder_mode_flag" value="1" />
+		<? endif ?>	
+
+		<div id="<?= $widget->get_id() ?>" class="list-container">
 			<? 
 				if (!$widget->custom_partial)
-					$widget->render_partial('list'); 
+					$widget->display_partial('list'); 
 				else
-					$widget->render_partial($widget->custom_partial); 
+					$widget->display_partial($widget->custom_partial); 
 			?>
 		</div>
 	<? if (!$widget->no_interaction && !$widget->no_form): ?>
@@ -96,7 +103,7 @@
 	<? if (!$widget->no_js_declarations): ?>
 		<script>
 			function listWidgetReload(show_load_indicator) {
-				return $('<?= $widget->get_form_id() ?>').sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
+				return $('<?= $widget->get_form_id() ?>').sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
 					extraFields: { <?=$widget->get_event_handler_data('on_list_reload')?> },
 					update: '<?= $widget->get_id() ?>', 
 					onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 

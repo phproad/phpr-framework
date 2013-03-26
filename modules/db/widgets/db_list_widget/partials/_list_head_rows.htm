@@ -5,19 +5,19 @@
 		if ($widget->custom_head_cells !== false || $head_cb_option_set)
 		{	
 			if (!$head_cb_option_set && strlen($widget->custom_head_cells))
-				$this->renderPartial($widget->custom_head_cells, null, true, true);
+				$widget->display_partial($widget->custom_head_cells, null, true, true);
 			elseif ($widget->custom_head_cells)
-				$this->renderPartial($widget->custom_head_cells, null, true, true);
+				$widget->display_partial($widget->custom_head_cells, null, true, true);
 		}
 	?>
 	
 	<? foreach ($list_columns as $column): ?>
-		<th class="<?= $widget->list_cell_class($column) ?> <?=($column->isCustom || $widget->no_interaction || $widget->no_sorting || $column->noSorting)?'noSort':''?> <?=($column->listNoTitle)?'no-title':''?>" <? if($column->listNoTitle): ?>title="<?= strlen(trim($column->listTitle)) ? h($column->listTitle) : h($column->displayName) ?>"<? endif ?>>
-			<? if (!$column->isCustom && !$widget->no_interaction && !$widget->no_sorting && !$column->noSorting): ?>
-				<a href="#" onclick="return $(this).getForm().sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
+		<th class="link <?= $widget->list_cell_class($column) ?> <?=($column->is_custom || $widget->no_interaction || $widget->no_sorting || $column->no_sorting)?'no-sort':''?> <?=($column->list_no_title)?'no-title':''?>" <? if($column->list_no_title): ?>title="<?= strlen(trim($column->list_title)) ? h($column->list_title) : h($column->display_name) ?>"<? endif ?>>
+			<? if (!$column->is_custom && !$widget->no_interaction && !$widget->no_sorting && !$column->no_sorting): ?>
+				<a href="#" onclick="return $(this).getForm().sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
 					extraFields: {
 						<?=$widget->get_event_handler_data('on_list_column_click')?>, 
-						columnName: '<?= $column->dbName ?>'
+						columnName: '<?= $column->db_name ?>'
 					}, 
 					update: '<?= $widget->get_id() ?>', 
 					loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1, show: false}, 
@@ -26,15 +26,15 @@
 					onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}
 				});">
 			<? endif ?>
-			<? if ($column->listNoTitle): ?>
+			<? if ($column->list_no_title): ?>
 				&nbsp;
 			<? else: ?>
-				<?= strlen(trim($column->listTitle)) ? h($column->listTitle) : h($column->displayName) ?>
+				<?= strlen(trim($column->list_title)) ? h($column->list_title) : h($column->display_name) ?>
 			<? endif ?>
-			<? if (!$column->isCustom && !$widget->no_interaction && !$widget->no_sorting && !$column->noSorting): ?></a><? endif ?>
+			<? if (!$column->is_custom && !$widget->no_interaction && !$widget->no_sorting && !$column->no_sorting): ?></a><? endif ?>
 		</th>
 	<? endforeach ?>
-	<? if ($widget->is_editable && $widget->show_delete_icon): ?>
-		<th class="noSort">&nbsp;</th>
+	<? if ($widget->show_delete_icon): ?>
+		<th class="no-sort">&nbsp;</th>
 	<? endif ?>
 </tr>

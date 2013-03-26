@@ -1,0 +1,5 @@
+<? if (!isset($list_checked_records)) $list_checked_records = array(); ?>
+
+<td class="list-checkbox">
+	<input name="list_ids[]" <?=Phpr_Form::checkbox_state(in_array($model->get_primary_key_value(), $list_checked_records)) ?> class="list_cb checkbox" type="checkbox" value="<?=$model->get_primary_key_value() ?>" onclick="Admin_Page.listCheckSingle(this)" />
+</td>

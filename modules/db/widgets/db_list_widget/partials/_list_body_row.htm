@@ -10,9 +10,9 @@
 		if ($widget->custom_body_cells !== false || $body_cb_option_set)
 		{
 			if (!$body_cb_option_set && strlen($widget->custom_body_cells))
-				$widget->render_partial($widget->custom_body_cells, array('model'=>$row), true, true);
+				$widget->display_partial($widget->custom_body_cells, array('model'=>$row), true, true);
 			elseif ($widget->custom_body_cells)
-				$widget->render_partial($widget->custom_body_cells, array('model'=>$row), true, true);
+				$widget->display_partial($widget->custom_body_cells, array('model'=>$row), true, true);
 		}
 	?>
 
@@ -27,34 +27,34 @@
 		if ($cell_onclick_handler)
 			$cell_onclick_handler = 'onclick="'.$cell_onclick_handler.'"';
 	?>
-		<td class="<?= $widget->list_cell_class($column) ?> <?= $url ? 'link' : null ?> <?=($column->listNoTitle)?'no-title':''?>" <?= $cell_onclick_handler ?>>
+		<td class="<?= $widget->list_cell_class($column) ?> <?= $url ? 'link' : null ?> <?=($column->list_no_title)?'no-title':''?>" <?= $cell_onclick_handler ?>>
 			<?
 				if ($widget->cell_partial !== false)
 				{
 					if (!strlen($widget->cell_partial))
-						$widget->render_partial('list_cell_partial', array('model'=>$row, 'index'=>$index, 'column'=>$column, 'url'=>$url), false);
+						$widget->display_partial('list_cell_partial', array('model'=>$row, 'index'=>$index, 'column'=>$column, 'url'=>$url), false);
 					else
-						$widget->render_partial($widget->cell_partial, array('model'=>$row, 'index'=>$index, 'column'=>$column, 'url'=>$url), true, true);
+						$widget->display_partial($widget->cell_partial, array('model'=>$row, 'index'=>$index, 'column'=>$column, 'url'=>$url), true, true);
 				}
 			?>
 		
 			<? if ($url): ?><a <?= $onClick ?> href="<?= $url.'?'.uniqid() ?>"><? endif ?>
 			<? if ($column->type !== db_bool): ?>
-				<?= h($row->displayField($column->dbName, 'list')) ?>
+				<?= h($row->display_field($column->db_name, 'list')) ?>
 			<? else: ?>
-				<? $widget->render_partial('list_bool_column', array('value'=>$row->{$column->dbName})); ?>
+				<? $widget->display_partial('list_bool_column', array('value'=>$row->{$column->db_name})); ?>
 			<? endif ?>
 			<? if ($url): ?></a><? endif ?>
 		</td>
 	<? endforeach ?>
-	<? if ($widget->is_editable && $widget->show_delete_icon): ?>
-		<td class="iconCell last">
-			<a onclick="return $(this).getForm().sendPhpr('<?= $controller->getEventHandler('onFormWidgetEvent') ?>', {
+	<? if ($widget->show_delete_icon): ?>
+		<td class="list-icon last">
+			<a onclick="return $(this).getForm().sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
 				extraFields: { 
 					<?=$widget->get_event_handler_data('on_form_delete')?>, 
 					primary_id: <?=$row->id?>
 				}, 
-				confirm: 'Do you really want to delete this <?=strtolower($widget->form_title)?>?', 
+				confirm: 'Do you really want to remove this <?=strtolower($widget->form_title)?>?', 
 				update: '<?=$widget->get_id()?>', 
 				loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1},
 				onSuccess: cancelPopup, 

@@ -27,7 +27,7 @@ class Db_Model_Log_Record extends Db_ActiveRecord
     public function define_columns($context = null)
     {
         $this->define_column('id', 'ID');
-        $this->define_column('record_datetime', 'Date and Time')->order('desc')->dateFormat('%x %X');
+        $this->define_column('record_datetime', 'Date and Time')->order('desc')->date_format('%x %X');
         $this->define_column('message', 'Message');
     }
 

@@ -9,10 +9,11 @@
 
 					<div class="embeddedList search700">
 						<?= $widget->render_finder() ?>
-					</div>				
+					</div>
 				</div>
 				<div class="footer">
-					<?= admin_ajax_button('Add selected', $this->getEventHandler('onFormWidgetEvent'), array('class'=>'default'), "
+					<?= admin_ajax_button('Add selected', $this->getEventHandler('onFormWidgetEvent'), 
+						array('class'=>'btn btn-success'), "
 						extraFields: { ".$widget->get_event_handler_data('on_form_add')." }, 
 						update: '".$widget->get_id($widget->column_name)."', 
 						loadIndicator: {injectInElement: true}, 

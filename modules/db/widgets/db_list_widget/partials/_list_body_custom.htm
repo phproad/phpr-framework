@@ -1,0 +1,18 @@
+<? if ($widget->show_reorder): ?>
+	<td class="list-icon">
+		<a href="javascript:;" 
+			class="sort-handle has-tooltip" 
+			onclick="return false" title="Reorder <?= $widget->form_title ?>">
+			<i class="icon-resize-vertical"></i>
+		</a>
+		<input class="<?= $widget->get_element_id('sort_ids') ?>" name="<?= $widget->get_element_id('sort_ids') ?>[]" value="<?= $model->id ?>" type="hidden" />
+		<input class="<?= $widget->get_element_id('sort_order') ?>" name="<?= $widget->get_element_id('sort_order') ?>[]" value="<?= $model->sort_order ?>" type="hidden" />
+	</td>
+<? endif ?>
+<? if ($widget->show_checkboxes): ?>
+	<? if (!isset($list_checked_records)) $list_checked_records = array(); ?>
+
+	<td class="list-checkbox">
+		<input name="list_ids[]" <?= checkbox_state(in_array($model->get_primary_key_value(), $list_checked_records)) ?> class="list_cb checkbox" type="checkbox" value="<?=$model->get_primary_key_value() ?>" onclick="Admin_Page.listCheckSingle(this)" />
+	</td>
+<? endif ?>

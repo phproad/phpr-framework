@@ -114,32 +114,48 @@
 			}
 
 			<? if ($widget->control_panel): ?>
-			        jQuery(document).ready(function() {
-			            var list_tab_container = jQuery('#<?=$widget->get_element_id('container')?>');
-			            var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
-			            if (list_tab)
-			            {
-			                list_tab.addEvent('onTabClick', function() {
+					jQuery(document).ready(function() {
+						var list_tab_container = jQuery('#<?=$widget->get_element_id('container')?>');
+						var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
+						if (list_tab)
+						{
+							list_tab.addEvent('onTabClick', function() {
 
-			                    var toolbar = list_tab_container
-			                                    .find('.scrollable_control_panel:first')
-			                                    .not('.scrollable_cp_loaded')
-			                                    .addClass('scrollable_cp_loaded');
+								var toolbar = list_tab_container
+									.find('.scrollable_control_panel:first')
+									.not('.scrollable_cp_loaded')
+									.addClass('scrollable_cp_loaded');
 
-			                    if (toolbar.length > 0)
-			                        new Backend_ScrollabeToolbar(toolbar.get(0));
-			                });
-			            }
-			        });
+								if (toolbar.length > 0)
+									new Backend_ScrollabeToolbar(toolbar.get(0));
+							});
+						}
+					});
 
-			        // When the container gets updated, we need to refresh the logic above
-			        function <?=$widget->get_id()?>_init() {
-			            var list_tab_container = jQuery('#<?= $widget->get_id() ?>');
-			            var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
-			            if (list_tab)
-			                list_tab.fireEvent('onTabClick');
-			        }        
+					// When the container gets updated, we need to refresh the logic above
+					function <?=$widget->get_id()?>_init() {
+						var list_tab_container = jQuery('#<?= $widget->get_id() ?>');
+						var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
+						if (list_tab)
+							list_tab.fireEvent('onTabClick');
+					}
 			<? endif ?>	
+
+			<? if ($widget->show_reorder): ?>
+				function makeListWidgetSortable() {
+					var widgetList = $('<?= $widget->get_element_id('body')?>');
+					if (widgetList) {
+						widgetList.makeListSortable('onSetOrders', '<?= $widget->get_element_id('sort_order') ?>', '<?= $widget->get_element_id('sort_ids') ?>', 'sort-handle');
+						//widgetList.addEvent('dragComplete', providersUpdateOrders);
+					}
+				}
+
+				window.addEvent('domready', function(){
+					if ($('<?= $widget->get_element_id('body')?>'))
+						makeListWidgetSortable();
+				})
+
+			<? endif ?>
 		</script>
 	<? endif ?>
 </div>

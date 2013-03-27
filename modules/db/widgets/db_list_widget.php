@@ -17,7 +17,8 @@ $this->add_form_field('quotes')->display_as(frm_widget, array(
 	'form_title' => 'Quote',
 	'form_context' => 'create',
 	'form_foreign_key' => 'request_id',
-	'conditions' => 'request_id=:id',            
+	'conditions' => 'request_id=:id',
+	'show_checkboxes' => false
 ))->tab('Quotes');
 
 */
@@ -28,8 +29,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 	public $class_name = null;
 	public $conditions;
 
-	// List
-	public $show_delete_icon = false;
+	// List	
 	public $items_per_page = 20; 
 	public $no_data_message = 'There are no items in this view';
 	public $load_indicator = null;
@@ -75,6 +75,8 @@ class Db_List_Widget extends Db_Form_Widget_Base
 
 	public $finder_mode = false;
 	public $show_checkboxes = false;
+	public $show_reorder = false;
+	public $show_delete_icon = false;
 
 	// Form
 	public $is_editable = false;
@@ -140,9 +142,12 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			} }); return false;";
 		}
 
-		if ($this->show_checkboxes) {
-			$this->custom_body_cells = 'list_body_cb';
-			$this->custom_head_cells = 'list_head_cb';
+		if ($this->show_reorder)
+			$this->no_sorting = true;
+
+		if ($this->show_checkboxes||$this->show_reorder) {
+			$this->custom_body_cells = 'list_body_custom';
+			$this->custom_head_cells = 'list_head_custom';
 		}
 	}
 
@@ -263,15 +268,19 @@ class Db_List_Widget extends Db_Form_Widget_Base
 
 		$ajax_fields = implode(','.PHP_EOL,  $ajax_fields_arr);
 
-		return cp_button('Add '.$this->form_title, $icon, array(
-			'onclick'=>"new PopupForm('".$this->controller->get_event_handler('on_form_widget_event')."', { 
+		$attributes = (isset($options['attributes'])) ? $options['attributes'] : array();
+		$attributes['onclick'] = "new PopupForm('".$this->controller->get_event_handler('on_form_widget_event')."', { 
 				ajaxFields: {
 					".$ajax_fields.", 
 					".$this->get_event_handler_data('on_form_popup').",
 					form_context: '".$this->controller->form_get_context()."', 
 					edit_session_key: '".$this->controller->form_get_edit_session_key()."'
 				} 
-			}); return false"));
+			}); return false";
+
+		$label = (isset($options['label'])) ? $options['label'] : 'Add '.$this->form_title;
+
+		return cp_button($label, $icon, $attributes);
 	}
 
 	public function cp_add_button($icon='plus', $options = array())
@@ -294,8 +303,9 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			$model_id = post('primary_id', null);
 			$form_context = post('form_context');
 			$mode = post('form_popup_mode', 'create');
-
-			if ($form_context == "preview") // Deferred sessions not needed
+			
+			// Deferred sessions not needed
+			if ($form_context == "preview")
 				$this->controller->reset_form_edit_session_key();
 
 			$model_context = $this->form_context;
@@ -305,16 +315,20 @@ class Db_List_Widget extends Db_Form_Widget_Base
 				$model = $model->find($model_id);
 
 			$model->define_form_fields($model_context);
+
+			if (method_exists($this->controller, 'listwidget_before_form_popup_'.$this->column_name))
+				$this->controller->{'listwidget_before_form_popup_'.$this->column_name}($model);
+
 			$this->view_data['model'] = $model;
 			$this->view_data['new_record_flag'] = !($model_id);
 			$this->view_data['form_title'] = $this->form_title;
+
+			$this->display_partial('list_popup_'.$mode);
 		}
 		catch (Exception $ex)
 		{
 			$this->controller->handle_page_error($ex);
 		}
-
-		$this->display_partial('list_popup_'.$mode);
 	}
 
 	public function on_form_update($field, $model)
@@ -342,8 +356,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			$relation_type = $this->form_relation_type;
 			$relation_name = $this->form_relation_name;
 
-			if ($model_id)
-			{
+			if ($model_id) {
 				$model = $model->find($model_id);
 
 				if ($foreign_key !== null && $relation_type == "has_many")
@@ -358,8 +371,8 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			$model->init_columns_info();
 			$model->define_form_fields();
 
-			if (method_exists($this->controller, 'list_before_save_'.$this->column_name))
-				$this->controller->{'list_before_save_'.$this->column_name}($model, $data, $master_object);
+			if (method_exists($this->controller, 'listwidget_before_form_update_'.$this->column_name))
+				$this->controller->{'listwidget_before_form_update_'.$this->column_name}($model, $data, $master_object);
 
 			$model->save($data, $session_key);
 
@@ -721,16 +734,16 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		if (!count($definitions))
 			throw new Phpr_ApplicationException('Error rendering list: model columns are not defined.');
 
-		$visibleFound = false;
+		$visible_found = false;
 		foreach ($definitions as $definition)
 		{
 			if ($definition->visible)
 			{
-				$visibleFound = true;
+				$visible_found = true;
 				break;
 			}
 		}
-		if (!$visibleFound)
+		if (!$visible_found)
 			throw new Phpr_ApplicationException('Error rendering list: there are no visible columns defined in the model.');
 
 		if (count($this->columns))
@@ -827,6 +840,6 @@ class Db_List_Widget extends Db_Form_Widget_Base
 
 		$this->_sorting_column = (object)(array('field'=>$list_columns[$first_column]->db_name, 'direction'=>'asc'));
 		return $this->_sorting_column;
-	}    
+	}
 
 }

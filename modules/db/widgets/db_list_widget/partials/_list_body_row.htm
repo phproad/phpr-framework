@@ -54,12 +54,12 @@
 					<?=$widget->get_event_handler_data('on_form_delete')?>, 
 					primary_id: <?=$row->id?>
 				}, 
-				confirm: 'Do you really want to remove this <?=strtolower($widget->form_title)?>?', 
+				confirm: 'Do you really want to remove this <?= strtolower($widget->form_title) ?>?', 
 				update: '<?=$widget->get_id()?>', 
 				loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1},
 				onSuccess: cancelPopup, 
-				onAfterUpdate: <?=$widget->get_id()?>_init
-			});" title="Delete event" class="icon delete" href="#">Delete</a>
+				onAfterUpdate: <?= $widget->get_id() ?>_init
+			});" title="Delete <?= $widget->form_title ?>" class="has-tooltip delete" href="javascript:;"><i class="icon-remove"></i></a>
 		</td>
 	<? endif ?>
 </tr>

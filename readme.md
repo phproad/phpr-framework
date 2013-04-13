@@ -11,7 +11,7 @@ PHPR is a OOP MVC web application framework.
 ## Requirements
 
 * Server: `Apache 2.0`, or `Nginx`.
-* Interpreter: `PHP 5.2.5`
+* Interpreter: `PHP 5.3.0`
 
 ## PHP configuration
 

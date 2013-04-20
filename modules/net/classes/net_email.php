@@ -94,13 +94,13 @@ class Net_Email
         $external_recipients = array();
 
         foreach ($recipients as $recipient=>$email) {
-            if (!is_object($email)) {
-                $mail->AddAddress($email, $recipient);
-                $external_recipients[$email] = $recipient;
-            }
-            elseif (get_class($email) == 'Phpr_User' || get_parent_class($email) == 'Phpr_User') {
+            if (is_object($email) && isset($email->email)) {
                 $mail->AddAddress($email->email, $email->name);
                 $external_recipients[$email->email] = $email->name;
+            }
+            else {
+                $mail->AddAddress($email, $recipient);
+                $external_recipients[$email] = $recipient;
             }
         }
         

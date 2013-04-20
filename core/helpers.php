@@ -1,5 +1,0 @@
-<?php
-
-/**
- * PHPR Global helpers
- */

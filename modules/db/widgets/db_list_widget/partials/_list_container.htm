@@ -1,22 +1,23 @@
 <?
-	$show_toolbar = $widget->control_panel || (!$widget->no_interaction || $widget->search_enabled);
+	$show_toolbar = $widget->control_panel || (!$widget->no_interaction && $widget->search_enabled);
 ?>
 <div id="<?=$widget->get_element_id('container')?>">
-	<? if ($show_toolbar): ?>
+
+<? if ($show_toolbar): ?>
 	<div class="navbar list-toolbar">
 		<div class="navbar-inner">
-	<? endif ?>
-	<? if ($widget->control_panel): ?>
+<? endif ?>
 
+			<? if ($widget->control_panel): ?>
 				<div class="container">
 
 				<!-- Main toolbar -->
 				<div class="nav-collapse">
 					<? $widget->display_partial($widget->control_panel); ?>
 				</div>
-	<? endif ?>
+			<? endif ?>
 
-	<? if (!$widget->no_interaction || $widget->search_enabled): ?>
+			<? if (!$widget->no_interaction || $widget->search_enabled): ?>
 
 				<? if ($widget->search_enabled): ?>
 					<?
@@ -66,14 +67,16 @@
 					</script>
 				<? endif ?>
 
-	<? endif ?>
-	<? if ($widget->control_panel): ?>
+			<? endif ?>
+
+		<? if ($widget->control_panel): ?>
 			</div>
-	<? endif ?>
-	<? if ($show_toolbar): ?>
+		<? endif ?>
+
+<? if ($show_toolbar): ?>
 		</div>
 	</div>
-	<? endif ?>
+<? endif ?>
 
 	<? 
 		if ($widget->top_partial)
@@ -103,10 +106,10 @@
 	<? if (!$widget->no_js_declarations): ?>
 		<script>
 			function listWidgetReload(show_load_indicator) {
-				return $('<?= $widget->get_form_id() ?>').sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
+				return jQuery('#<?= $widget->get_form_id() ?>').get(0).sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
 					extraFields: { <?=$widget->get_event_handler_data('on_list_reload')?> },
 					update: '<?= $widget->get_id() ?>', 
-					onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
+					onSuccess: function(){ jQuery('#<?= $widget->get_id() ?>').trigger('listUpdated'); }, 
 					onBeforePost: LightLoadingIndicator.show.pass('Loading...'), 
 					onComplete: LightLoadingIndicator.hide, 
 					loadIndicator: {show: false, injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
@@ -114,46 +117,52 @@
 			}
 
 			<? if ($widget->control_panel): ?>
-					jQuery(document).ready(function() {
-						var list_tab_container = jQuery('#<?=$widget->get_element_id('container')?>');
-						var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
-						if (list_tab)
-						{
-							list_tab.addEvent('onTabClick', function() {
+					jQuery(document).ready(function($) {
+						var list_tab_container = $('#<?=$widget->get_element_id('container')?>');
+						var list_tab = (list_tab_container.length > 0) ? list_tab_container.getTab() : false;
+						if (list_tab.length > 0) {
+							list_tab.on('onTabClick', function() {
 
 								var toolbar = list_tab_container
 									.find('.scrollable_control_panel:first')
 									.not('.scrollable_cp_loaded')
 									.addClass('scrollable_cp_loaded');
 
-								if (toolbar.length > 0)
-									new Backend_ScrollabeToolbar(toolbar.get(0));
+								//if (toolbar.length > 0)
+								//	toolbar.scrollableToolbar();
 							});
 						}
 					});
 
 					// When the container gets updated, we need to refresh the logic above
 					function <?=$widget->get_id()?>_init() {
+						jQuery('#<?= $widget->get_id() ?>').trigger('listInitialized');
 						var list_tab_container = jQuery('#<?= $widget->get_id() ?>');
-						var list_tab = (list_tab_container.length > 0) ? list_tab_container.get(0).getTab() : false;
+						var list_tab = (list_tab_container.length > 0) ? list_tab_container.getTab() : false;
 						if (list_tab)
-							list_tab.fireEvent('onTabClick');
+							list_tab.trigger('onTabClick');
 					}
 			<? endif ?>	
 
 			<? if ($widget->show_reorder): ?>
-				function makeListWidgetSortable() {
-					var widgetList = $('<?= $widget->get_element_id('body')?>');
-					if (widgetList) {
-						widgetList.makeListSortable('onSetOrders', '<?= $widget->get_element_id('sort_order') ?>', '<?= $widget->get_element_id('sort_ids') ?>', 'sort-handle');
-						//widgetList.addEvent('dragComplete', providersUpdateOrders);
+				jQuery(document).ready(function($) { 
+					function makeListWidgetSortable() {
+						var widgetList = jQuery('#<?= $widget->get_element_id('body')?>');
+						if (widgetList.length > 0) {
+							widgetList.sortableList({
+								handler: '<?= $controller->get_event_handler('on_form_widget_event') ?>',
+								extraData: { <?=$widget->get_event_handler_data('on_list_set_order')?> },
+								inputOrders: '<?= $widget->get_element_id('sort_orders') ?>',
+								inputIds: '<?= $widget->get_element_id('sort_ids') ?>',
+								handleClass: '.sort-handle'
+							})
+						}
 					}
-				}
 
-				window.addEvent('domready', function(){
-					if ($('<?= $widget->get_element_id('body')?>'))
-						makeListWidgetSortable();
-				})
+					jQuery('#<?= $widget->get_id() ?>').on('listUpdated listInitialized', makeListWidgetSortable);
+
+					makeListWidgetSortable();
+				});
 
 			<? endif ?>
 		</script>

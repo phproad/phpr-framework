@@ -2,7 +2,7 @@
 	<h2><?=($new_record_flag) ? 'New' : 'Update'?> <?=$form_title?></h2>
 	<div class="form-600">
 		<?= Phpr_Form::open_tag(array('id'=>'list_manage_element')) ?>
-			<? if (!isset($fatalError)): ?>
+			<? if (!isset($fatal_error)): ?>
 				<input type="hidden" name="primary_id" value="<?=$model->id?>" id="primary_id" />
 				<div class="content">
 					<? $this->form_render($model) ?>

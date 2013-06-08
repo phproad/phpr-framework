@@ -18,7 +18,8 @@ $this->add_form_field('quotes')->display_as(frm_widget, array(
 	'form_context' => 'create',
 	'form_foreign_key' => 'request_id',
 	'conditions' => 'request_id=:id',
-	'show_checkboxes' => false
+	'show_checkboxes' => false,
+	'show_reorder' => false, // Requires model is extended with Db_Model_Sortable
 ))->tab('Quotes');
 
 */
@@ -109,7 +110,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		$this->finder_mode = true;
 		$this->load_relations();
 		$this->prepare_render_data();
-		$this->render_partial('list_container');
+		$this->display_partial('list_container');
 	}
 
 	protected function display_table()
@@ -256,7 +257,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		$this->unique_id = $this->unique_id .= "_finder";
 	}
 
-	public function cp_popup_button($icon='plus', $options)
+	public function cp_popup_button($icon='plus', $options = array())
 	{
 		if (!isset($options['data']['form_popup_mode']))
 			$options['data']['form_popup_mode'] = 'create';
@@ -295,6 +296,41 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		return $this->cp_popup_button($icon, $options);
 	}
 
+	public function cp_delete_button($icon='minus', $options = array())
+	{		
+		$ajax_fields = '';
+		if (isset($options['data'])) {
+			$ajax_fields_arr = array();
+			foreach ($options['data'] as $key=>$value) {
+				$ajax_fields_arr[] = "'".$key."': '".$value."'";
+			}
+
+			$ajax_fields = implode(','.PHP_EOL,  $ajax_fields_arr) . ',';
+		}
+
+		$attributes = (isset($options['attributes'])) ? $options['attributes'] : array();
+		$attributes['onclick'] = "return $('".$this->get_id()."').getForm().sendPhpr(
+		'".$this->controller->get_event_handler('on_form_widget_event')."',
+		{
+			extraFields: {
+				".$ajax_fields."
+				".$this->get_event_handler_data('on_list_delete_selected')."
+			},
+			update: '".$this->get_id()."',
+			loadIndicator: {
+				show: true,
+				element: '".$this->get_id()."',
+				hideOnSuccess: true
+			},
+			confirm: 'Do you really want to remove these ".strtolower(Phpr_Inflector::pluralize($this->form_title))."?',
+			onAfterUpdate: ".$this->get_id()."_init
+		})";
+
+		$label = (isset($options['label'])) ? $options['label'] : 'Delete '.Phpr_Inflector::pluralize($this->form_title);
+
+		return cp_button($label, $icon, $attributes);
+	}
+
 	public function on_form_popup($field, $model)
 	{
 		$this->load_relations();
@@ -314,7 +350,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			if ($model_id)
 				$model = $model->find($model_id);
 
-			$model->define_form_fields($model_context);
+			$model->init_form_fields($model_context);
 
 			if (method_exists($this->controller, 'listwidget_before_form_popup_'.$this->column_name))
 				$this->controller->{'listwidget_before_form_popup_'.$this->column_name}($model);
@@ -358,18 +394,15 @@ class Db_List_Widget extends Db_Form_Widget_Base
 
 			if ($model_id) {
 				$model = $model->find($model_id);
-
-				if ($foreign_key !== null && $relation_type == "has_many")
-					$model->{$foreign_key} = $master_object_id;
 			}
+			
+			if ($foreign_key !== null && $relation_type == "has_many")
+				$model->{$foreign_key} = $master_object_id;
 
 			$data = post($model_class, array());
 
-			//$model->master_object_id = $master_object_id;
-			//$model->master_object_class = $this->controller->form_model_class;
-
-			$model->init_columns_info();
-			$model->define_form_fields();
+			$model->init_columns();
+			$model->init_form_fields();
 
 			if (method_exists($this->controller, 'listwidget_before_form_update_'.$this->column_name))
 				$this->controller->{'listwidget_before_form_update_'.$this->column_name}($model, $data, $master_object);
@@ -379,10 +412,14 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			// Is new record (!$model_id)
 			if (!$model_id && ($relation_type == "has_and_belongs_to_many" || $relation_type == "has_many"))
 			{
-				$master_object->{$relation_name}->delete($model, $session_key);
+				// Prevents duplicate
+				if ($relation_type == "has_and_belongs_to_many")
+					$master_object->{$relation_name}->delete($model, $session_key);
+
 				$master_object->{$relation_name}->add($model, $session_key);
 				
-				if (!$session_key) // Preview lists should autosave
+				// Preview lists should autosave
+				if (!$session_key)
 					$master_object->save();
 			}
 
@@ -428,7 +465,8 @@ class Db_List_Widget extends Db_Form_Widget_Base
 				$master_object->{$relation_name}->delete($model, $session_key);
 				$master_object->{$relation_name}->add($model, $session_key);
 
-				if (!$session_key) // Preview lists should autosave
+				// Preview lists should autosave
+				if (!$session_key)
 					$master_object->save();
 			}
 
@@ -572,6 +610,55 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		$this->display_table();
 	}
 
+	public function on_list_set_order()
+	{
+		$this->load_relations();
+		$child_model = $this->create_child_model_object();
+		$child_model->set_item_orders(post('item_ids'), post('sort_orders'));
+	}
+
+	protected function on_list_delete_selected($id = null)
+	{
+		$this->load_relations();
+		try
+		{
+			$master_object_id = $this->model->id;
+			$master_object_class = get_class($this->model);
+			$master_object = $this->model;
+
+			$child_model = $this->create_child_model_object();
+
+			$session_key = post('edit_session_key');
+			$form_context = post('form_context');
+
+			// Do not use deferred sessions
+			if ($form_context == "preview")
+				$session_key = null;
+
+			$relation_name = $this->form_relation_name;			
+			
+			$model_ids = post('list_ids', array());
+			if (!count($model_ids))
+				throw new Phpr_ApplicationException('Please select '.$this->form_title.'(s) to delete.');
+
+			$models = $child_model->where('id in (?)', array($model_ids))->find_all();
+
+			foreach ($models as $model) {
+				$master_object->{$relation_name}->delete($model, $session_key);
+
+				// Preview lists should autosave
+				if (!$session_key)
+					$master_object->save();
+			}
+
+			$this->display_table();
+		}
+		catch (Exception $ex)
+		{
+			Phpr::$response->ajax_report_exception($ex, true, true);
+		}
+	}
+
 	// Preferences
 	//
 
@@ -654,8 +741,8 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		if (!strlen($this->class_name))
 			throw new Phpr_SystemException('Data model class is not specified for List Widget. Use the class_name option to set it');
 			
-		$modelClass = $this->class_name;
-		$result = $this->child_model = new $modelClass();
+		$model_class = $this->class_name;
+		$result = $this->child_model = new $model_class();
 		
 		return $result;
 	}
@@ -666,7 +753,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 
 		if ($this->form_relation_type == "has_and_belongs_to_many" || $this->form_relation_type == "has_many")
 		{
-			$child_model = $this->model->get_related_records_deferred_obj($this->form_relation_name, $this->controller->form_get_edit_session_key());
+			$child_model = $this->model->get_deferred($this->form_relation_name, $this->controller->form_get_edit_session_key());
 		}
 
 		// Apply conditions
@@ -718,6 +805,9 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			}
 		}
 		
+		if (method_exists($this->controller, 'listwidget_before_fetch_'.$this->column_name))
+			$this->controller->{'listwidget_before_fetch_'.$this->column_name}($child_model, $this->model);
+		
 		return $child_model;
 	}
 
@@ -727,7 +817,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			return $this->_columns;
 
 		$model = $this->create_child_model_object();
-		$model->init_columns_info('list_widget');
+		$model->init_columns('list_widget');
 		$this->apply_defaults();
 
 		$definitions = $model->get_column_definitions($this->data_context);

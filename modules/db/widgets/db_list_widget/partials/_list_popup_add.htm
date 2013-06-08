@@ -2,10 +2,10 @@
 	<h2>Add <?=$form_title?></h2>
 	<div class="form-700">
 		<?= Phpr_Form::openTag(array('id'=>'formlist_manage_element')) ?>
-			<? if (!isset($fatalError)): ?>
+			<? if (!isset($fatal_error)): ?>
 				<input type="hidden" name="edit_session_key" value="<?=post('edit_session_key')?>" />
 				<div class="content">
-					<div class="formFlash"></div>
+					<div class="form-flash"></div>
 
 					<div class="embeddedList search700">
 						<?= $widget->render_finder() ?>

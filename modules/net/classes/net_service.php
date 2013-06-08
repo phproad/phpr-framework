@@ -23,6 +23,30 @@ class Net_Service
 		return new self($options);
 	}
 
+	private function get_data_and_headers_from_response($response_data)
+	{
+		$headers = array();
+
+		$blocks = explode("\r\n\r\n", $response_data);
+
+		$header_data = $blocks[count($blocks)-2]; // use the last header block, ignoring redirects and such
+		$body_data = $blocks[count($blocks)-1]; // the last block is the data
+
+		foreach(explode("\r\n", $header_data) as $header_data_item) {
+			$items = explode(": ", $header_data_item);
+
+			if(count($items) < 2)
+				continue; // except for the first line, not sure why this header doesn't have a key and value
+
+			$key = $items[0];
+			array_shift($items);
+
+			$headers[$key] = implode(": ", $items);
+		}
+
+		return array($body_data, $headers);
+	}
+
 	public function run($request, $callback = null) 
 	{
 		$c = curl_init();
@@ -41,12 +65,13 @@ class Net_Service
 		{
 			$r = new Net_Response();
 
-			$headers = array();
-
 			ob_start();
-			$r->data = curl_exec($c);
+			$response_data = curl_exec($c);
 			ob_end_clean();
 
+			list($data, $headers) = $this->get_data_and_headers_from_response($response_data);
+
+			$r->data = $data;
 			$r->headers = $headers;
 			$r->request = $request;
 			$r->info = curl_getinfo($c);
@@ -115,14 +140,17 @@ class Net_Service
 		
 			$info = curl_getinfo($handle);
 
-			$data = curl_multi_getcontent($handle);
+			$response_data = curl_multi_getcontent($handle);
 
 			curl_multi_remove_handle($this->mc, $handle);
 
 			unset($this->connections[$handle]);
 
+			list($data, $headers) = $this->get_data_and_headers_from_response($response_data);
+
 			$response = new Net_Response();
 			$response->request = $connection['request'];
+			$response->headers = $headers;
 			$response->data = $data;
 			$response->info = $info;
 			$response->status_code = curl_getinfo($handle, CURLINFO_HTTP_CODE);

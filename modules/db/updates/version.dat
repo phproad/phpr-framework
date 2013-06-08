@@ -1,1 +1,19 @@
-#1 First version
+#1|1.0.1 Add Active Record deferred relations binding feature
+#2|1.0.2 Add user parameters table
+#3|1.0.3 Add files table
+#4|1.0.4 Add module parameters table
+#5|1.0.5 Add trace log table
+#6|1.0.6 Add field column to the db_files table
+#7|1.0.7 Add version string feature
+#8|1.0.8 Add record locking feature
+#9|1.0.9 Add support for non-database objects to the locking feature
+#10|1.0.10 Add lock pinging feature
+#11|1.0.11 Add the public folder for the images
+#12|1.0.12 Add the image sorting feature
+#13|1.0.13 Improved session management features
+#14|1.0.14 Minor improvements to security
+#15|1.0.15 Add the title field to the file model
+#16|1.0.16 Add extra database indexes
+#17|1.0.17 Add the error details field to the trace log table
+#18|1.0.18 Add table for cron worker
+#19|1.0.19 Add table for model logging

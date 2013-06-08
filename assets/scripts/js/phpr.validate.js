@@ -63,8 +63,8 @@
 			return this;
 		}
 
-		o.action = function(ajaxHandler) {
-			var postObj = Ahoy.post(_form).action(ajaxHandler);
+		o.action = function(handler) {
+			var postObj = Ahoy.post(_form).action(handler);
 
 			this.success(function() {
 				postObj.send();

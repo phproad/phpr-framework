@@ -1,35 +1,3 @@
-// Leaving this here for now... should go in phpr.js
-
-
-window.PHPR = { };
-
-PHPR.doSomething = function(element) {
- 
-};
-
-$.phpr = PHPR;
-
-
-
-$.fn.phpr = function() {
-
-	var self = this;
-
-	var o = {};
-
-	o.form = function() {
-		return $.phpr.form(self);
-	};
-
-	o.validate = function() {
-		return $.phpr.validate(self);
-	};
-
-	return o;
-};
-
-// End testing code
-
 /**
  * PHPR Form
  * 

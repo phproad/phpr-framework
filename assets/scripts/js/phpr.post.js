@@ -78,21 +78,14 @@ Methods: (# functions provided by $.deferred)
 	PHPR.post = function(handler, options) {
 
 		var o = {},
-			deferred = $.Deferred(),
-			_form = null,
-			_options = $.extend(true, {
-				action: 'core:on_null',
-				data: {},
-				success: null,
-				fail: null,
-				complete: null,
-				prepare: null
-			}, options);
+			_deferred = $.Deferred(),
+			_handler = handler,
+			_data = {},
+			_form = null;
 
-		if (handler)
-			_options.action = handler;
-
+		//
 		// Options
+		// 
 
 		o.setOption = function(option, value) {
 			_options[option] = value;
@@ -103,26 +96,68 @@ Methods: (# functions provided by $.deferred)
 			return _options[option];
 		}
 
-		// Form
+		o.getDefaultOptions = function() {
+			return {
+				action: 'core:on_null',
+				data: {},
+				done: null,
+				fail: null,
+				always: null,
+				prepare: null
+			};
+		}	
 
-		o.setForm = function(element) {
-			_form = element;
+		o.getOptions = function() {
+			_options = $.extend(true, o.getDefaultOptions(), options);
+
+			if (_handler)
+				_options.action = _handler;
+
+			_options.data = $.extend(true, _serialize_params(_form), _data);
+
+			return _options;
+		}
+
+		//
+		// Form Element
+		// 
+
+		o.setFormElement = function(form) {
+            form = (!form) ? jQuery('<form></form>') : form;
+            form = (form instanceof jQuery) ? form : jQuery(form);
+            form = (form.is('form')) ? form : form.closest('form');
+            form = (form.attr('id')) ? jQuery('form#'+form.attr('id')) : form.attr('id', 'form_element');
+            _form = form;   
 			return this;
 		}
 
-		o.getForm = function() {
+		o.getFormElement = function() {
 			return _form;
 		}
 
-		// Service
-
-		o.send = function() {			
-			deferred.resolve();
+		o.getFormUrl = function() {
+			return _form.attr('action');
 		}
 
-		// Helpers
+		//
+		// Send request
+		// 
 
-		o.serializeParams = function(element) {
+		o.send = function() {
+			return o.sendRequest(o.getFormUrl(), _handler, o.getOptions());
+		}
+
+		o.sendRequest = function(url, handler, options) {
+			
+			_deferred.resolve();
+			return false;
+		}
+
+		//
+		// Internals
+		// 
+
+		var _serialize_params = function(element) {
 			var params = {};
 
 			$.each(element.serializeArray(), function(index, value) {
@@ -143,8 +178,25 @@ Methods: (# functions provided by $.deferred)
 			return params;
 		}
 
+		var _strip_scripts = function(data, option) {
+			var scripts = '';
+
+			var text = data.replace(/<script[^>]*>([^\b]*?)<\/script>/gi, function() {
+				scripts += arguments[1] + '\n';
+				
+				return '';
+			});
+
+			if (option === true)
+				eval(scripts);
+			else if (typeof(option) == 'function')
+				option(scripts, text);
+			
+			return text;
+		}
+
 		// Promote the post object with a promise
-		return deferred.promise(o);
+		return _deferred.promise(o);
 	}
 
 })(jQuery);

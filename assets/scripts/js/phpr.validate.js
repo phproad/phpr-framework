@@ -63,8 +63,9 @@
 			return this;
 		}
 
-		o.action = function(handler) {
-			var postObj = Ahoy.post(_form).action(handler);
+		o.action = function(handler, options) {
+			// var postObj = Ahoy.post(_form).action(handler);
+			var postObj = PHPR.post(handler, options).setFormElement(_form);
 
 			this.success(function() {
 				postObj.send();

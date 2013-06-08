@@ -5,7 +5,7 @@
  * 
  * This class assists in working with module drivers
  */
-class Phpr_Driver_Base extends Phpr_Extension_Base
+class Phpr_Driver_Base extends Phpr_Extension
 {
 	// Driver folder name
 	public static $driver_folder;
@@ -17,6 +17,8 @@ class Phpr_Driver_Base extends Phpr_Extension_Base
 
 	public function __construct($obj = null)
 	{
+		parent::__construct();
+		
 		$this->_host_object = $obj;
 	}
 

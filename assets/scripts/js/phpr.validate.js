@@ -35,7 +35,9 @@
 		onkeyup: false,
 		submitHandler: function(form) {
 			form.submit();
-		}
+		},
+		errorClass: 'help-block',
+		controlErrorClass: "error"
 	};
 
 	PHPR.validate = function(element, options) {

@@ -11,6 +11,8 @@
 		o.text = '';
 		o.html = '';
 		o.javascript = '';
+		o.error = '';
+		o.status = '';
 
 		o.getDefaultOptions = function() {
 			return {
@@ -45,15 +47,18 @@
 				if (o.isSuccess) {
 					_deferred.resolve(o);
 				} else {
-					_deferred.reject(o, 'error', o.html.replace('@AJAX-ERROR@', ''))
+					o.error = o.html.replace('@AJAX-ERROR@', '');
+					o.status = 'error';
+					_deferred.reject(o);
 				}
 			});
 
 			// On Failure
 			ajax.fail(function(data, status, message) {
 				o.parseResponse(data);
-
-				_deferred.reject(o, status, message);
+				o.error = message;
+				o.status = status;
+				_deferred.reject(o);
 			});
 
 			if (options.lock)
@@ -83,7 +88,7 @@
 				ajaxObj = {
 					url: _url,
 					type: 'POST',
-					dataType: 'html', // Always force plaintext				
+					dataType: 'html', // Always force plaintext
 					beforeSend: function(xhr) {
 						xhr.setRequestHeader('PHPR-REMOTE-EVENT', '1');
 						xhr.setRequestHeader('PHPR-POSTBACK', '1');

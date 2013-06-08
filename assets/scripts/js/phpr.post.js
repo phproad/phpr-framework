@@ -84,6 +84,8 @@ Methods: (# functions provided by $.deferred)
 			_data = {},
 			_form = null;
 
+		o.requestObj = null;
+
 		//
 		// Options
 		// 
@@ -105,7 +107,12 @@ Methods: (# functions provided by $.deferred)
 				done: null,
 				fail: null,
 				always: null,
-				prepare: null
+				prepare: null,
+				selectorMode: true,
+				lock: true,
+				animation: function(element, html) {
+					element.html(html);
+				}
 			};
 		}	
 
@@ -146,7 +153,66 @@ Methods: (# functions provided by $.deferred)
 		// 
 
 		o.send = function() {
-			var request = new PHPR.request(o.getFormUrl(), _handler, o.getOptions());
+			var options = o.getOptions();
+			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);
+
+			o.requestObj.always(function(requestObj){
+				// Hide loading indicator
+				options.always && options.always(requestObj);
+			});
+
+			o.requestObj.done(function(requestObj){
+				o.updatePartials();
+				options.done && options.done(requestObj);
+			});
+
+			o.requestObj.fail(function(requestObj){
+				options.fail && options.fail(requestObj);
+			});
+
+		}
+
+		//
+		// Update partials
+		// 
+
+		o.updatePartials = function() {
+			var options = o.getOptions(),
+				oHtml = o.requestObj.html,
+				pattern = />>[^<>]*<</g,
+				patches = oHtml.match(pattern) || [],
+				updateElements = [];
+
+			for (var i = 0, l = patches.length; i < l; ++i) {
+				var index = oHtml.indexOf(patches[i]) + patches[i].length;
+
+				var html = (i < patches.length-1) 
+					? oHtml.slice(index, oHtml.indexOf(patches[i+1])) 
+					: oHtml.slice(index);
+
+				var id = patches[i].slice(2, patches[i].length-2);
+
+				if (id) {
+					var element;
+				
+					if (options.selectorMode)
+						element = $(id);
+					else
+						element = $('#' + id);
+						
+					if (!options.animation(element, html))
+						element.html(html);
+						
+					updateElements.push(id);
+				}
+			}
+
+			// If update element is a string, set update element to self.text
+			options.update && typeof(options.update) === 'string' && $('#' + options.update).html(self.text);
+
+			$.each(updateElements, function(k, v) {
+				$(window).trigger('onAfterAjaxUpdate', v);
+			});
 		}
 
 		//

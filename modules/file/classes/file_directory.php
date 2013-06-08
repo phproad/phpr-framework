@@ -59,20 +59,19 @@ class File_Directory
 
     public static function delete($path)
     {
-        if (!is_dir($path)) 
-            return false;
-
-        $iterator = new DirectoryIterator($path);
-        foreach ($iterator as $file) 
-        {
-            if ($file->isDot() || $file->isDir())
+        if (!$directory = @opendir($path))
+            return;
+    
+        while (false !== ($dir_obj = readdir($directory))) {
+            
+            if ($dir_obj == '.' || $dir_obj == '..') 
                 continue;
-
-            @unlink($file->getPathname());
+                
+            @unlink($path.'/'.$dir_obj);
         }
-        
+
+        closedir($directory);
         @rmdir($path);
-        return true;
     }
 
     public static function delete_recursive($path) 
@@ -80,21 +79,28 @@ class File_Directory
         if (!is_dir($path)) 
             return false;
 
-        $iterator = new DirectoryIterator($path);
-        foreach ($iterator as $file) 
-        {
-            if ($file->isDot())
-                continue;
-
-            $dir_path = $file->getPathname();
-
-            if (!is_link($dir_path) && $file->isDir()) 
-                self::delete_recursive($dir_path);
-            else
-                @unlink($dir_path);
-        }
+        $path = rtrim($path, '/');
+        $directory = dir($path);
         
-        @rmdir($path);
+        $count = 0;
+        while (($file = $directory->read()) !== false) {
+            if ($file != '.' && $file != '..') {
+                $count++;
+                if (!is_link($path.'/'.$file) && is_dir($path.'/'.$file)) {
+                    self::delete_recursive($path.'/'.$file);
+                }
+                else {
+                    unlink($path.'/'.$file);
+                    if($count > 100) {
+                        $directory->rewind();
+                        $count = 0;
+                    }
+                }
+            }
+        }
+        $directory->close();
+        
+        rmdir($path);
         return true;
     }
 

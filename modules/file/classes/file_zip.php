@@ -18,7 +18,7 @@ class File_Zip
 
 		$fileName = basename($file);
 		$archive->add($fileName);
-		@chmod($archive_path, Phpr_Files::get_file_permissions());
+		@chmod($archive_path, File::get_permissions());
 	}
 	
 	/**
@@ -52,38 +52,38 @@ class File_Zip
 		}
 
 		$d->close();
-		@chmod($archive_path, Phpr_Files::get_file_permissions());
+		@chmod($archive_path, File::get_permissions());
 	}
 	
-	public static function unzip($path, $archive_path, $replace_files = true, $set_permissions = true)
+	public static function unzip($archive_path, $destination_path, $replace_files = true, $set_permissions = true)
 	{
 		if (!file_exists($archive_path))
 			throw new Phpr_SystemException('Archive file is not found');
 
-		if (!is_writable($path))
-			throw new Phpr_SystemException('No writing permissions for directory '.$path);
+		if (!is_writable($destination_path))
+			throw new Phpr_SystemException('No writing permissions for directory '.$destination_path);
 
 		self::init_zip();
 		$archive = new PclZip($archive_path);
 
 		if ($set_permissions && $replace_files)
 		{
-			if (!@$archive->extract(PCLZIP_OPT_PATH, $path, PCLZIP_OPT_REPLACE_NEWER, PCLZIP_CB_POST_EXTRACT, 'zip_helper_post_extract'))
+			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_OPT_REPLACE_NEWER, PCLZIP_CB_POST_EXTRACT, 'zip_helper_post_extract'))
 				throw new Phpr_SystemException('Error extracting data from archive');
 		} 
 		else if ($set_permissions && !$replace_files)
 		{
-			if (!@$archive->extract(PCLZIP_OPT_PATH, $path, PCLZIP_CB_POST_EXTRACT, 'zip_helper_post_extract'))
+			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_CB_POST_EXTRACT, 'zip_helper_post_extract'))
 				throw new Phpr_SystemException('Error extracting data from archive');
 		}
 		else if (!$set_permissions && $replace_files)
 		{
-			if (!@$archive->extract(PCLZIP_OPT_PATH, $path, PCLZIP_OPT_REPLACE_NEWER))
+			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_OPT_REPLACE_NEWER))
 				throw new Phpr_SystemException('Error extracting data from archive');
 		}
 		else if (!$set_permissions && !$replace_files)
 		{
-			if (!@$archive->extract(PCLZIP_OPT_PATH, $path))
+			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path))
 				throw new Phpr_SystemException('Error extracting data from archive');
 		}
 	}

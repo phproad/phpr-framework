@@ -80,6 +80,7 @@ Methods: (# functions provided by $.deferred)
 		var o = {},
 			_deferred = $.Deferred(),
 			_handler = handler,
+			_options = options,
 			_data = {},
 			_form = null;
 
@@ -100,6 +101,7 @@ Methods: (# functions provided by $.deferred)
 			return {
 				action: 'core:on_null',
 				data: {},
+				update: {},
 				done: null,
 				fail: null,
 				always: null,
@@ -108,14 +110,14 @@ Methods: (# functions provided by $.deferred)
 		}	
 
 		o.getOptions = function() {
-			_options = $.extend(true, o.getDefaultOptions(), options);
+			var options = $.extend(true, o.getDefaultOptions(), _options);
 
 			if (_handler)
-				_options.action = _handler;
+				options.action = _handler;
 
-			_options.data = $.extend(true, _serialize_params(_form), _data);
+			options.data = $.extend(true, _serialize_params(_form), _data);
 
-			return _options;
+			return options;
 		}
 
 		//
@@ -144,13 +146,7 @@ Methods: (# functions provided by $.deferred)
 		// 
 
 		o.send = function() {
-			return o.sendRequest(o.getFormUrl(), _handler, o.getOptions());
-		}
-
-		o.sendRequest = function(url, handler, options) {
-			
-			_deferred.resolve();
-			return false;
+			var request = new PHPR.request(o.getFormUrl(), _handler, o.getOptions());
 		}
 
 		//
@@ -176,23 +172,6 @@ Methods: (# functions provided by $.deferred)
 			});
 
 			return params;
-		}
-
-		var _strip_scripts = function(data, option) {
-			var scripts = '';
-
-			var text = data.replace(/<script[^>]*>([^\b]*?)<\/script>/gi, function() {
-				scripts += arguments[1] + '\n';
-				
-				return '';
-			});
-
-			if (option === true)
-				eval(scripts);
-			else if (typeof(option) == 'function')
-				option(scripts, text);
-			
-			return text;
 		}
 
 		// Promote the post object with a promise

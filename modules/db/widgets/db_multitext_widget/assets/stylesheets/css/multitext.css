@@ -1,0 +1,11 @@
+.control-multitext {}
+.control-multitext .multitext-object { 
+	padding-top: 10px; 
+}
+.control-multitext .multitext-add { 
+	margin-top: 5px; 
+}
+.control-multitext .multitext-remove { 
+	position: relative; 
+	top: -10px; 
+}

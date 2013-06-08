@@ -1,0 +1,84 @@
+<?
+	$days = Phpr_Html::get_locale_dates_array('A_weekday_', 7);
+	$days_short = Phpr_Html::get_locale_dates_array('a_weekday_', 7, 7);
+	$days_min = Phpr_Html::get_locale_dates_array('a_weekday_', 7, 7, 2);
+	$months = Phpr_Html::get_locale_dates_array('n_month_', 12);
+	$months_short = Phpr_Html::get_locale_dates_array('b_month_', 12);
+	$date_format = str_replace(array('%d', '%m', '%Y'), array('dd','mm','yy'), Phpr::$locale->get_string('phpr.dates', "short_date_format"));
+
+	$field_id = $widget->field_id;
+	$fields = $widget->fields;
+	$css_class = $widget->css_class;
+?>
+
+<div class="multitext-shell" style="display:none">
+	<? foreach ($fields as $name => $params): ?>
+		<div class="control-group <?=$params['type']?> <?=(isset($params['align']))?$params['align']:'full'?>" style="margin-bottom:5px">
+			<label class="control-label"><?=$params['label']?></label>
+			<div class="controls">
+				<? switch ($params['type']):
+					case frm_text: ?>
+						<textarea class="multitext-field small" data-object-name="<?= $name ?>"></textarea>
+					<? break ?>
+
+					<? case frm_datetime: ?>
+
+						<div class="datePickerHolder">
+							<input value="" class="date multitext-field" type="text" name="" data-object-name="<?= $name ?>" />
+						</div>
+
+					<? break ?>
+
+					<?
+						case db_number:
+						case db_float:
+						case db_varchar: 
+					?>
+						<input autocomplete="off" value="" class="<?=$params['type'] ?> multitext-field" type="text" data-object-name="<?= $name ?>" />
+					<? break ?>
+
+				<? endswitch ?>
+			</div>
+		</div>
+	<? endforeach ?>
+	
+	<div class="clearfix"></div>
+	<div class="multitext-remove">
+		<a href="javascript:;" onclick="return Admin_Page.multiTextRemoveField(this)">
+			<i class="icon-remove"></i> Remove
+		</a>
+	</div>
+</div>
+
+<p>
+	<a href="javascript:;" class="btn btn-icon multitext-add" 
+		onclick="Admin_Page.multiTextAddField('<?=$field_id?>')">
+		<i class="icon-plus"></i> Add <?=h($form_field->get_col_definition()->display_name) ?>
+	</a>
+</p>
+
+<textarea style="display:none" autocomplete="off" 
+	<? if ($form_field->disabled) echo 'disabled="disabled"' ?> 
+	id="<?= $field_id ?>" 
+	name="<?= $widget->field_name ?>"><? if (!$form_field->hide_content): ?><?=h($form_model->display_field($form_field->db_name)) ?><? endif ?></textarea>
+
+<script>
+	jQuery(document).ready(function($) {
+		Admin_Page.multiTextInit('<?=$field_id?>', '<?=$widget->get_element_id('container')?>');
+	});
+
+	Admin_Page.multiTextInitDatePicker = function(el) {
+		jQuery(el).datepicker({
+			dateFormat: '<?=$date_format?>',
+			dayNamesShort: [<?=$days_short?>],
+			dayNamesMin: [<?=$days_min?>],
+			dayNames: [<?=$days?>],
+			monthNames: [<?=$months?>],
+			monthNamesShort: [<?=$months_short?>],
+			beforeShow: function(input, inst) {
+				var widget = jQuery(inst).datepicker('widget');
+				widget.css('margin-left', jQuery(input).outerWidth() - widget.outerWidth());
+			}
+		});
+	}
+</script>

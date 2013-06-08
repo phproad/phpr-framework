@@ -86,6 +86,14 @@ Methods: (# functions provided by $.deferred)
 
 		o.requestObj = null;
 
+		// 
+		// Static
+		// 
+
+		o.handleError = function(message) {
+			alert(message);
+		}
+
 		//
 		// Options
 		// 
@@ -110,6 +118,8 @@ Methods: (# functions provided by $.deferred)
 				prepare: null,
 				selectorMode: true,
 				lock: true,
+				alert: null,
+				confirm: null,
 				animation: function(element, html) {
 					element.html(html);
 				}
@@ -122,7 +132,9 @@ Methods: (# functions provided by $.deferred)
 			if (_handler)
 				options.action = _handler;
 
-			options.data = $.extend(true, _serialize_params(_form), _data);
+			options.data = (_form) 
+				? $.extend(true, _serialize_params(_form), _data)
+				: _data;
 
 			return options;
 		}
@@ -132,11 +144,11 @@ Methods: (# functions provided by $.deferred)
 		// 
 
 		o.setFormElement = function(form) {
-            form = (!form) ? jQuery('<form></form>') : form;
-            form = (form instanceof jQuery) ? form : jQuery(form);
-            form = (form.is('form')) ? form : form.closest('form');
-            form = (form.attr('id')) ? jQuery('form#'+form.attr('id')) : form.attr('id', 'form_element');
-            _form = form;   
+			form = (!form) ? jQuery('<form></form>') : form;
+			form = (form instanceof jQuery) ? form : jQuery(form);
+			form = (form.is('form')) ? form : form.closest('form');
+			form = (form.attr('id')) ? jQuery('form#'+form.attr('id')) : form.attr('id', 'form_element');
+			_form = form;
 			return this;
 		}
 
@@ -145,7 +157,7 @@ Methods: (# functions provided by $.deferred)
 		}
 
 		o.getFormUrl = function() {
-			return _form.attr('action');
+			return (_form) ? _form.attr('action') : window.location.href;
 		}
 
 		//
@@ -154,22 +166,43 @@ Methods: (# functions provided by $.deferred)
 
 		o.send = function() {
 			var options = o.getOptions();
+
+			if (options.prepare && !context.prepare())
+				return;
+
+			if (options.alert)
+				return alert(options.alert);
+			
+			if (options.confirm && !confirm(options.confirm))
+				return;
+
+			// @todo Show loading indicator
+
+			// Prepare and execute the request
 			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);
 
+			// On Complete
 			o.requestObj.always(function(requestObj){
-				// Hide loading indicator
+				
+				// @todo Hide loading indicator
+				 
 				options.always && options.always(requestObj);
 			});
 
+			// On Success
 			o.requestObj.done(function(requestObj){
 				o.updatePartials();
 				options.done && options.done(requestObj);
 			});
 
+			// On Failure
 			o.requestObj.fail(function(requestObj){
-				options.fail && options.fail(requestObj);
-			});
+				if (options.fail && !options.fail(requestObj))
+					return;
 
+				if (requestObj.error)
+					o.handleError(requestObj.error);
+			});
 		}
 
 		//

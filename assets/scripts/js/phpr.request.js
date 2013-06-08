@@ -28,7 +28,6 @@
 		}
 
 		o.sendRequest = function() {
-			
 			if (_locked)
 				return;
 
@@ -41,10 +40,10 @@
 			});
 
 			// On Success
-			ajax.done(function(data) {				
+			ajax.done(function(data) {
 				o.parseResponse(data);
 
-				if (o.isSuccess) {
+				if (o.isSuccess()) {
 					_deferred.resolve(o);
 				} else {
 					o.error = o.html.replace('@AJAX-ERROR@', '');
@@ -123,6 +122,9 @@
 			
 			return text;
 		}		
+
+		// Send the request on construct
+		o.sendRequest();
 
 		// Promote the request object with a promise
 		return _deferred.promise(o);

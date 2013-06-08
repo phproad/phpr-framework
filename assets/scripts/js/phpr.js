@@ -25,7 +25,7 @@ $.fn.phpr = function() {
 	};
 
 	o.post = function(handler, options) {
-		return $.phpr.form(self).post(handler, options);
+		return $.phpr.post(handler, options).setFormElement(self);
 	}
 	
 	o.indicator = function() {

@@ -114,7 +114,7 @@
 
 			ajaxObj.data = $.extend(true, ajaxObj.data, _options.data);
 
-			if (_options.update)
+			if (_options.update && $.isArray(_options.update))
 				ajaxObj.data.cms_update_elements = _options.update;
 
 			return $.ajax(ajaxObj);

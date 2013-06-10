@@ -338,9 +338,10 @@
 		// Extend the post object with DOM
 		o = $.extend(true, o, PHPR.post);
 
+		// (This creates too much unpredictability)
 		// If the second parameter is present, then automatically fire the request
-		if (options)
-			return o.send();
+		// if (options)
+		// 	return o.send();
 
 		// Promote the post object with a promise
 		return _deferred.promise(o);

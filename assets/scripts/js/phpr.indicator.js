@@ -26,12 +26,15 @@
 		 * @type Function
 		 * @return none
 		 */
-		o.showIndicator = function() {
-			var options = $.extend(true, {}, o.loadIndicator);
+		o.showIndicator = function(options) {
+			options = $.extend(true, o.options, options);
+
+			if (!options.show)
+				return;
 			
-			var container = options.injectInElement && options.form ? options.form : $('body');
-			var position = options.absolutePosition ? 'absolute' : 'fixed';
-			var visibility = options.hideElement ? 'hidden' : 'visible';
+			var container = options.injectInElement && options.form ? options.form : $('body'),
+				position = options.absolutePosition ? 'absolute' : 'fixed',
+				visibility = options.hideElement ? 'hidden' : 'visible';
 			
 			if (o.indicatorElement === null) {
 				var element = options.element ? $('#' + options.element) : $('<p />');
@@ -57,6 +60,9 @@
 		 * @return none
 		 */
 		o.hideIndicator = function() {
+			if (!o.indicatorElement)
+				return;
+
 			o.indicatorElement.hide();
 		}
 

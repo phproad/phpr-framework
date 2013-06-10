@@ -152,6 +152,14 @@ Methods: (# functions provided by $.deferred)
 			return this;
 		}
 
+		o.loadingIndicator = function(data) {
+			if (typeof data == "boolean")
+				_options.loadingIndicator = { show: data };
+			else
+				_options.loadingIndicator = $.extend(true, _options.loadingIndicator, data);
+			return this;
+		}
+
 		//
 		// Options
 		// 
@@ -171,9 +179,8 @@ Methods: (# functions provided by $.deferred)
 				alert: null,
 				confirm: null,
 				evalScripts: true,
-				animation: function(element, html) {
-					element.html(html);
-				}
+				loadingIndicator: { show: true },
+				animation: function(element, html) { element.html(html); }
 			};
 		}
 
@@ -240,8 +247,8 @@ Methods: (# functions provided by $.deferred)
 				return;
 
 			// Show loading indicator
-			if (PHPR.indicator)
-				PHPR.indicator.showIndicator();
+			if (PHPR.indicator && options.loadingIndicator.show)
+				PHPR.indicator.showIndicator(options.loadingIndicator);
 
 			// Prepare the request
 			o.requestObj = PHPR.request(o.getFormUrl(), _handler, options);
@@ -250,7 +257,7 @@ Methods: (# functions provided by $.deferred)
 			o.requestObj.always(function(requestObj){
 				
 				// Hide loading indicator
-				if (PHPR.indicator)
+				if (PHPR.indicator && options.loadingIndicator.show)
 					PHPR.indicator.hideIndicator();
 
 				options.always && options.always(requestObj);

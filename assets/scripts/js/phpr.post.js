@@ -80,7 +80,7 @@ Methods: (# functions provided by $.deferred)
 		var o = {},
 			_deferred = $.Deferred(),
 			_handler = handler,
-			_options = options,
+			_options = options || {},
 			_data = {},
 			_form = null;
 
@@ -140,9 +140,9 @@ Methods: (# functions provided by $.deferred)
 
 		o.data = function(field, value) {
 			if (typeof field == "object")
-				_options.data = field;
+				_data = field;
 			else if (typeof value != "undefined")
-				_options.data[field] = value;
+				_data[field] = value;
 			return this;
 		}
 
@@ -155,22 +155,13 @@ Methods: (# functions provided by $.deferred)
 		// Static
 		// 
 		
-		o.handleError = function(message) {
-			alert(message);
+		o.popupError = function(requestObj) {
+			alert(requestObj.error);
 		}
 
 		//
 		// Options
 		// 
-
-		o.setOption = function(option, value) {
-			_options[option] = value;
-			return this;
-		}
-
-		o.getOption = function(option) {
-			return _options[option];
-		}
 
 		o.getDefaultOptions = function() {
 			return {
@@ -190,7 +181,16 @@ Methods: (# functions provided by $.deferred)
 					element.html(html);
 				}
 			};
-		}	
+		}
+
+		o.setOption = function(option, value) {
+			_options[option] = value;
+			return this;
+		}
+
+		o.getOption = function(option) {
+			return _options[option];
+		}
 
 		o.buildOptions = function() {
 			var options = $.extend(true, o.getDefaultOptions(), _options);
@@ -247,7 +247,7 @@ Methods: (# functions provided by $.deferred)
 				PHPR.indicator.showIndicator();
 
 			// Prepare the request
-			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);			
+			o.requestObj = PHPR.request(o.getFormUrl(), _handler, options);
 
 			// On Complete
 			o.requestObj.always(function(requestObj){
@@ -271,7 +271,7 @@ Methods: (# functions provided by $.deferred)
 					return;
 
 				if (requestObj.error)
-					o.handleError(requestObj.error);
+					o.popupError(requestObj);
 			});
 
 			// Execute the request
@@ -346,6 +346,9 @@ Methods: (# functions provided by $.deferred)
 
 			return params;
 		}
+
+		// Extend the post object with DOM
+		o = $.extend(true, o, PHPR.post || {});
 
 		// Promote the post object with a promise
 		return _deferred.promise(o);

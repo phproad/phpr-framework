@@ -154,7 +154,7 @@ Methods: (# functions provided by $.deferred)
 		// 
 		// Static
 		// 
-
+		
 		o.handleError = function(message) {
 			alert(message);
 		}
@@ -231,8 +231,7 @@ Methods: (# functions provided by $.deferred)
 		// 
 
 		o.send = function() {
-			var options = o.buildOptions(),
-				loadingIndicator = new PHPR.indicator();
+			var options = o.buildOptions();
 
 			if (options.prepare && !context.prepare())
 				return;
@@ -245,7 +244,7 @@ Methods: (# functions provided by $.deferred)
 
 			// Show loading indicator
 			if (PHPR.indicator)
-				loadingIndicator.showIndicator();
+				PHPR.indicator.showIndicator();
 
 			// Prepare the request
 			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);			
@@ -255,7 +254,7 @@ Methods: (# functions provided by $.deferred)
 				
 				// Hide loading indicator
 				if (PHPR.indicator)
-					loadingIndicator.hideIndicator();
+					PHPR.indicator.hideIndicator();
 
 				options.always && options.always(requestObj);
 			});

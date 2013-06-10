@@ -1,39 +1,42 @@
 //
 // Phpr request
 //
+(function($) {
 
-window.PHPR = { };
+	window.PHPR = { };
 
-PHPR.doSomething = function(element) {
- 
-};
-
-$.phpr = PHPR;
-
-$.fn.phpr = function() {
-
-	var self = this;
-
-	var o = {};
-
-	o.form = function() {
-		return $.phpr.form(self);
+	PHPR.doSomething = function(element) {
+	 
 	};
 
-	o.validate = function() {
-		return $.phpr.validate(self);
+	$.phpr = PHPR;
+
+	$.fn.phpr = function() {
+
+		var self = this;
+
+		var o = {};
+
+		o.form = function() {
+			return $.phpr.form(self);
+		};
+
+		o.validate = function() {
+			return $.phpr.validate(self);
+		};
+
+		o.post = function(handler, options) {
+			return $.phpr.post(handler, options).setFormElement(self);
+		}
+		
+		o.indicator = function() {
+			return $.phpr.indicator();
+		}
+
+		return o;
 	};
 
-	o.post = function(handler, options) {
-		return $.phpr.post(handler, options).setFormElement(self);
-	}
-	
-	o.indicator = function() {
-		return $.phpr.indicator();
-	}
-
-	return o;
-};
+})(jQuery);
 
 //
 // URL functions

@@ -11,6 +11,12 @@
 
 (function($) {
 
+	PHPR.requestDefaults = {
+		data: {},
+		update: {},
+		lock: true
+	}
+
 	PHPR.request = function(url, handler, options) {
 		var o = {},
 			_deferred = $.Deferred(),
@@ -19,22 +25,20 @@
 			_options = options,
 			_locked = false;
 		
+		o.postObj = null;
+
 		o.text = '';
 		o.html = '';
 		o.javascript = '';
 		o.error = '';
 		o.status = '';
 
-		o.getDefaultOptions = function() {
-			return {
-				data: {},
-				update: {},
-				lock: true
-			};
+		o.setDefaultOptions = function(defaultOptions) {
+			PHPR.requestDefaults = $.extend(true, PHPR.requestDefaults, defaultOptions);
 		}
-		
+
 		o.buildOptions = function() {
-			var options = $.extend(true, o.getDefaultOptions(), _options);
+			var options = $.extend(true, PHPR.requestDefaults, _options);
 			return _options = options;
 		}
 

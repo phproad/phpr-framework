@@ -23,7 +23,7 @@
 		o.indicatorElement = null;
 
 		o.setDefaultOptions = function(defaultOptions) {
-			PHPR.validateDefaults = $.extend(true, PHPR.indicatorDefaults, defaultOptions);
+			PHPR.indicatorDefaults = $.extend(true, PHPR.indicatorDefaults, defaultOptions);
 		}
 
 		/**
@@ -71,6 +71,8 @@
 			o.indicatorElement.hide();
 		}
 
+		// Extend the indicator object with DOM
+		o = $.extend(true, o, PHPR.indicator);
 		return o;
 	}
 

@@ -33,6 +33,24 @@
 
 (function($) {
 
+	PHPR.postDefaults = {
+		action: 'core:on_null',
+		data: {},
+		update: {},
+		done: null, // On Success
+		fail: null, // On Failure
+		always: null, // On Complete
+		afterUpdate: null, // On After Update
+		prepare: null,
+		selectorMode: true,
+		lock: true,
+		alert: null,
+		confirm: null,
+		evalScripts: true,
+		loadingIndicator: { show: true },
+		animation: function(element, html) { element.html(html); }
+	};
+
 	PHPR.post = function(handler, options) {
 
 		var o = {},
@@ -127,24 +145,8 @@
 		// Options
 		// 
 
-		o.getDefaultOptions = function() {
-			return {
-				action: 'core:on_null',
-				data: {},
-				update: {},
-				done: null,
-				fail: null,
-				afterUpdate: null,
-				always: null,
-				prepare: null,
-				selectorMode: true,
-				lock: true,
-				alert: null,
-				confirm: null,
-				evalScripts: true,
-				loadingIndicator: { show: true },
-				animation: function(element, html) { element.html(html); }
-			};
+		o.setDefaultOptions = function(defaultOptions) {
+			PHPR.postDefaults = $.extend(true, PHPR.postDefaults, defaultOptions);
 		}
 
 		o.setOption = function(option, value) {
@@ -157,7 +159,7 @@
 		}
 
 		o.buildOptions = function(options) {
-			options = $.extend(true, o.getDefaultOptions(), _options, options);
+			options = $.extend(true, PHPR.postDefaults, _options, options);
 			
 			if (_handler)
 				options.action = _handler;
@@ -211,43 +213,49 @@
 
 			// Show loading indicator
 			if (PHPR.indicator && options.loadingIndicator.show)
-				PHPR.indicator.showIndicator(options.loadingIndicator);
-
+				PHPR.indicator().showIndicator(options.loadingIndicator);
+			
 			// Prepare the request
-			o.requestObj = PHPR.request(o.getFormUrl(), _handler, options);
+			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);
+			o.requestObj.postObj = o;
 
 			// On Complete
-			o.requestObj.always(function(requestObj){
-				
-				// Hide loading indicator
-				if (PHPR.indicator && options.loadingIndicator.show)
-					PHPR.indicator.hideIndicator();
-
-				options.always && options.always(requestObj);
-			});
+			o.requestObj.always(o.onComplete);
 
 			// On Success
-			o.requestObj.done(function(requestObj){
-				o.updatePartials();
-
-				if (options.evalScripts) 
-					eval(requestObj.javascript);
-
-				options.done && options.done(requestObj);
-			});
+			o.requestObj.done(o.onSuccess);
 
 			// On Failure
-			o.requestObj.fail(function(requestObj){
-				if (options.fail && !options.fail(requestObj))
-					return;
-
-				if (requestObj.error)
-					o.popupError(requestObj);
-			});
+			o.requestObj.fail(o.onFailure);
 
 			// Execute the request
 			o.requestObj.send();
 			return false;
+		}
+
+		o.onComplete = function(requestObj) {
+			// Hide loading indicator
+			if (PHPR.indicator && _options.loadingIndicator.show)
+				PHPR.indicator().hideIndicator();
+
+			_options.always && _options.always(requestObj);
+		}
+
+		o.onSuccess = function(requestObj) {
+			o.updatePartials();
+
+			if (_options.evalScripts) 
+				eval(requestObj.javascript);
+
+			_options.done && _options.done(requestObj);
+		}
+
+		o.onFailure = function(requestObj) {
+			if (_options.fail && !_options.fail(requestObj))
+				return;
+
+			if (requestObj.error)
+				o.popupError(requestObj);
 		}
 
 		//

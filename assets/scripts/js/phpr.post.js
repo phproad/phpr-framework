@@ -231,7 +231,8 @@ Methods: (# functions provided by $.deferred)
 		// 
 
 		o.send = function() {
-			var options = o.buildOptions();
+			var options = o.buildOptions(),
+				loadingIndicator = new PHPR.indicator();
 
 			if (options.prepare && !context.prepare())
 				return;
@@ -242,7 +243,9 @@ Methods: (# functions provided by $.deferred)
 			if (options.confirm && !confirm(options.confirm))
 				return;
 
-			// @todo Show loading indicator
+			// Show loading indicator
+			if (PHPR.indicator)
+				loadingIndicator.showIndicator();
 
 			// Prepare the request
 			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);			
@@ -250,8 +253,10 @@ Methods: (# functions provided by $.deferred)
 			// On Complete
 			o.requestObj.always(function(requestObj){
 				
-				// @todo Hide loading indicator
-				 
+				// Hide loading indicator
+				if (PHPR.indicator)
+					loadingIndicator.hideIndicator();
+
 				options.always && options.always(requestObj);
 			});
 
@@ -314,6 +319,8 @@ Methods: (# functions provided by $.deferred)
 			$.each(updateElements, function(k, v) {
 				$(window).trigger('onAfterAjaxUpdate', v);
 			});
+
+			_options.afterUpdate && _options.afterUpdate();
 		}
 
 		//

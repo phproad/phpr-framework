@@ -1,25 +1,30 @@
 (function($) {
 
+	PHPR.indicatorDefaults = {
+		show: true,
+		hideOnSuccess: true,
+		overlayClass: 'ajax_loading_indicator',
+		posX: 'center',
+		posY: 'center',
+		src: null,
+		injectInElement: false,
+		noImage: false,
+		zIndex: 9999,
+		element: null,
+		absolutePosition: false,
+		injectPosition: 'bottom',
+		overlayOpacity: 1,
+		hideElement: false
+	};
+
 	PHPR.indicator = function() {
 		var o = {};
 
 		o.indicatorElement = null;
-		o.options = {
-			show: true,
-			hideOnSuccess: true,
-			overlayClass: 'ajax_loading_indicator',
-			posX: 'center',
-			posY: 'center',
-			src: null,
-			injectInElement: false,
-			noImage: false,
-			zIndex: 9999,
-			element: null,
-			absolutePosition: false,
-			injectPosition: 'bottom',
-			overlayOpacity: 1,
-			hideElement: false
-		};
+
+		o.setDefaultOptions = function(defaultOptions) {
+			PHPR.validateDefaults = $.extend(true, PHPR.indicatorDefaults, defaultOptions);
+		}
 
 		/**
 		 * Shows the loading indicator.
@@ -27,7 +32,7 @@
 		 * @return none
 		 */
 		o.showIndicator = function(options) {
-			options = $.extend(true, o.options, options);
+			options = $.extend(true, PHPR.indicatorDefaults, options);
 
 			if (!options.show)
 				return;

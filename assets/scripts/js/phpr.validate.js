@@ -15,7 +15,7 @@
  *   Page.loginForm.validate().action('on_action')
  *   	.success(function() { alert('Done!'); });
  *   	
- *   	
+ *
  * Deferring:
  *   
  *   Page.loginForm = $.phpr.form();
@@ -54,6 +54,10 @@
 		_options = $.extend(true, _jv_defaults, options);
 		_jv_object = _form.validate(_options);
 
+		o.setDefaultOptions = function(defaultOptions) {
+			PHPR.validateDefaults = $.extend(true, PHPR.validateDefaults, defaultOptions);
+		}
+
 		o.valid = function() {
 			return _jv_object.valid();
 		}
@@ -63,7 +67,7 @@
 			return this;
 		}
 
-		o.action = function(handler, options) {
+		o.post = o.action = function(handler, options) {
 			var postObj = PHPR.post(handler, options).setFormElement(_form);
 
 			this.success(function() {

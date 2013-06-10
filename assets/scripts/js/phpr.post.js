@@ -82,6 +82,7 @@ Methods: (# functions provided by $.deferred)
 			_handler = handler,
 			_options = options || {},
 			_data = {},
+			_update = {},
 			_form = null;
 
 		o.requestObj = null;
@@ -132,9 +133,9 @@ Methods: (# functions provided by $.deferred)
 
 		o.update = function(element, partial) {
 			if (partial)
-				_options.update[element] = partial;
+				_update[element] = partial;
 			else
-				_options.update = element;
+				_update = element;
 			return this;
 		}
 
@@ -149,14 +150,6 @@ Methods: (# functions provided by $.deferred)
 		o.queue = function(value) {
 			_options.lock = !value;
 			return this;
-		}
-
-		// 
-		// Static
-		// 
-		
-		o.popupError = function(requestObj) {
-			alert(requestObj.error);
 		}
 
 		//
@@ -177,6 +170,7 @@ Methods: (# functions provided by $.deferred)
 				lock: true,
 				alert: null,
 				confirm: null,
+				evalScripts: true,
 				animation: function(element, html) {
 					element.html(html);
 				}
@@ -198,9 +192,13 @@ Methods: (# functions provided by $.deferred)
 			if (_handler)
 				options.action = _handler;
 
+			// Build post back data
 			options.data = (_form) 
 				? $.extend(true, _serialize_params(_form), _data)
 				: _data;
+
+			// Build partials to update
+			options.update = $.extend(true, options.update, _update);
 
 			return _options = options;
 		}
@@ -233,11 +231,10 @@ Methods: (# functions provided by $.deferred)
 		o.send = function() {
 			var options = o.buildOptions();
 
-			if (options.prepare && !context.prepare())
-				return;
+			options.prepare && options.prepare();
 
 			if (options.alert)
-				return alert(options.alert);
+				alert(options.alert);
 			
 			if (options.confirm && !confirm(options.confirm))
 				return;
@@ -262,6 +259,10 @@ Methods: (# functions provided by $.deferred)
 			// On Success
 			o.requestObj.done(function(requestObj){
 				o.updatePartials();
+
+				if (options.evalScripts) 
+					eval(requestObj.javascript);
+
 				options.done && options.done(requestObj);
 			});
 
@@ -275,7 +276,16 @@ Methods: (# functions provided by $.deferred)
 			});
 
 			// Execute the request
-			return o.requestObj.send();
+			o.requestObj.send();
+			return false;
+		}
+
+		//
+		// Error Popup
+		// 
+
+		o.popupError = function(requestObj) {
+			alert(requestObj.error);
 		}
 
 		//

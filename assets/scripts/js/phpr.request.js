@@ -14,7 +14,8 @@
 	PHPR.requestDefaults = {
 		data: {},
 		update: {},
-		lock: true
+		lock: true,
+		cmsMode: false
 	}
 
 	PHPR.request = function(url, handler, options) {
@@ -98,19 +99,23 @@
 
 		var _get_ajax_object = function() {
 			
+			var _head_handler = (_options.cmsMode) ? 'on_handle_request' : _handler;
+
 			var ajaxObj = {
-					url: _url,
-					type: 'POST',
-					dataType: 'html', // Always force plaintext
-					beforeSend: function(xhr) {
-						xhr.setRequestHeader('PHPR-REMOTE-EVENT', '1');
-						xhr.setRequestHeader('PHPR-POSTBACK', '1');
-						xhr.setRequestHeader('PHPR-EVENT-HANDLER', 'ev{on_handle_request}');
-					},
-					data: {
-						cms_handler_name: _handler
-					}
-				};
+				url: _url,
+				type: 'POST',
+				dataType: 'html', // Always force plaintext
+				beforeSend: function(xhr) {
+					xhr.setRequestHeader('PHPR-REMOTE-EVENT', '1');
+					xhr.setRequestHeader('PHPR-POSTBACK', '1');
+					xhr.setRequestHeader('PHPR-EVENT-HANDLER', 'ev{' + _head_handler + '}');
+				},
+				data: {}
+			};
+
+			if (_options.cmsMode) {
+				ajaxObj.data.cms_handler_name = _handler;
+			}
 
 			ajaxObj.data = $.extend(true, ajaxObj.data, _options.data);
 

@@ -22,17 +22,17 @@
 			};
 		}
 		
-		o.getOptions = function() {
+		o.buildOptions = function() {
 			var options = $.extend(true, o.getDefaultOptions(), _options);
-			return options;
+			return _options = options;
 		}
 
-		o.sendRequest = function() {
+		o.send = function() {
 			if (_locked)
 				return;
 
-			var ajax = _get_ajax_object(),
-				options = o.getOptions();
+			var options = o.buildOptions(),
+				ajax = _get_ajax_object();
 
 			// On Complete
 			ajax.always(function(){
@@ -83,8 +83,7 @@
 
 		var _get_ajax_object = function() {
 			
-			var options = o.getOptions(),
-				ajaxObj = {
+			var ajaxObj = {
 					url: _url,
 					type: 'POST',
 					dataType: 'html', // Always force plaintext
@@ -98,10 +97,10 @@
 					}
 				};
 
-			ajaxObj.data = $.extend(true, ajaxObj.data, options.data);
+			ajaxObj.data = $.extend(true, ajaxObj.data, _options.data);
 
-			if (options.update)
-				ajaxObj.data.cms_update_elements = options.update;
+			if (_options.update)
+				ajaxObj.data.cms_update_elements = _options.update;
 
 			return $.ajax(ajaxObj);
 		}
@@ -121,10 +120,7 @@
 				option(scripts, text);
 			
 			return text;
-		}		
-
-		// Send the request on construct
-		o.sendRequest();
+		}
 
 		// Promote the request object with a promise
 		return _deferred.promise(o);

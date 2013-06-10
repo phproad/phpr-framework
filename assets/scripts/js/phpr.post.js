@@ -86,6 +86,71 @@ Methods: (# functions provided by $.deferred)
 
 		o.requestObj = null;
 
+		//
+		// Services
+		// 
+
+		o.success = function(func) {
+			_deferred.done(func);
+			return this;
+		}
+
+		o.error = function(func) {
+			_deferred.fail(func);
+			return this;
+		}
+
+		o.complete = function(func) {
+			_deferred.always(func);
+			return this;
+		}
+
+		o.afterUpdate = function(func) {
+			_options.afterUpdate = func;
+			return this;
+		}
+
+		o.handler = o.action = function(value) {
+			_handler = handler;
+			return this;
+		}
+
+		o.confirm = function(value) {
+			_options.confirm = value;
+			return this;
+		}
+
+		o.alert = function(value) {
+			_options.alert = value;
+			return this;
+		}
+
+		o.prepare = function(value) {
+			_options.prepare = value;
+			return this;
+		}
+
+		o.update = function(element, partial) {
+			if (partial)
+				_options.update[element] = partial;
+			else
+				_options.update = element;
+			return this;
+		}
+
+		o.data = function(field, value) {
+			if (typeof field == "object")
+				_options.data = field;
+			else if (typeof value != "undefined")
+				_options.data[field] = value;
+			return this;
+		}
+
+		o.queue = function(value) {
+			_options.lock = !value;
+			return this;
+		}
+
 		// 
 		// Static
 		// 
@@ -114,6 +179,7 @@ Methods: (# functions provided by $.deferred)
 				update: {},
 				done: null,
 				fail: null,
+				afterUpdate: null,
 				always: null,
 				prepare: null,
 				selectorMode: true,
@@ -126,7 +192,7 @@ Methods: (# functions provided by $.deferred)
 			};
 		}	
 
-		o.getOptions = function() {
+		o.buildOptions = function() {
 			var options = $.extend(true, o.getDefaultOptions(), _options);
 
 			if (_handler)
@@ -136,7 +202,7 @@ Methods: (# functions provided by $.deferred)
 				? $.extend(true, _serialize_params(_form), _data)
 				: _data;
 
-			return options;
+			return _options = options;
 		}
 
 		//
@@ -165,7 +231,7 @@ Methods: (# functions provided by $.deferred)
 		// 
 
 		o.send = function() {
-			var options = o.getOptions();
+			var options = o.buildOptions();
 
 			if (options.prepare && !context.prepare())
 				return;
@@ -178,8 +244,8 @@ Methods: (# functions provided by $.deferred)
 
 			// @todo Show loading indicator
 
-			// Prepare and execute the request
-			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);
+			// Prepare the request
+			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);			
 
 			// On Complete
 			o.requestObj.always(function(requestObj){
@@ -203,6 +269,9 @@ Methods: (# functions provided by $.deferred)
 				if (requestObj.error)
 					o.handleError(requestObj.error);
 			});
+
+			// Execute the request
+			return o.requestObj.send();
 		}
 
 		//
@@ -210,8 +279,7 @@ Methods: (# functions provided by $.deferred)
 		// 
 
 		o.updatePartials = function() {
-			var options = o.getOptions(),
-				oHtml = o.requestObj.html,
+			var oHtml = o.requestObj.html,
 				pattern = />>[^<>]*<</g,
 				patches = oHtml.match(pattern) || [],
 				updateElements = [];
@@ -228,12 +296,12 @@ Methods: (# functions provided by $.deferred)
 				if (id) {
 					var element;
 				
-					if (options.selectorMode)
+					if (_options.selectorMode)
 						element = $(id);
 					else
 						element = $('#' + id);
 						
-					if (!options.animation(element, html))
+					if (!_options.animation(element, html))
 						element.html(html);
 						
 					updateElements.push(id);
@@ -241,7 +309,7 @@ Methods: (# functions provided by $.deferred)
 			}
 
 			// If update element is a string, set update element to self.text
-			options.update && typeof(options.update) === 'string' && $('#' + options.update).html(self.text);
+			_options.update && typeof(_options.update) === 'string' && $('#' + _options.update).html(self.text);
 
 			$.each(updateElements, function(k, v) {
 				$(window).trigger('onAfterAjaxUpdate', v);

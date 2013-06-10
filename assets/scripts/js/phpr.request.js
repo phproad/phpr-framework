@@ -1,3 +1,14 @@
+/**
+ * PHPR Request
+ * 
+ * This object is used internally by PHPR Post. It should not
+ * be used unless you are pro.
+ * 
+ * Usage:
+ * 
+ * $.phpr.request('http://mysite.com', 'user:on_login', { data: {username:'', password:''}  }).send();
+ */
+
 (function($) {
 
 	PHPR.request = function(url, handler, options) {

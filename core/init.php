@@ -10,21 +10,7 @@ if ($path = realpath(PATH_APP . '/config/config.php'))
 // Core PHPR class
 require_once('phpr.php');
 
-// Add support for get_called_class() in 5.2
-// 
-
-if (!function_exists('get_called_class')) {
-	function get_called_class() 
-	{
-		$t = debug_backtrace(); 
-		$t = $t[0];
-		if (isset($t['object']) && $t['object'] instanceof $t['class']) {
-			return get_class( $t['object'] );
-		}
-		return false;
-	}
-}
-
+//
 // Initialize auto class loading
 // 
 

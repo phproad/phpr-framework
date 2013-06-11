@@ -59,6 +59,16 @@
 			return allMessages;
 		};	
 
+		//
+		// Helpers
+		// 
+
+		o.focusField = function(fieldSelector) {
+			setTimeout(function() { 
+				$(fieldSelector).focus();
+			}, 0);
+		}
+
 		return o;
 	}
 

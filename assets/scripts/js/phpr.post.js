@@ -47,6 +47,7 @@
 		alert: null,
 		confirm: null,
 		evalScripts: true,
+		execScriptsOnFail: true,
 		loadingIndicator: { show: true },
 		animation: function(element, html) { element.html(html); }
 	};
@@ -62,6 +63,7 @@
 			_form = null;
 
 		o.requestObj = null;
+		o.indicatorObj = null;
 
 		//
 		// Services
@@ -165,9 +167,10 @@
 				options.action = _handler;
 
 			// Build post back data
-			options.data = (_form) 
-				? $.extend(true, _serialize_params(_form), _data)
-				: _data;
+			options.data = $.extend(true, options.data, _data);
+
+			if (_form)
+				options.data = $.extend(true, options.data, _serialize_params(_form));
 
 			// Build partials to update
 			options.update = $.extend(true, options.update, _update);
@@ -212,8 +215,10 @@
 				return;
 
 			// Show loading indicator
-			if (PHPR.indicator && options.loadingIndicator.show)
-				PHPR.indicator().showIndicator(options.loadingIndicator);
+			if (PHPR.indicator && options.loadingIndicator.show) {
+				o.indicatorObj = PHPR.indicator();
+				o.indicatorObj.showIndicator(options.loadingIndicator);
+			}
 			
 			// Prepare the request
 			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);
@@ -235,27 +240,30 @@
 
 		o.onComplete = function(requestObj) {
 			// Hide loading indicator
-			if (PHPR.indicator && _options.loadingIndicator.show)
-				PHPR.indicator().hideIndicator();
+			if (PHPR.indicator && _options.loadingIndicator.show && o.indicatorObj)
+				o.indicatorObj.hideIndicator();
 
 			_options.always && _options.always(requestObj);
+
+			$(PHPR).trigger('complete.post', [requestObj]);
 		}
 
 		o.onSuccess = function(requestObj) {
 			o.updatePartials();
 
-			if (_options.evalScripts) 
-				eval(requestObj.javascript);
-
 			_options.done && _options.done(requestObj);
+
+			$(PHPR).trigger('success.post', [requestObj]);
 		}
 
 		o.onFailure = function(requestObj) {
 			if (_options.fail && !_options.fail(requestObj))
 				return;
 
-			if (requestObj.error)
+			if (requestObj.errorMessage)
 				o.popupError(requestObj);
+
+			$(PHPR).trigger('error.post', [requestObj]);
 		}
 
 		//
@@ -263,7 +271,7 @@
 		// 
 
 		o.popupError = function(requestObj) {
-			alert(requestObj.error);
+			alert(requestObj.errorMessage);
 		}
 
 		//
@@ -271,6 +279,29 @@
 		// 
 
 		o.updatePartials = function() {
+			if (/window.location=/.test(o.requestObj.javascript))
+				return;
+
+			if ($.isArray(_options.update) || _options.update == 'multi')
+				o.updatePartialsMulti();
+			else
+				o.updatePartialsSingle();
+		}
+
+		o.updatePartialsSingle = function() {
+			var element = null;
+			if (_options.update instanceof jQuery)
+				element = _options.update;
+			else
+				element = $(_options.update);
+
+			if (element && element.length) {
+				element.html(o.requestObj.html);
+				$(window).trigger('onAfterAjaxUpdate', element);				
+			}
+		}
+		
+		o.updatePartialsMulti = function() {
 			var oHtml = o.requestObj.html,
 				pattern = />>[^<>]*<</g,
 				patches = oHtml.match(pattern) || [],
@@ -296,12 +327,9 @@
 					if (!_options.animation(element, html))
 						element.html(html);
 						
-					updateElements.push(id);
+					updateElements.push(element);
 				}
 			}
-
-			// If update element is a string, set update element to self.text
-			_options.update && typeof(_options.update) === 'string' && $('#' + _options.update).html(self.text);
 
 			$.each(updateElements, function(k, v) {
 				$(window).trigger('onAfterAjaxUpdate', v);

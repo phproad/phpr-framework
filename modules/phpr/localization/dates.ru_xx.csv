@@ -1,0 +1,66 @@
+Container, Source, Destination
+
+"Regional date/time formatting strings and settings"
+
+"Full month names, corresponds the %B specifier"
+phpr.dates, B_month_1, Января
+phpr.dates, B_month_2, Февраля
+phpr.dates, B_month_3, Марта
+phpr.dates, B_month_4, Апреля
+phpr.dates, B_month_5, Мая
+phpr.dates, B_month_6, Июня
+phpr.dates, B_month_7, Июля
+phpr.dates, B_month_8, Августа
+phpr.dates, B_month_9, Сентября
+phpr.dates, B_month_10, Октября
+phpr.dates, B_month_11, Ноября
+phpr.dates, B_month_12, Декабря
+
+"Full month names, corresponds the %n specifier"
+phpr.dates, n_month_1, Январь
+phpr.dates, n_month_2, Февраль
+phpr.dates, n_month_3, Март
+phpr.dates, n_month_4, Апрель
+phpr.dates, n_month_5, Май
+phpr.dates, n_month_6, Июнь
+phpr.dates, n_month_7, Июль
+phpr.dates, n_month_8, Август
+phpr.dates, n_month_9, Сентябрь
+phpr.dates, n_month_10, Октябрь
+phpr.dates, n_month_11, Ноябрь
+phpr.dates, n_month_12, Декабрь
+
+"Abbreviated month names, corresponds the %b specifier"
+phpr.dates, b_month_1, Янв
+phpr.dates, b_month_2, Февр
+phpr.dates, b_month_3, Март
+phpr.dates, b_month_4, Апр
+phpr.dates, b_month_5, Май
+phpr.dates, b_month_6, Июнь
+phpr.dates, b_month_7, Июль
+phpr.dates, b_month_8, Авг
+phpr.dates, b_month_9, Сент
+phpr.dates, b_month_10, Окт
+phpr.dates, b_month_11, Нояб
+phpr.dates, b_month_12, Дек
+
+"Full weekday names, corresponds the %A specifier"
+phpr.dates, A_weekday_1, Понедельник
+phpr.dates, A_weekday_2, Вторник
+phpr.dates, A_weekday_3, Среда
+phpr.dates, A_weekday_4, Четверг
+phpr.dates, A_weekday_5, Пятница
+phpr.dates, A_weekday_6, Суббота
+phpr.dates, A_weekday_7, Воскресенье
+
+"Abbreviated weekday names, corresponds the %a specifier"
+phpr.dates, a_weekday_1, Пн
+phpr.dates, a_weekday_2, Вт
+phpr.dates, a_weekday_3, Ср
+phpr.dates, a_weekday_4, Чт
+phpr.dates, a_weekday_5, Пт
+phpr.dates, a_weekday_6, Сб
+phpr.dates, a_weekday_7, Вс
+
+"Week abbreviation"
+phpr.dates, week_abbr, Нед

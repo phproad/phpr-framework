@@ -1,0 +1,98 @@
+Container, Source, Destination
+
+"Regional date/time formatting strings and settings"
+
+"Full month names, corresponds the %B specifier"
+phpr.dates, B_month_1, Janvier
+phpr.dates, B_month_2, Février
+phpr.dates, B_month_3, Mars
+phpr.dates, B_month_4, Avril
+phpr.dates, B_month_5, Mai
+phpr.dates, B_month_6, Juin
+phpr.dates, B_month_7, Juillet
+phpr.dates, B_month_8, Août
+phpr.dates, B_month_9, Septembre
+phpr.dates, B_month_10, Octobre
+phpr.dates, B_month_11, Novembre
+phpr.dates, B_month_12, Décembre
+
+"Full month names, corresponds the %n specifier"
+phpr.dates, n_month_1, Janvier
+phpr.dates, n_month_2, Février
+phpr.dates, n_month_3, Mars
+phpr.dates, n_month_4, Avril
+phpr.dates, n_month_5, Mai
+phpr.dates, n_month_6, Juin
+phpr.dates, n_month_7, Juillet
+phpr.dates, n_month_8, Août
+phpr.dates, n_month_9, Septembre
+phpr.dates, n_month_10, Octobre
+phpr.dates, n_month_11, Novembre
+phpr.dates, n_month_12, Décembre
+
+"Abbreviated month names, corresponds the %b specifier"
+phpr.dates, b_month_1, Jan
+phpr.dates, b_month_2, Fév
+phpr.dates, b_month_3, Mar
+phpr.dates, b_month_4, Avr
+phpr.dates, b_month_5, Mai
+phpr.dates, b_month_6, Jun
+phpr.dates, b_month_7, Jul
+phpr.dates, b_month_8, Aoû
+phpr.dates, b_month_9, Sep
+phpr.dates, b_month_10, Oct
+phpr.dates, b_month_11, Nov
+phpr.dates, b_month_12, Déc
+
+"Full weekday names, corresponds the %A specifier"
+phpr.dates, A_weekday_1, Lundi
+phpr.dates, A_weekday_2, Mardi
+phpr.dates, A_weekday_3, Mercredi
+phpr.dates, A_weekday_4, Jeudi
+phpr.dates, A_weekday_5, Vendredi
+phpr.dates, A_weekday_6, Samedi
+phpr.dates, A_weekday_7, Dimanche
+
+"Abbreviated weekday names, corresponds the %a specifier"
+phpr.dates, a_weekday_1, Lun
+phpr.dates, a_weekday_2, Mar
+phpr.dates, a_weekday_3, Mer
+phpr.dates, a_weekday_4, Jeu
+phpr.dates, a_weekday_5, Ven
+phpr.dates, a_weekday_6, Sam
+phpr.dates, a_weekday_7, Dim
+
+"Week"
+phpr.dates, day_str, jour
+phpr.dates, week_str, semaine
+phpr.dates, month_str, mois
+phpr.dates, year_str, ans
+
+"Week abbreviation"
+phpr.dates, day_abbr, jour
+phpr.dates, week_abbr, semaine
+phpr.dates, month_abbr, mois
+phpr.dates, year_abbr, ans
+
+"Time"
+phpr.dates, second_str, secondes
+phpr.dates, minute_str, minute
+phpr.dates, hour_str, heure
+
+"Time abbreviation"
+phpr.dates, second_abbr, sec
+phpr.dates, minute_abbr, min
+phpr.dates, hour_abbr, hr
+
+"Interval strings"
+phpr.dates, interval_now, moins d'une minute
+phpr.dates, interval_prefix, il ya
+phpr.dates, interval_suffix, 
+
+"Interval placement"
+
+Possible values:
+    0: the number precedes before interval string (eg: 2 days)
+    1: the number follows after interval string (eg: days 2)
+    
+phpr.dates, interval_place, 0

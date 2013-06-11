@@ -1,0 +1,98 @@
+Container, Source, Destination
+
+"Regional date/time formatting strings and settings"
+
+"Full month names, corresponds the %B specifier"
+phpr.dates, B_month_1, January
+phpr.dates, B_month_2, February
+phpr.dates, B_month_3, March
+phpr.dates, B_month_4, April
+phpr.dates, B_month_5, May
+phpr.dates, B_month_6, June
+phpr.dates, B_month_7, July
+phpr.dates, B_month_8, August
+phpr.dates, B_month_9, September
+phpr.dates, B_month_10, October
+phpr.dates, B_month_11, November
+phpr.dates, B_month_12, December
+
+"Full month names, corresponds the %n specifier"
+phpr.dates, n_month_1, January
+phpr.dates, n_month_2, February
+phpr.dates, n_month_3, March
+phpr.dates, n_month_4, April
+phpr.dates, n_month_5, May
+phpr.dates, n_month_6, June
+phpr.dates, n_month_7, July
+phpr.dates, n_month_8, August
+phpr.dates, n_month_9, September
+phpr.dates, n_month_10, October
+phpr.dates, n_month_11, November
+phpr.dates, n_month_12, December
+
+"Abbreviated month names, corresponds the %b specifier"
+phpr.dates, b_month_1, Jan
+phpr.dates, b_month_2, Feb
+phpr.dates, b_month_3, Mar
+phpr.dates, b_month_4, Apr
+phpr.dates, b_month_5, May
+phpr.dates, b_month_6, Jun
+phpr.dates, b_month_7, Jul
+phpr.dates, b_month_8, Aug
+phpr.dates, b_month_9, Sep
+phpr.dates, b_month_10, Oct
+phpr.dates, b_month_11, Nov
+phpr.dates, b_month_12, Dec
+
+"Full weekday names, corresponds the %A specifier"
+phpr.dates, A_weekday_1, Monday
+phpr.dates, A_weekday_2, Tuesday
+phpr.dates, A_weekday_3, Wednesday
+phpr.dates, A_weekday_4, Thursday
+phpr.dates, A_weekday_5, Friday
+phpr.dates, A_weekday_6, Saturday
+phpr.dates, A_weekday_7, Sunday
+
+"Abbreviated weekday names, corresponds the %a specifier"
+phpr.dates, a_weekday_1, Mon
+phpr.dates, a_weekday_2, Tue
+phpr.dates, a_weekday_3, Wed
+phpr.dates, a_weekday_4, Thu
+phpr.dates, a_weekday_5, Fri
+phpr.dates, a_weekday_6, Sat
+phpr.dates, a_weekday_7, Sun
+
+"Week"
+phpr.dates, day_str, day
+phpr.dates, week_str, week
+phpr.dates, month_str, month
+phpr.dates, year_str, year
+
+"Week abbreviation"
+phpr.dates, day_abbr, day
+phpr.dates, week_abbr, wk
+phpr.dates, month_abbr, mth
+phpr.dates, year_abbr, yr
+
+"Time"
+phpr.dates, second_str, second
+phpr.dates, minute_str, minute
+phpr.dates, hour_str, hour
+
+"Time abbreviation"
+phpr.dates, second_abbr, sec
+phpr.dates, minute_abbr, min
+phpr.dates, hour_abbr, hr
+
+"Interval strings"
+phpr.dates, interval_now, less than a minute
+phpr.dates, interval_prefix, about
+phpr.dates, interval_suffix, 
+
+"Interval placement"
+
+Possible values:
+    0: the number precedes before interval string (eg: 2 days)
+    1: the number follows after interval string (eg: days 2)
+    
+phpr.dates, interval_place, 0

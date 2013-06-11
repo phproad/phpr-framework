@@ -1,0 +1,16 @@
+Container, Source, Destination
+
+"Regional date/time formatting strings and settings"
+
+"Preferred short date representation format, corresponds the %x specifier"
+phpr.dates, short_date_format, %m/%d/%Y
+
+"Preferred full date representation format, corresponds the %F specifier"
+phpr.dates, full_date_format,"%A, %B %d, %Y"
+
+"Preferred time representation format, corresponds the %X specifier"
+phpr.dates, time_format, %I:%M:%S %p
+
+"AM/PM specifier formats, corresponds the %p specifier"
+phpr.dates, ampm_am, AM
+phpr.dates, ampm_pm, PM

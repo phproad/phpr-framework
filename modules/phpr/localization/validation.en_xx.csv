@@ -1,0 +1,18 @@
+Container, Source, Destination
+
+"Form validation error messages"
+
+phpr.validation, required, The %s field is required.
+phpr.validation, numeric, The %s field must contain a number.
+phpr.validation, minlen, The %s field must be at least %s characters in length.
+phpr.validation, maxlen, The %s field can not exceed %s characters in length.
+phpr.validation, length, The %s field must be exactly %s characters in length.
+phpr.validation, alpha, The %s field may only contain alphabetical characters.
+phpr.validation, alphanum, The %s field may only contain alpha-numeric characters.
+phpr.validation, email, The %s field must contain a valid email address.
+phpr.validation, ip, The %s field must contain a valid IP address.
+phpr.validation, matches, The %s field does not match the %s field.
+phpr.validation, regexp, The %s field value is invalid.
+phpr.validation, float, The %s field must contain a number.
+phpr.validation, datetime, The %s field(s) must contain a valid date/time value in format %s.
+phpr.validation, unique, The %s field must contain a unique value.

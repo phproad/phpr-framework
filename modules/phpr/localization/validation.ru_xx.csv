@@ -1,0 +1,18 @@
+Container, Source, Destination
+
+"Form validation error messages"
+
+phpr.validation, required,"Пожалуйста, заполните поле %s."
+phpr.validation, numeric, Поле %s должно содержать число.
+phpr.validation, minlen, Поле %s должно иметь минимальную длину %s символов.
+phpr.validation, maxlen, Значение поля %s не должно быть длиннее %s символов.
+phpr.validation, length, Поле %s должно иметь длину %s символов.
+phpr.validation, alpha, Поле %s может содержать только буквы.
+phpr.validation, alphanum, Поле %s должно содержать только буквы и цифры.
+phpr.validation, email, Поле %s должно содержать правильный email-адрес.
+phpr.validation, ip, Поле %s должно содержать правильный ip-адрес.
+phpr.validation, matches, Значение поля "%s" должно совпадать с полем %s.
+phpr.validation, regexp, Поле %s содержит неверное значение.
+phpr.validation, float, Поле %s должно содержать число.
+phpr.validation, datetime, Поле %s должно содержать дату в формате %s.
+phpr.validation, unique, Поле %s должно содержать уникальное значение.

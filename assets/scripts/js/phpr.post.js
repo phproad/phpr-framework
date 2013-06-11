@@ -173,7 +173,10 @@
 				options.data = $.extend(true, options.data, _serialize_params(_form));
 
 			// Build partials to update
-			options.update = $.extend(true, options.update, _update);
+			if (typeof options.update == 'object' && typeof _update == 'object')
+				options.update = $.extend(true, options.update, _update);
+			else if (typeof _update == 'string')
+				options.update = _update;
 
 			return _options = options;
 		}
@@ -196,7 +199,7 @@
 		}
 
 		o.getFormUrl = function() {
-			return (_form) ? _form.attr('action') : window.location.href;
+			return (_form) ? _form.attr('action') : location.pathname;
 		}
 
 		//
@@ -221,7 +224,7 @@
 			}
 			
 			// Prepare the request
-			o.requestObj = new PHPR.request(o.getFormUrl(), _handler, options);
+			o.requestObj = new PHPR.request(o.getFormUrl(), options.action, options);
 			o.requestObj.postObj = o;
 
 			// On Complete

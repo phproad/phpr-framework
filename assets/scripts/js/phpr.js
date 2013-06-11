@@ -71,6 +71,27 @@ function var_dump(obj, use_alert) {
 	
 };
 
+//
+// Lock Manager
+// 
+
+LockManager = function() {
+
+	this.locks = {};
+	this.set = function(name) {
+		this.locks[name] = true;
+	};
+	this.get = function(name) {
+		return (this.locks[name]);
+	};
+	this.remove = function(name) {
+		this.locks[name] = null;
+	}
+	
+};
+
+lockManager = new LockManager();
+
 
 //
 // Cookies
@@ -117,3 +138,74 @@ jQuery.cookie = function(name, value, options) {
 		return cookieValue;
 	}
 };
+
+//
+// Hot key bindings
+//
+
+(function($) {
+	$.fn.bindkey = function(sBind, oFunction) {
+		if (this.length == 0)
+			return;
+		
+		if (typeof sBind != "string")
+			return;
+
+		var _sBind = sBind.toLowerCase();
+		var _oCallback = oFunction;
+		var _oPressed = {shift: false, ctrl: false, alt: false};
+		var _oWaited = {shift: false, ctrl: false, alt: false, specific: -1};
+		var _oKeys = {'esc':27, 'tab':9, 'space':32, 'return':13, 'enter':13, 'backspace':8, 'scroll':145, 'capslock':20, 'numlock':144, 'pause':19,
+					'break':19, 'insert':45, 'home':36, 'delete':46, 'suppr':46, 'end':35, 'pageup':33, 'pagedown':34, 'left':37, 'up':38, 'right':39, 'down':40,
+					'f1':112, 'f2':113, 'f3':114, 'f4':115, 'f5':116, 'f6':117, 'f7':118, 'f8':119, 'f9':120, 'f10':121, 'f11':122, 'f12':123}
+
+		function init () {
+			aKeys = _sBind.split ('+');
+			iKeysCount = aKeys.length;
+			for (i = 0; i < iKeysCount; i++) {
+				switch (aKeys[i]) {
+					case 'shift':
+						_oWaited.shift = true;
+						break;
+					case 'ctrl':
+						_oWaited.ctrl = true;
+						break;
+					case 'alt':
+						_oWaited.alt = true;
+						break;
+				}
+			}
+			_oWaited.specific = _oKeys[aKeys[aKeys.length-1]];
+
+			if (typeof (_oWaited.specific) == 'undefined')
+				_oWaited.specific = String.charCodeAt (aKeys[aKeys.length-1]);
+		}
+
+		this.keydown (function (oEvent) {
+			_oPressed.shift = oEvent.originalEvent.shiftKey;
+			_oPressed.ctrl = oEvent.originalEvent.ctrlKey;
+			_oPressed.alt = oEvent.originalEvent.altKey;
+
+			if (oEvent.which == _oWaited.specific
+					&& _oPressed.shift == _oWaited.shift
+					&& _oPressed.ctrl == _oWaited.ctrl
+					&& _oPressed.alt == _oWaited.alt) {
+
+				_oCallback (this);
+				_oPressed.shift = false;
+				_oPressed.ctrl = false;
+				_oPressed.alt = false;
+			}
+		});
+
+		this.keyup (function (oEvent) {
+			_oPressed.shift = oEvent.originalEvent.shiftKey;
+			_oPressed.ctrl = oEvent.originalEvent.ctrlKey;
+			_oPressed.alt = oEvent.originalEvent.altKey;
+		});
+
+		init ();
+
+		return $(this);
+	}
+})(jQuery);

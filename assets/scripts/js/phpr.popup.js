@@ -143,18 +143,15 @@ function realignPopups() {
 					cancelPopup();
 				});				
 			} else {
-				new Request.Phpr({
-					url: location.pathname, 
-					handler: this.formLoadHandler, 
-					extraFields: this.options.ajaxFields, 
-					update: this.tmp.find('>*:first').get(0), 
-					loadIndicator: {show: false}, 
-					onSuccess: function() { 
+				new PHPR.post(this.formLoadHandler, {
+					data: $.extend(true, this.options.ajaxFields, { phpr_popup_form_request: 1 }),
+					update: this.tmp.find('>*:first'), 
+					loadIndicator: { show: false }, 
+					done: function(requestObj) {
 						self.formLoaded();
 					}
-				}).post({phpr_popup_form_request: 1 });
+				}).send();
 			}
-	
 		},
 		
 		_get_popup_inner: function() {

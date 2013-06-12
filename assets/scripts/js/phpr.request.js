@@ -141,18 +141,18 @@
 			if (phpr_css_list.length == 0 && phpr_js_list.length == 0)
 				return false;
 			else {
-				_load_assets(phpr_js_list, phpr_css_list, function(){ _deferred.resolve(o); });	
+				loadAssets(phpr_js_list, phpr_css_list, function(){ _deferred.resolve(o); });	
 				return true;
 			}
 		}
 
-		var _load_assets = function(javascript, css, callback) {
+		o.loadAssets = function(javascript, css, callback) {
 			
-			var js_list = javascript.filter(function(item){
+			var js_list = $.grep(javascript, function(item){
 				return $('head script[src="'+item+'"]').length == 0;
 			});
 
-			var css_list = css.filter(function(item){
+			var css_list = $.grep(css, function(item){
 				return $('head link[href="'+item+'"]').length == 0;
 			});
 
@@ -164,14 +164,14 @@
 				return;
 			}
 			
-			_load_javascript_in_sequence(js_list, function(){
+			o.loadJavascriptInSequence(js_list, function(){
 				js_loaded = true;
 				if (css_counter == css_list.length)
 					callback();
 			});
 
-			css_list.each(function(source){
-				_load_css_file(source, function(){
+			$.each(css_list, function(index, source){
+				o.loadCssFile(source, function(){
 						css_counter++;
 						if (js_loaded && css_counter == css_list.length)
 							callback();
@@ -180,7 +180,7 @@
 			});
 		}
 
-		var _load_css_file = function(source, callback) {
+		o.loadCssFile = function(source, callback) {
 			var cssFile = document.createElement('link');
 			cssFile.setAttribute('rel', 'stylesheet');
 			cssFile.setAttribute('type', 'text/css');
@@ -194,7 +194,7 @@
 			return cssFile;
 		}
 
-		var _load_javascript_in_sequence = function(sources, callback) {
+		o.loadJavascriptInSequence = function(sources, callback) {
 			var source = sources.shift();
 
 			var jsFile = document.createElement('script')
@@ -207,7 +207,7 @@
 
 			$.getScript(source, function() {
 				if (sources.length > 0)
-					_load_javascript_in_sequence(sources, callback);
+					o.loadJavascriptInSequence(sources, callback);
 				else
 					callback();
 			});

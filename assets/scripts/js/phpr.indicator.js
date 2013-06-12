@@ -1,26 +1,29 @@
 (function($) {
 
 	PHPR.indicatorDefaults = {
+		element: null,
+		indicatorElement: null,
 		show: true,
-		hideOnSuccess: true,
-		overlayClass: 'ajax_loading_indicator',
+		src: null,
 		posX: 'center',
 		posY: 'center',
-		src: null,
-		injectInElement: false,
-		noImage: false,
 		zIndex: 9999,
-		element: null,
 		absolutePosition: false,
+		injectInElement: false,
 		injectPosition: 'bottom',
+		overlayClass: 'ajax-loading-indicator',
 		overlayOpacity: 1,
-		hideElement: false
+		noImage: true,
+		hideOnSuccess: true,
+		loadingText: '<span>Loading...</span>'
 	};
 
-	PHPR.indicator = function() {
-		var o = {};
+	PHPR.indicator = function(options) {
+		var o = {},
+			_options = options || {};
 
 		o.indicatorElement = null;
+		o.imageElement = null;
 
 		o.setDefaultOptions = function(defaultOptions) {
 			PHPR.indicatorDefaults = $.extend(true, PHPR.indicatorDefaults, defaultOptions);
@@ -31,32 +34,101 @@
 		 * @type Function
 		 * @return none
 		 */
-		o.showIndicator = function(options) {
-			options = $.extend(true, PHPR.indicatorDefaults, options);
+		o.show = function(options) {
+			options = $.extend(true, {}, PHPR.indicatorDefaults, _options, options);
 
 			if (!options.show)
-				return;
+				return this;
+
+			if (!options.src && !options.noImage)
+				throw "PHPR.indicator: options.src is null";
 			
-			var container = options.injectInElement && options.form ? options.form : $('body'),
-				position = options.absolutePosition ? 'absolute' : 'fixed',
-				visibility = options.hideElement ? 'hidden' : 'visible';
-			
+			if (typeof options.element == 'string')
+				options.element = $(options.element);
+
+			var element = options.element.length > 0 ? options.element : $('body'),
+				container = options.injectInElement ? element : $('body'),
+				position = options.absolutePosition ? 'absolute' : 'fixed';
+
+			if (options.indicatorElement) {
+				o.indicatorElement = $(options.indicatorElement);
+				if (!o.indicatorElement.length)
+					o.indicatorElement = null;
+			}
+
 			if (o.indicatorElement === null) {
-				var element = options.element ? $('#' + options.element) : $('<p />');
-				
-				o.indicatorElement = element
-					.css({
-						visibility: visibility,
+
+				// Set up overlay
+				var overlay = $('<div />');
+				o.indicatorElement = overlay.css({
 						position: position,
 						opacity: options.overlayOpacity,
 						zIndex: options.zIndex
 					})
-					.addClass(options.overlayClass)
-					.html("<span>Loading...</span>")
-					.prependTo(container);
+					.addClass(options.overlayClass);
+
+				// Loading text
+				if (options.noImage) {
+					o.indicatorElement.html(options.loadingText);
+				}
+
+				// Set up image
+				if (!options.noImage) {
+					o.imageElement = $('<img />').attr('src', options.src).css({
+							position: 'absolute',
+							'z-index': (options.zIndex+1)
+						})
+						.wrap('<span />')
+						.hide();
+					o.indicatorElement.append(o.imageElement);
+
+					// Position the image
+					o.imageElement.on('load', function() { 
+						var img = $(this);
+						
+						switch (options.posX) {
+							case 'center': img.css({ left: '50%', 'margin-left': -(img.outerWidth() / 2) + "px" }); break;
+							case 'left': img.css({ left: 0 }); break;
+							case 'right': img.css({ right: 0 }); break;
+						}
+
+						switch (options.posY) {
+							case 'center': img.css({ 'top': '50%', 'margin-top': -(img.outerHeight() / 2) + "px" }); break;
+							case 'top': img.css({ top: 0 }); break;
+							case 'bottom': img.css({ bottom: 0 }); break;
+						}
+
+						img.show();
+					});
+				}
+
+				// Set indicator size
+				var overlayTop = element.offset().top,
+					overlayLeft = element.offset().left;
+
+				if (options.injectInElement) {
+  					if (element.is('body') || element.css('position') == 'relative') {
+						overlayTop = 0;
+						overlayLeft	= 0;
+  					} else {
+						var offsetParent = element.offsetParent();
+						overlayTop -= offsetParent.offset().top;
+						overlayLeft -= offsetParent.offset().left;
+  					}
+				}
+
+				o.indicatorElement
+					.css({
+						top: overlayTop,
+						left: overlayLeft,
+						width: element.outerWidth() + 'px',
+						height: element.outerHeight() + 'px'
+					});
+
+				container.prepend(overlay);
 			}
 			
-			o.indicatorElement.show();
+			return this;
 		}
 		
 		/**
@@ -64,11 +136,12 @@
 		 * @type Function
 		 * @return none
 		 */
-		o.hideIndicator = function() {
+		o.hide = function() {
 			if (!o.indicatorElement)
-				return;
+				return this;
 
 			o.indicatorElement.hide();
+			return this;
 		}
 
 		// Extend the indicator object with DOM

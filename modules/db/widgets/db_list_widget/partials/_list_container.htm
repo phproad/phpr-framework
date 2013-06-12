@@ -37,31 +37,46 @@
 					<script type="text/javascript">
 						<?
 							$form_id = $widget->get_form_id();
-							$list_form = $widget->no_form ? '$(\''.$search_control_id.'\').getForm()' : '$(\''.$form_id.'\')';
+							$list_form = $this->list_no_form ? "jQuery('#".$search_control_id."').closest('form')" : "jQuery('#".$form_id."')";							
 						?>
-						var searchHandler = new SearchControlHandler('<?= h($search_control_id) ?>', {'default_text': '<?= $widget->search_prompt ?>'});
+						var searchHandler = jQuery('#<?=h($search_control_id) ?>').searchControl({ defaultText: '<?=$widget->search_prompt ?>' });
 
-						searchHandler.addEvent('send', function(){
-							return <?= $list_form ?>.sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
-								update: '<?= $widget->get_id() ?>', 
-								extraFields: {
+						searchHandler.on('send', function(){
+							return <?= $list_form ?>.phpr().post('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
+								update: '#<?= $widget->get_id() ?>', 
+								data: {
 									<?=$widget->get_event_handler_data('on_list_search')?>, 
-									'search_string': $('<?= $search_field_id ?>').get('value')
+									search_string: $('<?= $search_field_id ?>').get('value')
 								}, 
-								onFailure: popupAjaxError, 
-								onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
-								loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
-							});
+								error: popupAjaxError, 
+								success: function() { 
+									jQuery('#<?= $widget->get_id() ?>').trigger('listUpdated'); 
+								}, 
+								loadIndicator: {
+									injectInElement: true, 
+									element: '#<?= $widget->get_id() ?>', 
+									src: '<?= $widget->load_indicator ?>', 
+									hideOnSuccess: 1
+								}
+							}).send();
 						});
-						searchHandler.addEvent('cancel', function(){
-							return <?= $list_form ?>.sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
-								update: '<?= $widget->get_id() ?>', 
-								extraFields: {
+
+						searchHandler.on('cancel', function(){
+							return <?=$list_form ?>.phpr().post('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
+								update: '#<?= $widget->get_id() ?>', 
+								data: {
 									<?=$widget->get_event_handler_data('on_list_search_cancel')?>
 								},
-								onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}, 
-								loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
-							});
+								success: function() { 
+									jQuery('#<?= $widget->get_id() ?>').trigger('listUpdated'); 
+								}, 
+								loadIndicator: {
+									injectInElement: true, 
+									element: '<?= $widget->get_id() ?>', 
+									src: '<?= $widget->load_indicator ?>', 
+									hideOnSuccess: 1
+								}
+							}).send();
 						});
 						
 					</script>

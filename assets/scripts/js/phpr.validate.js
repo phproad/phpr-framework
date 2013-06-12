@@ -51,7 +51,7 @@
 		if (element.length == 0)
 			throw 'PHPR Validate: Unable to find form element';
 
-		_options = $.extend(true, _jv_defaults, options);
+		_options = $.extend(true, {}, _jv_defaults, options);
 		_jv_object = _form.validate(_options);
 
 		o.setDefaultOptions = function(defaultOptions) {

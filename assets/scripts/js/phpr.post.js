@@ -179,17 +179,21 @@
 			if (_handler)
 				context.action = _handler;
 
-			// Build post back data
-			context.data = $.extend(true, context.data, _data);
-
-			if (_form)
-				context.data = $.extend(true, context.data, _serialize_params(_form));
-
 			// Build partials to update
 			if (typeof context.update == 'object' && typeof _update == 'object')
 				context.update = $.extend(true, context.update, _update);
 			else if (typeof _update == 'string')
 				context.update = _update;
+
+			return _context = context;
+		}
+
+		o.buildPostData = function(context) {
+			// Build post back data
+			context.data = $.extend(true, context.data, _data);
+
+			if (_form)
+				context.data = $.extend(true, context.data, _serialize_params(_form));
 
 			return _context = context;
 		}
@@ -224,6 +228,8 @@
 
 			if (context.beforeSend)
 				_execute_event('beforeSend');
+
+			context = o.buildPostData(context);
 			
 			if (context.alert)
 				alert(context.alert);

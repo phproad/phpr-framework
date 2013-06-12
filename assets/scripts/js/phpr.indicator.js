@@ -107,14 +107,14 @@
 					overlayLeft = element.offset().left;
 
 				if (options.injectInElement) {
-  					if (element.is('body') || element.css('position') == 'relative') {
+					if (element.is('body') || element.css('position') == 'relative') {
 						overlayTop = 0;
 						overlayLeft	= 0;
-  					} else {
+					} else {
 						var offsetParent = element.offsetParent();
 						overlayTop -= offsetParent.offset().top;
 						overlayLeft -= offsetParent.offset().left;
-  					}
+					}
 				}
 
 				o.indicatorElement

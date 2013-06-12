@@ -37,30 +37,35 @@
 		action: 'core:on_null',
 		data: {},
 		update: {},
-		done: null, // On Success
-		fail: null, // On Failure
-		always: null, // On Complete
+		success: null, // On Success
+		error: null, // On Failure
+		complete: null, // On Complete
 		afterUpdate: null, // On After Update
-		prepare: null,
+		beforeSend: null, // On Before Send
 		selectorMode: true,
 		lock: true,
 		alert: null,
 		confirm: null,
 		evalScripts: true,
 		execScriptsOnFail: true,
-		loadingIndicator: { show: true },
+		loadIndicator: { show: true },
+		customIndicator: null,
 		animation: function(element, html) { element.html(html); }
 	};
 
-	PHPR.post = function(handler, options) {
+	PHPR.post = function(handler, context) {
 
 		var o = {},
 			_deferred = $.Deferred(),
 			_handler = handler,
-			_options = options || {},
+			_context = context || {},
 			_data = {},
 			_update = {},
-			_form = null;
+			_form = null,
+			_events = { 
+				beforeSend: [],
+				afterUpdate: []
+			};
 
 		o.requestObj = null;
 		o.indicatorObj = null;
@@ -89,28 +94,36 @@
 			return this;
 		}
 
-		o.afterUpdate = function(func) {
-			_options.afterUpdate = func;
-			return this;
-		}
-
 		o.handler = o.action = function(value) {
 			_handler = handler;
 			return this;
 		}
 
 		o.confirm = function(value) {
-			_options.confirm = value;
+			_context.confirm = value;
 			return this;
 		}
 
 		o.alert = function(value) {
-			_options.alert = value;
+			_context.alert = value;
 			return this;
 		}
 
-		o.prepare = function(value) {
-			_options.prepare = value;
+		o.beforeSend = function(value) {
+			if ($.isArray(_events.beforeSend))
+				_events.beforeSend.push(value);
+			else
+				_events.beforeSend = value;
+
+			return this;
+		}
+
+		o.afterUpdate = function(func) {
+			if ($.isArray(_events.afterUpdate))
+				_events.afterUpdate.push(value);
+			else
+				_events.afterUpdate = value;
+
 			return this;
 		}
 
@@ -131,15 +144,15 @@
 		}
 
 		o.queue = function(value) {
-			_options.lock = !value;
+			_context.lock = !value;
 			return this;
 		}
 
-		o.loadingIndicator = function(data) {
+		o.loadIndicator = function(data) {
 			if (typeof data == "boolean")
-				_options.loadingIndicator = { show: data };
+				_context.loadIndicator = { show: data };
 			else
-				_options.loadingIndicator = $.extend(true, _options.loadingIndicator, data);
+				_context.loadIndicator = $.extend(true, _context.loadIndicator, data);
 			return this;
 		}
 
@@ -152,33 +165,33 @@
 		}
 
 		o.setOption = function(option, value) {
-			_options[option] = value;
+			_context[option] = value;
 			return this;
 		}
 
 		o.getOption = function(option) {
-			return _options[option];
+			return _context[option];
 		}
 
-		o.buildOptions = function(options) {
-			options = $.extend(true, PHPR.postDefaults, _options, options);
+		o.buildOptions = function(context) {
+			context = $.extend(true, {}, PHPR.postDefaults, _context, context);
 			
 			if (_handler)
-				options.action = _handler;
+				context.action = _handler;
 
 			// Build post back data
-			options.data = $.extend(true, options.data, _data);
+			context.data = $.extend(true, context.data, _data);
 
 			if (_form)
-				options.data = $.extend(true, options.data, _serialize_params(_form));
+				context.data = $.extend(true, context.data, _serialize_params(_form));
 
 			// Build partials to update
-			if (typeof options.update == 'object' && typeof _update == 'object')
-				options.update = $.extend(true, options.update, _update);
+			if (typeof context.update == 'object' && typeof _update == 'object')
+				context.update = $.extend(true, context.update, _update);
 			else if (typeof _update == 'string')
-				options.update = _update;
+				context.update = _update;
 
-			return _options = options;
+			return _context = context;
 		}
 
 		//
@@ -189,7 +202,7 @@
 			form = (!form) ? jQuery('<form></form>') : form;
 			form = (form instanceof jQuery) ? form : jQuery(form);
 			form = (form.is('form')) ? form : form.closest('form');
-			form = (form.attr('id')) ? jQuery('form#'+form.attr('id')) : form.attr('id', 'form_element');
+			form = (form.attr('id')) ? form : form.attr('id', 'form-element');
 			_form = form;
 			return this;
 		}
@@ -206,25 +219,35 @@
 		// Send request
 		// 
 
-		o.send = function(options) {
-			options = o.buildOptions(options);
+		o.send = function(context) {
+			context = o.buildOptions(context);
 
-			options.prepare && options.prepare();
-
-			if (options.alert)
-				alert(options.alert);
+			if (context.beforeSend)
+				_execute_event('beforeSend');
 			
-			if (options.confirm && !confirm(options.confirm))
+			if (context.alert)
+				alert(context.alert);
+			
+			if (context.confirm && !confirm(context.confirm))
 				return;
 
 			// Show loading indicator
-			if (PHPR.indicator && options.loadingIndicator.show) {
-				o.indicatorObj = PHPR.indicator();
-				o.indicatorObj.showIndicator(options.loadingIndicator);
+			if (context.loadIndicator.show) {
+				if (_form)
+					context.loadIndicator.element = _form;
+
+				o.indicatorObj = (context.customIndicator) 
+					? context.customIndicator(context.loadIndicator) 
+					: PHPR.indicator(context.loadIndicator);
+
+				o.indicatorObj.show();
 			}
 			
+			// Execute javascript after partials have loaded
+			var tmpOptions = $.extend(true, {}, context, { evalScripts: false });
+
 			// Prepare the request
-			o.requestObj = new PHPR.request(o.getFormUrl(), options.action, options);
+			o.requestObj = new PHPR.request(o.getFormUrl(), context.action, tmpOptions);
 			o.requestObj.postObj = o;
 
 			// On Complete
@@ -243,10 +266,11 @@
 
 		o.onComplete = function(requestObj) {
 			// Hide loading indicator
-			if (PHPR.indicator && _options.loadingIndicator.show && o.indicatorObj)
-				o.indicatorObj.hideIndicator();
+			if (_context.loadIndicator.show && o.indicatorObj && (_context.customIndicator || _context.loadIndicator.hideOnSuccess)) {
+				o.indicatorObj.hide();
+			} 
 
-			_options.always && _options.always(requestObj);
+			_context.complete && _context.complete(requestObj);
 
 			$(PHPR).trigger('complete.post', [requestObj]);
 		}
@@ -254,13 +278,16 @@
 		o.onSuccess = function(requestObj) {
 			o.updatePartials();
 
-			_options.done && _options.done(requestObj);
+			_context.success && _context.success(requestObj);
+
+			if (_context.evalScripts)
+				$.globalEval(requestObj.javascript);
 
 			$(PHPR).trigger('success.post', [requestObj]);
 		}
 
 		o.onFailure = function(requestObj) {
-			if (_options.fail && !_options.fail(requestObj))
+			if (_context.error && !_context.error(requestObj))
 				return;
 
 			if (requestObj.errorMessage)
@@ -285,22 +312,25 @@
 			if (/window.location=/.test(o.requestObj.javascript))
 				return;
 
-			if ($.isArray(_options.update) || _options.update == 'multi')
+			if ($.isArray(_context.update) || _context.update == 'multi')
 				o.updatePartialsMulti();
 			else
 				o.updatePartialsSingle();
+
+			if (_context.afterUpdate)
+				_execute_event('afterUpdate');
 		}
 
 		o.updatePartialsSingle = function() {
 			var element = null;
-			if (_options.update instanceof jQuery)
-				element = _options.update;
+			if (_context.update instanceof jQuery)
+				element = _context.update;
 			else
-				element = $(_options.update);
+				element = $(_context.update);
 
 			if (element && element.length) {
 				element.html(o.requestObj.html);
-				$(window).trigger('onAfterAjaxUpdate', element);				
+				$(window).trigger('onAfterAjaxUpdate', element);
 			}
 		}
 		
@@ -322,12 +352,12 @@
 				if (id) {
 					var element;
 				
-					if (_options.selectorMode)
+					if (_context.selectorMode)
 						element = $(id);
 					else
 						element = $('#' + id);
 						
-					if (!_options.animation(element, html))
+					if (!_context.animation(element, html))
 						element.html(html);
 						
 					updateElements.push(element);
@@ -337,13 +367,34 @@
 			$.each(updateElements, function(k, v) {
 				$(window).trigger('onAfterAjaxUpdate', v);
 			});
-
-			_options.afterUpdate && _options.afterUpdate();
 		}
 
 		//
 		// Internals
 		// 
+
+		var _execute_event = function(eventName, params) {
+			var eventObj;
+
+			// Fire chained in events
+			eventObj = _events[eventName];
+
+			if ($.isArray(eventObj)) {
+				$.each(eventObj, function(index, func){
+					if (typeof func == 'function')
+						func();
+				});
+			} 
+			else if (typeof eventObj == 'function') {
+				eventObj();
+			}
+
+			// Fire contextual event
+			eventObj = _context[eventName];
+			if (eventObj && typeof eventObj == 'function') {
+				eventObj();
+			}
+		}
 
 		var _serialize_params = function(element) {
 			var params = {};

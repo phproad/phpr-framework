@@ -20,12 +20,12 @@
 		execScriptsOnFail: true
 	}
 
-	PHPR.request = function(url, handler, options) {
+	PHPR.request = function(url, handler, context) {
 		var o = {},
 			_deferred = $.Deferred(),
 			_url = url,
 			_handler = handler,
-			_options = options,
+			_context = context,
 			_locked = false;
 		
 		o.postObj = null;
@@ -41,15 +41,15 @@
 		}
 
 		o.buildOptions = function() {
-			var options = $.extend(true, PHPR.requestDefaults, _options);
-			return _options = options;
+			var context = $.extend(true, {}, PHPR.requestDefaults, _context);
+			return _context = context;
 		}
 
 		o.send = function() {
 			if (_locked)
 				return;
 
-			var options = o.buildOptions(),
+			var context = o.buildOptions(),
 				ajax = _get_ajax_object();
 
 			// On Complete
@@ -75,7 +75,7 @@
 				o.onFailure(status, message);
 			});
 
-			if (options.lock)
+			if (context.lock)
 				_locked = true;
 
 			return false;
@@ -86,9 +86,9 @@
 		}
 
 		o.onSuccess = function() {
-			if (_options.evalScripts) 
-				eval(o.javascript);
-			
+			if (_context.evalScripts) 
+				$.globalEval(o.javascript);
+
 			$(PHPR).trigger('success.request', [o]);
 
 			o.status = 'success';
@@ -98,8 +98,8 @@
 		}
 
 		o.onFailure = function(status, message) {
-			if (_options.execScriptsOnFail)
-				eval(o.javascript);
+			if (_context.execScriptsOnFail)
+				$.globalEval(o.javascript);
 
 			o.errorMessage = message;
 			o.status = status;
@@ -219,7 +219,7 @@
 
 		var _get_ajax_object = function() {
 			
-			var _head_handler = (_options.cmsMode) ? 'on_handle_request' : _handler;
+			var _head_handler = (_context.cmsMode) ? 'on_handle_request' : _handler;
 
 			var ajaxObj = {
 				url: _url,
@@ -233,14 +233,14 @@
 				data: {}
 			};
 
-			if (_options.cmsMode) {
+			if (_context.cmsMode) {
 				ajaxObj.data.cms_handler_name = _handler;
 			}
 
-			ajaxObj.data = $.extend(true, ajaxObj.data, _options.data);
+			ajaxObj.data = $.extend(true, ajaxObj.data, _context.data);
 
-			if (_options.update && $.isArray(_options.update))
-				ajaxObj.data.cms_update_elements = _options.update;
+			if (_context.update && $.isArray(_context.update))
+				ajaxObj.data.cms_update_elements = _context.update;
 
 			return $.ajax(ajaxObj);
 		}
@@ -257,7 +257,7 @@
 			});
 
 			if (option === true)
-				eval(scripts);
+				$.globalEval(scripts);
 			else if (typeof(option) == 'function')
 				option(scripts, text);
 			

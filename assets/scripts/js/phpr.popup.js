@@ -147,7 +147,7 @@ function realignPopups() {
 					data: $.extend(true, this.options.ajaxFields, { phpr_popup_form_request: 1 }),
 					update: this.tmp.find('>*:first'), 
 					loadIndicator: { show: false }, 
-					done: function(requestObj) {
+					success: function(requestObj) {
 						self.formLoaded();
 					}
 				}).send();

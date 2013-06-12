@@ -1,0 +1,118 @@
+<div class="form">
+
+	<!-- Passable fields -->
+	<input name="edit_session_key" id="<?= $this->form_get_element_id('form_session_key', get_class($form_model)) ?>" type="hidden" value="<?= $form_session_key ?>" />
+	<input type="hidden" name="form_context" value="<?= $this->form_get_context() ?>" />
+	<input type="hidden" name="form_unique_prefix" class="form_unique_prefix" value="<?= $this->form_get_unique_prefix() ?>" />
+
+	<? if (!$this->form_no_flash): ?>
+		<div class="form-flash" <? if ($this->form_flash_id): ?>id="<?= $this->form_flash_id ?>"<? endif ?>><?=flash()?></div>
+	<? endif ?>
+
+	<? if ($form_has_tabs && !$this->form_report_layout_mode): ?>
+		<div class="<?= $form_tabs_type ?>">
+			<div class="scroll-tabs tabbable" id="<?= $scroller_id = str_replace('.', '-', uniqid(get_class($form_model).'tab-scroller', true)) ?>">
+
+				<ul class="nav scroll-left scroll-disabled hidden">
+					<li><a href="javascript:;"><i class="icon-caret-left"></i></a></li>
+				</ul>
+
+				<div class="scroll-area">
+					<div class="scroll-content">
+						<ul id="<?= $this->form_get_element_id('form_tabs', get_class($form_model)) ?>" class="nav <?='nav-'.$form_tabs_type?>">
+							<? 
+								$index = 0;
+							?>
+							<? foreach ($form_elements as $tab_caption => $elements): ?>
+									<li <?=array_key_exists($tab_caption, $form_model->form_tab_ids) ? 'id="'.$form_model->form_tab_ids[$tab_caption].'"' : null ?> 
+										class="<?= $index == 0 ? 'active' : null ?> <?=(array_key_exists($tab_caption, $form_model->form_tab_visibility) && !$form_model->form_tab_visibility[$tab_caption]) ? 'hidden' : null ?>">
+										<a href="#<?='tab_'.($index+1) ?>" onclick="return false">
+											<?=h($tab_caption) ?>
+										</a>
+									</li>
+								<? 
+									$index++;
+								?>
+							<? endforeach ?>
+						</ul>
+					</div>
+				</div>
+
+				<ul class="nav scroll-right hidden">
+					<li><a href="javascript:;"><i class="icon-caret-right"></i></a></li>
+				</ul>
+
+			</div>
+		
+			<div id="<?= $this->form_get_element_id('form_pages', get_class($form_model)) ?>" class="tab-content <?='nav-'.$form_tabs_type.'-content' ?>">
+	<? endif ?>
+		<? 
+			$page_class = $this->form_preview_mode ? 'form-page-preview' : 'form-page';
+		?>
+		<? if ($this->form_report_layout_mode): ?>
+			<table class="form-report-layout">
+				<tr>
+		<? endif; ?>
+		<? 
+			$index = 0;
+			$tab_num = count($form_elements);
+			$width = $tab_num ? round(100/$tab_num) : 100;
+		?>
+		<? foreach ($form_elements as $form_tab_caption=>$elements): ?>
+			<? 
+				$css_class = array_key_exists($form_tab_caption, $form_model->form_tab_css_classes) ? $form_model->form_tab_css_classes[$form_tab_caption] : null;
+			?>
+				<? if ($this->form_report_layout_mode): ?>
+					<td class="form-report-column <?= $index == 0 ? 'first' : null ?> <?= $index == ($tab_num-1) ? 'last' : null ?>" style="width: <?= $width.'%' ?>">
+						<div class="form-report-column-content">
+				<? else: ?>
+					<? if ($form_has_tabs): ?>
+						<div class="tab-pane <?= $css_class ?> <?= $page_class ?> <?= $index != 0 || ($this->form_preview_mode && $index > 0 && !$this->form_report_layout_mode) ? 'hidden' : 'active' ?>" id="<?='tab_'.($index+1) ?>">
+					<? else: ?>
+						<div class="<?= $page_class ?>">
+					<? endif ?>
+				<? endif ?>
+					
+					<? if ($this->form_report_layout_mode): ?>
+						<h3 class="form-report-layout-header"><?=h($form_tab_caption) ?></h3>
+					<? endif ?>
+					
+					<? $this->form_render_partial('form_tab', array('form_tab_caption'=>$form_tab_caption, 'form_tab_elements'=>$elements, 'tab_index'=>$index)) ?>
+					<div class="clear"></div>
+				<? if ($this->form_report_layout_mode): ?>
+						</div>
+					</td>
+				<? else: ?>
+					</div>
+				<? endif ?>
+		<? 
+			$index++;
+		?>
+		<? endforeach ?>
+			
+		<? if ($this->form_report_layout_mode): ?>
+				</tr>
+			</table>	
+		<? endif ?>
+		
+	<? if ($form_has_tabs && !$this->form_report_layout_mode): ?>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			<? if ($form_tabs_type == 'tabs'): ?>
+				<?
+					$track_tab = $this->view_data_element('trackTab', true);
+					$track_tab = $track_tab ? 'true' : 'false';
+				?>
+				jQuery(document).ready(function($) { 
+					$('#<?= $this->form_get_element_id('form_tabs', get_class($form_model)) ?>').tabmanager({ 
+						pages: '#<?= $this->form_get_element_id('form_pages', get_class($form_model)) ?>', 
+						trackTab: <?= $track_tab ?>
+					});
+				});
+				
+			<? endif ?>
+		</script>
+	<? endif ?>
+</div>

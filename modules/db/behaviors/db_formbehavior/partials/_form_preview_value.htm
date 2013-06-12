@@ -1,0 +1,28 @@
+<div class="preview-field-value <?= $type ?> <?= ($form_field->preview_help) ? 'preview-field-help' : '' ?>">
+
+	<? if ($form_field->preview_link): ?>
+		<!-- Field with link -->
+		<div class="input-append">
+			<span class="uneditable-input"><?=strlen($value) ? $value : "&nbsp;" ?></span>
+			<a href="<?= $form_field->preview_link ?>" target="_blank" class="btn">
+				<i class="icon-external-link"></i>
+			</a>
+		</div>
+	<? else: ?>
+		<!-- Field -->
+		<span class="uneditable-input"><?=strlen($value) ? $value : "&nbsp;" ?></span>
+	<? endif ?>
+
+	<!-- Description -->
+	<? if (isset($description) && strlen($description)): ?>
+		<span class="help-block"><?= $description ?></span>
+	<? endif ?>
+	
+	<!-- Preview help block -->
+	<? if ($form_field->preview_help): ?>
+			<a href="javascript:;" class="has-tooltip preview-help" title="<?=h($form_field->preview_help) ?>">
+				<i class="icon-question-sign"></i> Help
+			</a>
+	<? endif ?>
+
+</div>

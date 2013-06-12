@@ -1,0 +1,17 @@
+<?
+	$form_file_list =  $form_model->{$form_field->db_name};
+	$base_url = $form_field->file_download_base_url ? $form_field->file_download_base_url : '/admin/files/get/';
+?>
+
+<? if ($form_file_list->count): ?>
+	<ul class="file-list">
+		<? foreach ($form_file_list as $file): ?>
+			<li>
+				<a href="<?=$base_url.$file->id.'/'.urlencode($file->name) ?>" target="_blank"><?=h($file->name) ?></a> 
+				(<?=File::size_from_bytes($file->size) ?>)
+			</li>
+		<? endforeach ?>
+	</ul>
+<? else: ?>
+	<p class="last">There are no files uploaded</p>
+<? endif ?>

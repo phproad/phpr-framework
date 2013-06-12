@@ -1,0 +1,6 @@
+<?
+	$column_definition = $form_field->get_col_definition(); 
+	$preview_value = h($form_model->display_field($form_field->db_name));
+	$preview_value = $form_field->nl2br ? nl2br($preview_value) : $preview_value;
+?>
+<?= $this->form_render_partial('form_preview_value', array('value'=>$preview_value, 'type'=>$column_definition->type)) ?>

@@ -1,0 +1,11 @@
+<?
+	$column_definition = $form_field->get_col_definition(); 
+	$field_value = h($form_model->display_field($form_field->db_name));
+	if ($form_field->nl2br)
+		$field_value = nl2br($field_value);
+		
+	if ($column_definition->currency)
+		$field_value = Phpr::$locale->get_currency($field_value);
+?>
+
+<?= $this->form_render_partial('form_preview_value', array('value'=>$field_value, 'type'=>$column_definition->type, 'form_field'=>$form_field)) ?>

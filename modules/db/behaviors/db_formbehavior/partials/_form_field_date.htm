@@ -1,0 +1,43 @@
+<?php
+	$input_id =  $this->form_get_element_id($form_model_class.'_'.$form_field->db_name);
+	$date_format = $form_field->get_col_definition()->get_date_format();
+	
+	if ($date_format != '%x')
+		$calendar_format = $date_format;
+	else 
+		$calendar_format = '';
+
+	if ($form_field->get_placeholder() !== null)
+		$placeholder = $form_field->get_placeholder();
+	else
+	{
+		$now = new Phpr_DateTime();
+		$placeholder = Phpr_DateTime_Format::format_datetime($now, $date_format);
+	}    
+?>
+
+<div class="datePickerHolder">
+	<input <? if ($form_field->disabled) echo 'disabled="disabled"' ?> value="<?=h($form_model->display_field($form_field->db_name)) ?>" class="date" type="text" id="<?=$input_id ?>" name="<?=$form_model_class ?>[<?=$form_field->db_name ?>]" placeholder="<?=h($placeholder)?>" />
+
+	<script type='text/javascript'>
+		jQuery(document).ready(function($) { 
+			var init_calendar = function() {
+				if (!Admin_Page.phprFieldInitialized['<?=$input_id ?>']) {
+					<?=Phpr_Html::calendar($input_id, $calendar_format); ?>
+					Admin_Page.phprFieldInitialized['<?=$input_id ?>'] = true;
+				}
+			}
+			
+			var thisTab = $('#<?=$input_id ?>').getTab();
+			if (thisTab) {
+				thisTab.on('onTabClick', function() {
+					init_calendar();
+				});
+			} else {
+				init_calendar();
+			}
+		});
+	</script>
+
+	<div class="clear"></div>
+</div>

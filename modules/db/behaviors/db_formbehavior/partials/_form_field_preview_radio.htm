@@ -1,0 +1,25 @@
+<? 
+	$column_definition = $form_field->get_col_definition();
+	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
+	$options = $this->form_field_get_options($form_field->db_name, $this->view_data['form_model'], $form_model->{$db_name}); 
+	$name = null;
+	$value = null;
+	$description = null;
+
+	if ($options) {
+		$name = $options;
+		$description = null;
+		
+		if (is_array($name)) {
+			$keys = array_keys($name);
+			$key_num = count($keys);
+			
+			$original_name = $name;
+			$name = $key_num ? $original_name[$keys[0]] : $value;
+			$description = $key_num ? $original_name[$keys[1]] : null;
+		}
+		
+	}
+?>	
+
+<?= $this->form_render_partial('form_preview_value', array('value'=>h($name), 'type'=>$column_definition->type, 'description'=>h($description))) ?>

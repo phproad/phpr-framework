@@ -1,0 +1,7 @@
+<?
+	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
+?>
+
+<input type="hidden" name="<?=$form_model_class ?>[<?=$db_name ?>]" value="" class="checkbox"/>
+
+<input <? if ($form_field->disabled) echo 'disabled="disabled"' ?> <?=Phpr_Form::checkbox_state($form_field->checkbox_on_state == $form_model->$db_name) ?> type="checkbox" id="<?=$this->form_get_element_id($form_model_class.'_'.$db_name) ?>" name="<?=$form_model_class ?>[<?=$db_name ?>]" value="<?=h($form_field->checkbox_on_state) ?>" class="checkbox"/>

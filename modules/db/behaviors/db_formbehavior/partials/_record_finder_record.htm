@@ -1,0 +1,31 @@
+<? 
+	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
+	
+	$id = $this->form_get_element_id($form_model_class.'_'.$db_name);
+	
+	$prompt = isset($form_field->render_options['prompt']) ? $form_field->render_options['prompt'] : 'Click the Find button to find a record';
+	
+	if (!strlen($form_model->$db_name))
+		$target_record = null;
+	else
+	{
+		$target_model = $this->form_get_record_finder_model($this->view_data['form_model'], $form_field);
+		$target_record = $target_model->find($form_model->$db_name);
+		
+		$display_name_field = isset($form_field->render_options['display_name_field']) ? $form_field->render_options['display_name_field'] : 'id';
+		$display_description_field = isset($form_field->render_options['display_description_field']) ? $form_field->render_options['display_description_field'] : null;
+	}
+?>
+
+<input type="hidden" id="<?=$id ?>" name="<?=$form_model_class ?>[<?=$db_name ?>]" value="<?=$form_model->$db_name ?>" />
+
+<div class="record-reference <?=$target_record ? null : 'empty' ?>">
+	<? if ($target_record): ?>
+		<?=h($target_record->$display_name_field) ?>
+		<? if ($display_description_field && strlen($target_record->$display_description_field)): ?>
+			<small><?=h($target_record->$display_description_field) ?></small>
+		<? endif ?>
+	<? else: ?>
+		<?=h($prompt) ?>
+	<? endif ?>
+</div>

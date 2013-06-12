@@ -1,0 +1,5 @@
+<? 
+	$column_definition = $form_field->get_col_definition(); 
+?>
+
+<? $this->form_render_partial('form_preview_value', array('value'=>h($form_model->display_field($form_field->db_name)), 'type'=>$column_definition->type)) ?>

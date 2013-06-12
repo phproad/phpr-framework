@@ -1,0 +1,42 @@
+<?
+	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
+	$state = $form_field->checkbox_on_state == $form_model->$db_name ? h($form_field->checkbox_on_state) : null;
+	
+	$field_id = $this->form_get_element_id($form_model_class.'_'.$form_field->db_name);
+	$hidden_field_id = $this->form_get_element_id($form_model_class.'_'.$form_field->db_name.'hidden');
+?>
+
+<input type="hidden" id="<?=$hidden_field_id ?>" name="<?=$form_model_class ?>[<?=$db_name ?>]" value="<?=$state ?>"/>
+
+<input type="checkbox" name="<?=$form_model_class ?>_<?=$db_name ?>_checkbox" 
+	class="switch-checkbox" 
+	id="<?=$field_id ?>" 
+	<?=$state !== null ? 'checked':''?> />
+
+<label class="switch-label" for="<?=$field_id ?>">
+	<div class="switch-inner">
+		<div class="switch-active"><div class="switch-switch">ON</div></div>
+		<div class="switch-inactive"><div class="switch-switch">OFF</div></div>
+	</div>
+</label>
+
+<script type="text/javascript">
+	jQuery(document).ready(function($) { 
+		$('#<?=$field_id ?>').bind('click', function(){			
+			var hiddenField = $('#<?=$hidden_field_id ?>');
+			var field = $('#<?=$field_id ?>');
+			if (!field.is(':checked'))
+			{
+				hiddenField.val('');
+				field.removeClass('on');
+				field.addClass('off');
+				field.trigger('toggle', false);
+			}else {
+				hiddenField.val('<?=h($form_field->checkbox_on_state) ?>');
+				field.removeClass('off');
+				field.addClass('on');
+				field.trigger('toggle', true);
+			}
+		})
+	});
+</script>

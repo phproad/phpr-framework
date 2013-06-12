@@ -1,0 +1,25 @@
+<?php 
+	$params = array(
+		'form_file_list' => $form_file_list,
+		'db_name'        => $db_name,
+		'form_model'     => $form_model,
+		'form_field'     => $form_field
+	);
+
+	switch ($display_mode)
+	{
+		case 'image_list' : 
+			$this->form_render_partial('form_image_list_sortable', $params);
+		break;
+		case 'single_image' : 
+			$this->form_render_partial('form_single_image', $params);
+		break;
+		case 'file_list' : 
+			$this->form_render_partial('form_file_list', $params);
+		break;
+		case 'single_file' : 
+			$this->form_render_partial('form_single_file', $params);
+		break;
+	}
+
+?>

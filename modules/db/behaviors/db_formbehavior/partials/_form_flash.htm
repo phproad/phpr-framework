@@ -1,0 +1,12 @@
+<? foreach (Phpr::$session->flash as $type=>$message): ?>
+	<?
+		if ($type == 'system')
+			continue;
+	?>
+
+	<p class="alert alert-<?= $type ?>"><?= $message ?></p>
+
+	<?
+		Phpr::$session->flash->now();
+	?>
+<? endforeach ?>

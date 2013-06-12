@@ -1,0 +1,9 @@
+<?
+	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
+	$state = $form_field->checkbox_on_state == $form_model->$db_name ? h($form_field->checkbox_on_state) : null;
+	
+	$field_id = $this->form_get_element_id($form_model_class.'_'.$form_field->db_name);
+	$hiddenFieldId = $this->form_get_element_id($form_model_class.'_'.$form_field->db_name.'hidden');
+?>
+
+<div id="<?=$field_id ?>" class="<?=$state === null ? 'off' : 'on' ?>"></div>

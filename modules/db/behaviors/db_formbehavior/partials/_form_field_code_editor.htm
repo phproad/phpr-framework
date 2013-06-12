@@ -1,0 +1,33 @@
+<?
+	$field_id = $this->form_get_element_id($form_model_class.'_'.$form_field->db_name.uniqid());
+	if (class_exists('Backend_CodeEditorConfiguration'))
+		$config = Backend_CodeEditorConfiguration::create()->render_settings();
+	else
+		$config = '{"showInvisibles":false,"highlightActiveLine":true,"showGutter":true,"showPrintMargin":false,"useSoftTabs":false,"tabSize":4,"fontSize":12,"theme":"textmate","folding":"manual","wrapMode":null}';
+?>
+
+<div class="code_wrapper <?=$form_field->size ?>">
+	<textarea class="<?=$form_field->size ?>" id="<?=$field_id ?>" name="<?=$form_model_class ?>[<?=$form_field->db_name ?>]"><?=h($form_model->display_field($form_field->db_name)) ?></textarea>
+</div>
+
+<script type="text/javascript">
+	var thisTab = jQuery('#<?=$field_id ?>').getTab();
+	if (thisTab.length > 0) {
+		thisTab.on('onTabClick', function(){			
+			if (!Admin_Page.phprFieldInitialized['<?=$field_id ?>'] && jQuery('#<?=$field_id ?>').is(':visible'))
+			{
+				var editor = init_code_editor('<?=$field_id ?>', '<?=$form_field->language ?>', <?=$config ?>);
+				Admin_Page.phprFieldInitialized['<?=$field_id ?>'] = true;
+			} else
+			{
+				var editor = find_code_editor('<?=$field_id ?>');
+				if (editor)
+					editor.resize();
+			}
+		})
+	} else {
+		jQuery(document).ready(function($) { 
+			init_code_editor('<?=$field_id ?>', '<?=$form_field->language ?>', <?=$config ?>);
+		});
+	}
+</script>

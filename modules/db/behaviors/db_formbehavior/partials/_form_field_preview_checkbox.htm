@@ -1,0 +1,5 @@
+<? 
+	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']); 
+?>
+
+<div class="custom-checkbox <?= $form_field->checkbox_on_state == $form_model->{$db_name} ? 'checked' : null ?>"></div>

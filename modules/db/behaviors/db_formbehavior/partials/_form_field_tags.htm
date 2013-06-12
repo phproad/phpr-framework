@@ -1,16 +1,16 @@
 <?php
-    $column_definition = $form_field->get_col_definition();
-    $column_info = $column_definition->get_column_info();
+	$column_definition = $form_field->get_col_definition();
+	$column_info = $column_definition->get_column_info();
 
-    $available_tags = isset($form_field->render_options['available_tags']) ? $form_field->render_options['available_tags'] : array();
-    $max_length = $column_info->length !== null ? 'maxlength="'.$column_info->length.'"' : null;
+	$available_tags = isset($form_field->render_options['available_tags']) ? $form_field->render_options['available_tags'] : array();
+	$max_length = $column_info->length !== null ? 'maxlength="'.$column_info->length.'"' : null;
 ?>
 <input autocomplete="off" <? if ($form_field->disabled) echo 'disabled="disabled"' ?> <?=$max_length ?> value="<?=h($form_model->display_field($form_field->db_name)) ?>" class="<?=$column_definition->type ?>" type="hidden" id="<?=$this->form_get_element_id($form_model_class.'_'.$form_field->db_name) ?>" name="<?=$form_model_class ?>[<?=$form_field->db_name ?>]"/>
 <script>    
-    jQuery(document).ready(function($) {
-        var tags_element = $("#<?=$this->form_get_element_id($form_model_class.'_'.$form_field->db_name) ?>").tagit({
-            availableTags: <?=json_encode($available_tags) ?>,
-            allowSpaces: true
-        });
-    });
+	jQuery(document).ready(function($) {
+		var tags_element = $("#<?=$this->form_get_element_id($form_model_class.'_'.$form_field->db_name) ?>").tagit({
+			availableTags: <?=json_encode($available_tags) ?>,
+			allowSpaces: true
+		});
+	});
 </script>

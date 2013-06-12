@@ -1,0 +1,52 @@
+<?
+	$column_definition = $form_field->get_col_definition();
+	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
+	$options = $this->form_field_get_options($form_field->db_name, $this->view_data['form_model'], $form_model->{$db_name}); 
+?>
+<? if (count($options) > 10): ?>
+	<div class="scrollable-list form">
+<? endif ?>
+	<?
+		$options_found = 0;
+		$value = null;
+	?>
+	<? foreach ($options as $key=>$option): ?>
+		<?
+			$options_found++;
+			$name = $option;
+			$description = null;
+			
+			if (is_array($name)) {
+				$keys = array_keys($name);
+				$key_num = count($keys);
+
+				$original_name = $name;
+				$name = $key_num ? $original_name[$keys[0]] : $value;
+				$description = $key_num ? $original_name[$keys[1]] : null;
+			}
+		?>	
+		<div class="checkbox-option">
+			<div class="custom-checkbox checked"></div>
+
+			<? $this->form_render_partial('form_preview_value', array('value'=>h($name), 'type'=>$column_definition->type, 'description'=>h($description))); ?>
+			<? if (!$form_field->preview_no_relation): ?>
+				<a class="btn preview-link" href="javascript:;" 
+					title="Preview" 
+					onclick="new PopupForm('<?=$this->get_event_handler('on_preview_popup') ?>', { ajaxFields: {
+						modelClass: '<?=$column_definition->reference_class_name ?>', 
+						modelId: '<?=$key ?>', popupLevel: window.PopupWindows.length, 
+						previewTitle: '<?=h($name) ?>'
+					}}); return false;"><i class="icon-search"></i></a>
+			<? endif ?>
+		</div>
+	<? endforeach ?>
+	
+	<? if (!$options_found): ?>
+		<div class="no_options">
+			<?= $this->form_render_partial('form_preview_value', array('value'=>h($form_field->relation_preview_no_options), 'type'=>db_text)) ?>
+		</div>
+	<? endif ?>
+
+<? if (count($options) > 10): ?>
+	</div>
+<? endif ?>

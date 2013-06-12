@@ -1,0 +1,73 @@
+<? 
+	$list_container_id = $this->form_get_element_id('form_attachments_container_'.get_class($form_model).'_'.$db_name); 
+	$list_id = $this->form_get_element_id('form_image_list_'.get_class($form_model).'_'.$db_name); 
+
+	$field_definition = $form_model->find_form_field($db_name);
+	$base_url = root_url('/uploaded/public/');
+?>
+<? if ($form_file_list->count): ?>
+	<? if ($form_file_list->count > 3): ?>
+	<div class="scrollable-image-list">
+	<? endif ?>
+	<ul class="imagelist-sortable" id="<?=$list_id ?>">
+		<? foreach ($form_file_list as $index=>$file): ?>
+			<li class="<?=$index == $form_file_list->count-1 ? 'last' : null ?> <?=Phpr_Html::zebra('images_'.$list_id) ?>">
+				<a href="#" class="row-drag-handle phpr_image_handle" onclick="return false" title="Reorder options">
+					<i class="icon-resize-vertical"></i>
+				</a>
+				
+				<a class="image-link" href="<?=$base_url.urlencode($file->disk_name) ?>" target="_blank"><img src="<?=$file->get_thumbnail_path(100, 'auto') ?>" alt="<?=h($file->name) ?>"/></a>
+				
+				<div class="image-info">
+					<h4><?=h($file->name) ?></h4>
+					<p>
+						Uploaded: <?=$file->display_field('created_at') ?> by <?=h($file->created_user_name) ?> |
+
+						<a href="#" onclick="return $(this).getForm().sendPhpr('<?=$this->get_event_handler('on_delete_file') ?>', {extraFields: {db_name: '<?=$db_name ?>', fileId: '<?=$file->id ?>'}, confirm: 'Do you really want to delete this file?', update: '<?=$list_container_id ?>', loadIndicator: {show: false}, onComplete: function(){ realignPopups(); }});" >Delete</a>
+					</p>
+					
+					<div id="<?='phpr_file_description_'.$file->id ?>">
+						<? $this->form_render_partial('form_file_description', array('file'=>$file)) ?>
+					</div>
+				</div>
+
+				<input class="image_id" value="<?=$file->id ?>" type="hidden"/>
+				<input class="image_order" value="<?=$file->sort_order ?>" type="hidden"/>
+
+				<div class="clear"></div>
+			</li>
+		<? endforeach ?>
+	</ul>
+	<? if ($form_file_list->count > 3): ?>
+	</div>
+	<? endif ?>
+
+	<script type="text/javascript">
+		jQuery('#<?=$list_id ?>').sortableList({
+			handler: '<?=$this->get_event_handler("on_set_form_files_order") ?>', 
+			inputIds: 'image_order', 
+			inputOrders: 'image_id', 
+			handleClass: '.phpr_image_handle', 
+			extraData: {'db_name': '<?=$db_name ?>'},
+			onDragComplete: function() {
+				var itemNum = jQuery('#<?=$list_id ?>').children().length;
+				jQuery('#<?=$list_id ?>').children().each(function(index, el){
+					var element = jQuery(this);
+					if (index % 2)
+						element.addClass('even');
+					else
+						element.removeClass('even');
+
+					if (index == itemNum-1)
+						element.addClass('last');
+					else
+						element.removeClass('last');
+				})
+			}
+		});
+	</script>
+	
+	<div class="clear"></div>
+<? else: ?>
+	<p class="muted"><?=h($field_definition->no_attachments_label) ?></p>
+<? endif ?>

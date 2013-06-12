@@ -1,0 +1,48 @@
+<?
+	$parent_form_field = $parent_model->find_form_field($field_name);
+	$column_definition = $parent_form_field->get_col_definition();
+	$field_id = $this->form_get_element_id($parent_model_class.'_'.$db_name);
+
+	$hint = isset($parent_form_field->render_options['hint']) ? $parent_form_field->render_options['hint'] : null;
+?>
+<div id="dropdown_create_form">
+	<h2>New <?=$column_definition->display_name?></h2>
+	<div class="content">
+		<div class="form-600">
+			<? if ($hint && $this->hint_check($field_id."_hint")): ?>
+				<?=$this->hint_render($field_id."_hint", $hint)?>
+			<? endif ?>
+
+			<?=Phpr_Form::open_tag() ?>
+				<? if (!isset($fatal_error)): ?>
+					<? $this->form_render($form_model) ?>
+
+					<?=admin_ajax_button('Save', $this->get_event_handler('on_dropdown_create_form_create'), array(), "
+							update: 'multi',
+							onSuccess: cancelPopup,
+							onAfterUpdate: assign_dropdown_create_".$field_id.",
+							extraFields: { model_class: '".get_class($form_model)."', parent_model_class:'".$parent_model_class."', db_name: '".$db_name."', field_name: '".$field_name."' },
+							loadIndicator: {injectInElement: true},
+							prepareFunction: function(){phprTriggerSave();}
+						"
+					) ?>
+					<?=admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+
+					<script type="text/javascript">
+
+						$('dropdown_create_form').addEvent('onClosePopup', function(){
+							$('<?=$field_id?>').selectedIndex = 0;
+							$('<?=$field_id?>').select_update();
+						});
+					</script>
+
+					<div class="clear"></div>
+				<? else: ?>
+					<?=flash()?>
+					<?=admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+					<div class="clear"></div>
+				<? endif ?>
+			</form>
+		</div>
+	</div>
+</div>

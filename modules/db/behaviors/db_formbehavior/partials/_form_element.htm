@@ -1,0 +1,35 @@
+<? if ($form_element instanceof Db_Form_Field_Definition): ?>
+
+	<? $this->form_render_field($form_element->db_name) ?>
+
+	<? if ($form_element->form_side == 'right' && $form_element->comment && $form_element->comment_position == 'below'): ?>
+		<? /* <div class="clearfix"></div> */ ?>
+	<? endif ?>
+	
+<? elseif ($form_element instanceof Db_Form_Section): ?>
+	<? 
+		$has_title = strlen($form_element->title) 
+	?>
+	
+	<div class="control-section <?=!$has_title ? 'control-section-basic' : null ?>" <? if(strlen($form_element->html_id)): ?>id="<?= $form_element->html_id ?>"<? endif ?>>
+		<? if ($has_title): ?>
+			<h4><?=h($form_element->title) ?></h4>
+		<? endif ?>
+		<? if (strlen($form_element->description)): ?>
+			<p><?=$form_element->content_html ? $form_element->description : h($form_element->description) ?></p>
+		<? endif ?>
+	</div>
+
+<? elseif ($form_element instanceof Db_Form_Custom_Area): ?>
+	
+	<? if (!$this->form_preview_mode): ?>
+		<? $this->form_render_partial('form_area_'.$form_element->id) ?>
+	<? else: ?>
+		<? $this->form_render_partial('form_area_preview_'.$form_element->id) ?>
+	<? endif ?>
+
+<? elseif ($form_element instanceof Db_Form_Partial): ?>
+
+	<? $this->display_partial($form_element->path) ?>
+
+<? endif ?>

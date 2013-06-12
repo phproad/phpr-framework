@@ -1,0 +1,49 @@
+<? 
+	$collapsible = $this->form_list_collapsable_elements($form_tab_elements);
+	$non_collapsible = $this->form_list_non_collapsable_elements($form_tab_elements);
+
+	if ($collapsible):
+		$visible = $this->form_is_collapsable_area_visible($tab_index);
+?>
+	<div class="form-collapse <?=$visible ? null : 'collapsed' ?>">
+		<div class="form-collapse-area">
+			<fieldset class="form-elements">
+			<? foreach ($collapsible as $element): ?>
+				<? 
+					if ($this->form_preview_mode && $element instanceof Db_Form_Field_Definition && $element->no_preview)
+				 		continue;
+				?>
+	
+				<? $this->form_render_partial('form_element', array('form_element'=>$element)) ?>
+			<? endforeach ?>
+			</fieldset>
+		</div>
+		
+		<div class="form-collapse-toggle">
+			<a href="javascript:;" 
+				class="form-collapse-toggle-<?= $visible ? 'up' : 'down' ?> btn" 
+				title="<?=$visible ? 'Hide' : 'Show' ?>" 
+				onclick="$(this).getForm().sendPhpr('<?=$this->get_event_handler('on_form_toggle_collapsable_area') ?>', { 
+					extraFields: { 
+						collapsible_tab_index: '<?=$tab_index ?>', 
+						current_expand_status: '<?=$visible ? 1 : 0 ?>' 
+					}, 
+					loadIndicator: { show: false }
+				}); Admin_Page.formCollapseToggle(this);">
+				<i class="icon-caret-<?= $visible ? 'up' : 'down' ?>"></i>
+			</a>
+		</div>
+	</div>
+<? endif ?>
+
+<fieldset class="form-elements">
+	<? foreach ($non_collapsible as $element): ?>
+		<? 
+			if ($this->form_preview_mode && $element instanceof Db_Form_Field_Definition && $element->no_preview)
+				continue;
+		?>
+		
+		<? $this->form_render_partial('form_element', array('form_element'=>$element)) ?>
+	<? endforeach ?>
+</fieldset>
+<div class="clear"></div>

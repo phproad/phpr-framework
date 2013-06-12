@@ -1,0 +1,14 @@
+<?
+	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
+?>
+<div class="input-append">
+	<div class="uneditable-input" id="<?=$this->form_get_record_finder_container_id($form_model_class, $form_field->db_name) ?>">
+		<? $this->form_render_partial('record_finder_record', array('form_model_class'=>$form_model_class)) ?>
+	</div>
+	<a href="javascript:;" 
+		class="btn"
+		title="Find"
+		onclick="new PopupForm('<?=$this->get_event_handler('on_find_form_record') ?>', {ajaxFields: {db_name: '<?=$form_field->db_name ?>', class_name:'<?=get_class($this->view_data['form_model'])?>'}}); return false;">
+		<i class="icon-search"></i>
+	</a>
+</div>

@@ -1,6 +1,7 @@
 //
 // Phpr request
 //
+
 (function($) {
 
 	window.PHPR = { };
@@ -25,11 +26,31 @@
 			return $.phpr.post(handler, options).setFormElement(self);
 		}
 		
-		o.indicator = function() {
-			return $.phpr.indicator();
+		o.indicator = function(options) {
+			options = $.extend(true, options, { element: self });
+			return $.phpr.indicator(options);
 		}
 
 		return o;
+	};
+
+	/**
+	 * Returns the parent DOM element of the current element.
+	 * @type Function
+	 * @return none
+	 */
+	$.fn.getForm = function() {
+		return $(this).closest('form');
+	};
+
+	/**
+	 * Sends a POST request.
+	 * @type Function
+	 * @param Object options Options to customize the request.
+	 * @return Boolean
+	 */
+	$.fn.sendRequest = $.fn.sendPhpr = function(handler, options) {
+		return $(this).phpr().post(handler, options).send();
 	};
 
 })(jQuery);

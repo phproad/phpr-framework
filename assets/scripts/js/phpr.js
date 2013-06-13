@@ -35,6 +35,16 @@
 	};
 
 	/**
+	 * Sends a POST request.
+	 * @type Function
+	 * @param Object options Options to customize the request.
+	 * @return Boolean
+	 */
+	$.fn.sendRequest = $.fn.sendPhpr = function(handler, options) {
+		return $(this).phpr().post(handler, options).send();
+	};
+
+	/**
 	 * Returns the parent DOM element of the current element.
 	 * @type Function
 	 * @return none
@@ -44,14 +54,14 @@
 	};
 
 	/**
-	 * Sends a POST request.
+	 * Serializes all field names within an element
 	 * @type Function
-	 * @param Object options Options to customize the request.
-	 * @return Boolean
+	 * @return array
 	 */
-	$.fn.sendRequest = $.fn.sendPhpr = function(handler, options) {
-		return $(this).phpr().post(handler, options).send();
-	};
+
+	$.fn.serializeElement = function() {
+		return PHPR.post().serializeElement(this);
+	}
 
 })(jQuery);
 

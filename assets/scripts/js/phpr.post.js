@@ -192,7 +192,7 @@
 			context.data = $.extend(true, context.data, _data);
 
 			if (_form)
-				context.data = $.extend(true, context.data, _serialize_params(_form));
+				context.data = $.extend(true, context.data, o.serializeElement(_form));
 
 			return _context = context;
 		}
@@ -216,6 +216,27 @@
 
 		o.getFormUrl = function() {
 			return (_form) ? _form.attr('action') : location.pathname;
+		}
+
+		o.serializeElement = function(element) {
+			var params = {};
+
+			$.each(element.serializeArray(), function(index, value) {
+				if (value.name.substr(value.name.length - 2, 2) === '[]') {
+					var name = value.name.substr(0, value.name.length - 2);
+					
+					if (!params[name]) {
+						params[name] = [];
+					}
+					
+					params[name].push(value.value);
+				} 
+				else {
+					params[value.name] = value.value;
+				}
+			});
+
+			return params;
 		}
 
 		//
@@ -404,27 +425,6 @@
 			if (eventObj && typeof eventObj == 'function') {
 				eventObj();
 			}
-		}
-
-		var _serialize_params = function(element) {
-			var params = {};
-
-			$.each(element.serializeArray(), function(index, value) {
-				if (value.name.substr(value.name.length - 2, 2) === '[]') {
-					var name = value.name.substr(0, value.name.length - 2);
-					
-					if (!params[name]) {
-						params[name] = [];
-					}
-					
-					params[name].push(value.value);
-				} 
-				else {
-					params[value.name] = value.value;
-				}
-			});
-
-			return params;
 		}
 
 		// Extend the post object with DOM

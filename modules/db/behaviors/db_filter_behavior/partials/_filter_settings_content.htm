@@ -1,0 +1,110 @@
+<? 
+	$filters_to_display = array();
+	foreach ($filter_settings_info as $current_filter_id => $filter) {
+
+		if (!array_key_exists($current_filter_id, $this->filter_filters))
+			continue;
+			
+		$filters_to_display[$current_filter_id] = array($this->filter_filters[$current_filter_id], $filter);
+	}
+
+	$filters_to_add = array();
+	foreach ($this->filter_filters as $id => $filter) {
+
+		if ($id == $this->filter_ignore_filter)
+			continue;
+			
+		if (array_key_exists($id, $filter_settings_info))
+			continue;
+
+		$filters_to_add[$id] = $filter;
+	}
+
+	$has_applied_filters = count($filters_to_display);
+	$has_available_filters = count($filters_to_add);
+	$has_filter_switches = count($this->filter_switchers);
+?>
+
+<? if ($has_applied_filters): ?>
+	<ul>
+		<? 
+			$index = 0;
+			$last_index = count($filters_to_display)-1;
+			foreach ($filters_to_display as $current_filter_id => $filter_data): 
+
+			$filter_info = $filter_data[0];
+			$filter = $filter_data[1];
+			
+			$full_text = implode(', ', array_values($filter));
+			$short_text = null;
+			if (mb_strlen($full_text) > $this->filter_desc_max_len) {
+				$short_text = mb_substr($full_text, 0, $this->filter_desc_max_len).'...';
+			}
+		?>
+			<li class="<?=$last_index == $index ? 'last' : null ?>"><span class="filter-title"><?= h($filter_info['name']) ?></span>: 
+				<? if ($short_text !== null):  ?>
+					<span id="<?=$current_filter_id.'_short' ?>">
+						<?= h($short_text) ?> | 
+						<a href="javascript:;" class="showall-link" onclick="$('#<?=$current_filter_id.'_short' ?>').hide(); $('#<?=$current_filter_id.'_full' ?>').show(); return false;">show all</a>
+					</span>
+					<span id="<?=$current_filter_id.'_full' ?>" style="display: none">
+						<?= h($full_text) ?>
+					</span>
+				<? else: ?>
+					<?= h($full_text) ?>
+				<? endif ?>
+				<span class="modify-filter">
+					(<a href="javascript:;" class="modify-link" onclick="new PopupForm('<?=$this->get_event_handler('on_filter_load_form') ?>', {ajaxFields: {filter_request: 1, id: '<?=$current_filter_id ?>', existing: '1'}}); return false;">modify</a>)
+				</span>
+			</li>
+		<? 
+			$index++;
+			endforeach ?>
+	</ul>
+<? endif ?>
+
+<? if ($has_available_filters): ?>
+	<div class="available-filter-list <?= $has_applied_filters ? 'with-filters-applied' : '' ?>">
+		<i class="icon-filter"></i> 
+		<span class="filter-heading"><?= h($this->filter_list_title) ?>: </span>
+		<? 
+			$filters = $this->filter_filters;
+			$last_index = count($filters_to_add)-1;
+		
+			if ($this->ignore_filter)
+				$last_index--;
+		
+			$index = 0;
+		?>
+		<? foreach ($filters_to_add as $id => $filter): ?>
+			<a href="javascript:;" onclick="new PopupForm('<?=$this->get_event_handler('on_filter_load_form') ?>', { ajaxFields: { filter_request: 1, id: '<?=$id ?>' } }); return false;"><?= mb_strtolower(h($filter['name'])) ?></a><?= $index < $last_index ? ', ' : null ?>
+		<? $index++; endforeach ?>
+	</div>
+<? endif ?>
+
+<? if (!$has_available_filters && $has_applied_filters): ?>
+	<div class="cancel-filter-list">
+		<i class="icon-filter"></i> 
+		<a href="javascript:;" onclick="return $(this).phpr().post('<?= $this->get_event_handler('on_filter_reset') ?>', { confirm: 'Are you sure you want to cancel the filters?', loadIndicator: {show: false}, update: '#filter_settings_content', complete: listReload }).send();">
+			Cancel filters
+		</a>
+	</div>
+<? endif ?>
+
+<? if ($has_filter_switches): ?>
+	<?=Phpr_Form::open_tag(array('id'=>null)) ?>
+		<ul class="filter-switchers">
+			<? foreach ($this->filter_switchers as $filter_id=>$filter_info): ?>
+				<li>
+					<input <?=Phpr_Form::checkbox_state(in_array($filter_id, $filter_checked_switchers)) ?> 
+						onclick="$(this).phpr().post('<?=$this->get_event_handler('on_filter_apply_switchers') ?>', {loadIndicator: {show: false}, success: function(){ cancelPopup(); <?=$this->filter_on_apply ?>}})" 
+						type="checkbox" 
+						value="1" 
+						name="filter_switchers[<?=$filter_id ?>]" 
+						id="<?='filter_switcher_'.$filter_id ?>" />
+					<label for="<?='filter_switcher_'.$filter_id ?>"><?= h($filter_info['name']) ?></label>
+				</li>
+			<? endforeach ?>
+		</ul>
+	</form>
+<? endif ?>

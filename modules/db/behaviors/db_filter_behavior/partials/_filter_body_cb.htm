@@ -1,0 +1,8 @@
+<td class="checkbox">
+	<input name="filter_ids[]" 
+		<?=Phpr_Form::checkbox_state(in_array($model->get_primary_key_value(), $filter_checked_records)) ?> 
+		class="filter_list_cb checkbox" 
+		type="checkbox" 
+		value="<?= $model->get_primary_key_value() ?>" 
+		onclick="Admin_Page.listCheckSingle(this)" />
+</td>

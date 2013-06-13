@@ -1,0 +1,123 @@
+<div>
+	<h2>
+		Filter<? if (!$this->view_data_element('not_found')): ?>: <?=mb_strtolower(h($filter_info['name'])) ?><? endif ?>
+	</h2>
+	<div class="form-700">
+		<?=Phpr_Form::open_tag() ?>
+
+			<!-- Passable fields -->
+			<input type="hidden" name="filter_form_flag" value="1" />
+			<input type="hidden" name="filter_id_value" value="<?=$filter_id ?>" />
+
+			<? if ($this->view_data_element('not_found')): ?>
+				<div class="content">
+					<p>Filter not found.</p>
+				</div>
+			<? else: ?>
+				<div class="content">
+					<?
+						$is_sliding_list = $model->is_extended_with('Db_Act_As_Tree');
+					?>
+					<p><?= isset($filter_info['prompt']) ? h($filter_info['prompt']) : h($this->filter_prompt) ?></p>
+
+					<div class="form-flash"></div>
+					<div id="filter_list" class="filter-list">
+						<div class="embedded-list">
+							<?
+								$list_columns = Phpr_Util::splat($filter_obj->list_columns);
+								$this->list_name = $this->filter_get_list_name($model);
+							
+								$search_fields = $list_columns;
+								foreach ($search_fields as $index => &$field) {
+									$field = "@".$field;
+								}
+							?>
+						
+							<?=$this->list_render(array(
+								'list_model_class' => get_class($model),
+								'list_no_setup_link' => true,
+								'list_columns' => $list_columns,
+								'list_display_as_sliding_list' => $is_sliding_list,
+								'list_scrollable' => false,
+								'list_custom_prepare_func' => 'filter_prepare_data',
+								'list_custom_body_cells' => PATH_SYSTEM.'/modules/db/behaviors/db_filter_behavior/partials/_filter_body_control.htm',
+								'list_custom_head_cells' => PATH_SYSTEM.'/modules/db/behaviors/db_filter_behavior/partials/_filter_head_control.htm',
+								'list_search_fields' => $search_fields,
+								'list_search_prompt' => 'search',
+								'list_reuse_model' => false,
+								'list_no_form' => true,
+								'list_record_url' => null,
+								'list_items_per_page' => 6,
+								'list_search_enabled' => true,
+								'list_name' => $this->filter_get_list_name($model),
+								'filter_id' => $filter_id,
+								'list_no_js_declarations' => true
+							)) ?>
+						</div>
+					</div>
+				
+					<h5><?= isset($filter_info['added_list_title']) ? h($filter_info['added_list_title']) : 'Added Filters' ?></h5>
+					
+					<div class="added-filter-list">
+						
+						<table class="list-table">
+							<tbody id="added-filter-list">
+								<? if (!isset($filter_checked_records) || !$filter_checked_records->count): ?>
+									<tr class="no-data">
+										<td>No filters added</td>
+									</tr>
+								<? else: ?>
+									<? foreach ($filter_checked_records as $record): ?>
+										<tr class="<?=Phpr_Html::zebra('filter_record') ?>">
+											<td class="list-icon">
+												<a class="filter-control" href="javascript:;" onclick="return filter_delete_record(this)" title="Remove filter">
+													<i class="icon-minus-sign-alt"></i>
+												</a>
+											</td>
+											<td class="last">
+												<?
+													$column_values = array();
+													foreach ($list_columns as $column) {
+														$column_values[] = $record->$column;
+													}
+												?>
+												<?= implode(', ', $column_values); ?>
+												<input type="hidden" name="filter_ids[]" class="record_id" value="<?=$record->id ?>"/>
+											</td>
+										</tr>
+									<? endforeach ?>
+								<? endif ?>
+							</tbody>
+						</table>
+
+					</div>
+				</div>
+				<div class="footer">
+					<?= admin_ajax_button('Apply', $this->get_event_handler('on_filter_apply'), array('class' => 'btn-success'), 
+						"loadIndicator: { injectInElement: true, hideOnSuccess: true }, 
+						data: { filter_id: '".$filter_id."' },
+						update: '#filter_settings_content',
+						success: function(o){ cancelPopup(); ".$this->filter_on_apply." }"
+					) ?>
+					<?= admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+
+					<? if (!$filter_new): ?>
+						<div class="pull-right">
+							<?=admin_ajax_button('Cancel filter', $this->get_event_handler('on_filter_remove'), array('class' => 'btn-danger'),
+							"
+								data: {filter_id: '".$filter_id."'},
+								loadIndicator: {injectInElement: true, hideOnSuccess: true},
+								update: '#filter_settings_content',
+								success: function(){ cancelPopup(); ".$this->filter_on_remove." }
+							"
+							) ?>
+							<input type="hidden" name="filter_existing" value="1" />
+						</div>
+					<? endif ?>
+
+				</div>
+			<? endif ?>
+
+		</form>
+	</div>
+</div>

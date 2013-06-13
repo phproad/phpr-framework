@@ -189,7 +189,6 @@
 		}
 
 		o.buildPostData = function(context) {
-			// Build post back data
 			context.data = $.extend(true, context.data, _data);
 
 			if (_form)
@@ -234,7 +233,7 @@
 			if (context.alert)
 				alert(context.alert);
 			
-			if (context.confirm && !confirm(context.confirm))
+			if (context.confirm && !o.popupConfirm(context))
 				return;
 
 			// Show loading indicator
@@ -290,6 +289,7 @@
 				$.globalEval(requestObj.javascript);
 
 			$(PHPR).trigger('success.post', [requestObj]);
+			$(window).trigger('onAfterAjaxUpdateGlobal');
 		}
 
 		o.onFailure = function(requestObj) {
@@ -303,11 +303,15 @@
 		}
 
 		//
-		// Error Popup
+		// Behaviors
 		// 
 
 		o.popupError = function(requestObj) {
 			alert(requestObj.errorMessage);
+		}
+
+		o.popupConfirm = function(postObj) {
+			return confirm(postObj.confirm);
 		}
 
 		//

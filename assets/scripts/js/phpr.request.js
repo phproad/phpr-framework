@@ -141,7 +141,7 @@
 			if (phpr_css_list.length == 0 && phpr_js_list.length == 0)
 				return false;
 			else {
-				loadAssets(phpr_js_list, phpr_css_list, function(){ _deferred.resolve(o); });	
+				o.loadAssets(phpr_js_list, phpr_css_list, function(){ _deferred.resolve(o); });	
 				return true;
 			}
 		}
@@ -211,7 +211,7 @@
 				else
 					callback();
 			});
-		}		
+		}
 	
 		//
 		// Internals

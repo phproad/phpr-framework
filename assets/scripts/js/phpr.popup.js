@@ -143,6 +143,9 @@ function realignPopups() {
 					cancelPopup();
 				});				
 			} else {
+				if (this.options.ajaxFields instanceof jQuery)
+					this.options.ajaxFields = this.options.ajaxFields.serializeElement();
+
 				new PHPR.post(this.formLoadHandler, {
 					data: $.extend(true, this.options.ajaxFields, { phpr_popup_form_request: 1 }),
 					update: this.tmp.find('>*:first'), 

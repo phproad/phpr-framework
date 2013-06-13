@@ -189,6 +189,9 @@
 		}
 
 		o.buildPostData = function(context) {
+			if (context.data instanceof jQuery)
+				context.data = o.serializeElement(context.data);
+
 			context.data = $.extend(true, context.data, _data);
 
 			if (_form)

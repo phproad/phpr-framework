@@ -3,7 +3,6 @@
 	$list_container_id = $this->form_get_element_id('form_attachments_container_'.$form_model_class.'_'.$form_field->db_name);
 	$uploader_link_id = $this->form_get_element_id('form_uploader_link_'.$form_model_class.'_'.$form_field->db_name);
 	$uploader_id = $this->form_get_element_id('form_attachments_uploader_'.$form_model_class.'_'.$form_field->db_name);
-	$upload_loading_indicator = $this->form_get_element_id('form_uploader_indicator_'.$form_model_class.'_'.$form_field->db_name);
 ?>
 
 <div id="<?= $list_container_id ?>">
@@ -32,18 +31,15 @@
 				url: '<?= $this->form_get_upload_url($form_field->db_name) ?>',
 				trigger: '#<?= $uploader_link_id ?>',
 				onUploadComplete: function() {
-					$('#<?= $uploader_id ?>').closest('form').get(0).sendPhpr(
-						'<?= $this->get_event_handler('on_update_file_list') ?>', 
-						{
-							data: { db_name: '<?= $form_field->db_name ?>' },
-							update: '#<?= $list_container_id ?>',
-							customIndicator: LightLoadingIndicator,
-							afterUpdate: function(){
-								realignPopups();
-								$(window).trigger('phpr_file_upload_complete', ['<?= $form_field->db_name ?>']);
-							}
+					$('#<?= $uploader_id ?>').phpr().post('<?= $this->get_event_handler('on_update_file_list') ?>', {
+						data: { db_name: '<?= $form_field->db_name ?>' },
+						update: '#<?= $list_container_id ?>',
+						customIndicator: LightLoadingIndicator,
+						afterUpdate: function(){
+							realignPopups();
+							$(window).trigger('phpr_file_upload_complete', ['<?= $form_field->db_name ?>']);
 						}
-					)
+					}).send();
 				}
 			});
 		}

@@ -294,17 +294,18 @@
 		}
 
 		o.onComplete = function(requestObj) {
-			// Hide loading indicator
-			if (_context.loadIndicator.show && o.indicatorObj && (_context.customIndicator || _context.loadIndicator.hideOnSuccess)) {
-				o.indicatorObj.hide();
-			} 
-
 			_context.complete && _context.complete(requestObj);
 
 			$(PHPR).trigger('complete.post', [requestObj]);
 		}
 
 		o.onSuccess = function(requestObj) {
+
+			// Hide loading indicator
+			if (_context.loadIndicator.show && o.indicatorObj && (_context.customIndicator || _context.loadIndicator.hideOnSuccess)) {
+				o.indicatorObj.hide();
+			} 
+
 			o.updatePartials();
 
 			_context.success && _context.success(requestObj);
@@ -317,6 +318,12 @@
 		}
 
 		o.onFailure = function(requestObj) {
+
+			// Hide loading indicator
+			if (_context.loadIndicator.show && o.indicatorObj) {
+				o.indicatorObj.hide();
+			} 
+
 			if (_context.error && !_context.error(requestObj))
 				return;
 

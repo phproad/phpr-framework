@@ -1,10 +1,10 @@
 <?
-	$popup_level = $this->view_data_element('popupLevel', 0);
+	$popup_level = $this->view_data_element('popup_level', 0);
 	$container_class = $popup_level % 2 ? 'form-500' : 'form-450';
 ?>
 
 <div class="<?=$container_class ?>">
-	<h2><?=$title ?></h2>
+	<h2><?= $title ?></h2>
 	<div class="content">
 		<? if ($model_obj): ?>
 			<? $this->form_render_preview($model_obj) ?>

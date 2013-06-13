@@ -35,12 +35,10 @@
 					$('#<?= $uploader_id ?>').closest('form').get(0).sendPhpr(
 						'<?= $this->get_event_handler('on_update_file_list') ?>', 
 						{
-							extraFields: { db_name: '<?= $form_field->db_name ?>' },
-							update: '<?= $list_container_id ?>',
-							loadIndicator: { show: false },
-							onBeforePost: LightLoadingIndicator.show.pass('Loading...'),
-							onComplete: function(){
-								LightLoadingIndicator.hide();
+							data: { db_name: '<?= $form_field->db_name ?>' },
+							update: '#<?= $list_container_id ?>',
+							customIndicator: LightLoadingIndicator,
+							afterUpdate: function(){
 								realignPopups();
 								$(window).trigger('phpr_file_upload_complete', ['<?= $form_field->db_name ?>']);
 							}
@@ -50,7 +48,7 @@
 			});
 		}
 
-		var popupContainer = $('<?= $uploader_id ?>').closest('div.popupForm');
+		var popupContainer = $('#<?= $uploader_id ?>').closest('div.popupForm');
 		if (popupContainer.length > 0)
 			$(window).on('popupLoaded', init_file_attachments);
 		else

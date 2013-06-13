@@ -8,16 +8,19 @@
 	$comment_text = $this->form_preview_mode ? Phpr_Util::any($form_field->preview_comment, $form_field->comment) : $form_field->comment;
 	$comment_tool_tip = $form_field->comment_tooltip;
 ?>
-<div class="control-group <?=$display_mode ?> <?=$form_field->form_side ?> <?=$this->form_preview_mode ? 'preview' : null ?> <?=$column_definition->is_reference ? 'reference' : null ?> <?=$column_definition->is_reference && $form_field->preview_no_relation ? 'preview_no_relation' : null ?> <?=$form_field->css_class_name ?>" id="<?=$this->form_get_element_id('form_field_'.$db_name, get_class($form_model)) ?>">
+<div class="control-group <?= $display_mode ?> <?= $form_field->form_side ?> <?= $this->form_preview_mode ? 'preview' : null ?> <?= $column_definition->is_reference ? 'reference' : null ?> <?= $column_definition->is_reference && $form_field->preview_no_relation ? 'preview_no_relation' : null ?> <?= $form_field->css_class_name ?>" id="<?= $this->form_get_element_id('form_field_'.$db_name, get_class($form_model)) ?>">
 	
 	<? if (!$form_field->no_label): ?>
-		<label for="<?=$this->form_get_element_id(get_class($form_model).'_'.$db_name) ?>" class="control-label">
+		<label for="<?= $this->form_get_element_id(get_class($form_model).'_'.$db_name) ?>" class="control-label">
 			<?=h($form_field->get_col_definition()->display_name) ?>
 
 			<? if ($required && !$this->form_preview_mode): ?><i class="required icon-asterisk"></i><? endif ?>
 		</label>
 		<? if ($comment_text && $form_field->comment_position == 'above'): ?>
-			<span class="help-block comment-before"><? if (!$form_field->comment_html): ?><?=h($comment_text) ?><? else: ?><?=$comment_text ?><? endif ?> <? if ($comment_tool_tip): ?><a href="#" tabindex="-1" class="comment_tooltip tooltip" onclick="return false" title="<?=$comment_tool_tip ?>">?</a><? endif ?> </span>
+			<span class="help-block comment-before">
+				<? if (!$form_field->comment_html): ?><?=h($comment_text) ?><? else: ?><?= $comment_text ?><? endif ?> 
+				<? if ($comment_tool_tip): ?><a href="javascript:;" tabindex="-1" class="comment_tooltip tooltip" onclick="return false" title="<?= $comment_tool_tip ?>">?</a><? endif ?> 
+			</span>
 		<? endif ?>
 	<? endif ?>
 	
@@ -26,7 +29,7 @@
 			$this->display_partial($form_field->title_partial);
 	?>
 
-	<div id="<?=$this->form_get_element_id('form_field_container_'.$db_name, get_class($form_model)) ?>" class="controls <?=$this->form_preview_mode ? 'preview-field' : 'form-field '.$form_field->css_classes ?>">
+	<div id="<?= $this->form_get_element_id('form_field_container_'.$db_name, get_class($form_model)) ?>" class="controls <?= $this->form_preview_mode ? 'preview-field' : 'form-field '.$form_field->css_classes ?>">
 	<?
 		$this->form_render_field_partial($form_model, $form_field);
 	?>
@@ -34,12 +37,14 @@
 	<? if ($this->form_preview_mode && $column_definition->is_reference && ($column_definition->reference_type == 'belongs_to') && !$form_field->preview_no_relation): ?>
 		<a class="btn preview-link" href="javascript:;" 
 			title="Preview" 
-			onclick="new PopupForm('<?=$this->get_event_handler('on_preview_popup') ?>', {ajaxFields: {
-				modelClass: '<?=$column_definition->reference_class_name ?>', 
-				modelId: '<?=$form_model->$db_name ?>', 
-				popupLevel: window.PopupWindows.length, 
-				previewTitle: '<?=h($form_field->get_col_definition()->display_name) ?>'
-			}}); return false;"><i class="icon-search"></i></a>
+			onclick="new PopupForm('<?= $this->get_event_handler('on_preview_popup') ?>', { 
+				ajaxFields: {
+					model_class: '<?= $column_definition->reference_class_name ?>', 
+					model_id: '<?= $form_model->$db_name ?>', 
+					popup_level: window.PopupWindows.length, 
+					preview_title: '<?=h($form_field->get_col_definition()->display_name) ?>'
+				} 
+			}); return false;"><i class="icon-search"></i></a>
 	<? endif ?>
 	</div>
 
@@ -48,7 +53,7 @@
 			<? if (!$form_field->comment_html): ?>
 				<?=h($comment_text) ?>
 			<? else: ?>
-				<?=$comment_text ?>
+				<?= $comment_text ?>
 			<? endif ?>
 		</span>
 	<? endif ?>

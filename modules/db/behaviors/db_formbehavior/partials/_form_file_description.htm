@@ -1,10 +1,10 @@
 <p>
-<? if (!$file->description && !$file->title): ?>
-	<a href="#" onclick="new PopupForm('<?=$this->get_event_handler("on_show_file_description_form") ?>', {ajaxFields: {file_id: '<?=$file->id ?>'}}); return false;" >Set image title and description</a>
-<? else: ?>
-	<strong>Title:</strong> <?=$file->title ? h($file->title) : '[not specified]' ?> <br/>
-	<strong>Description:</strong> <?=$file->description ? h($file->description) : '[not specified]' ?> 
-	| 
-	<a href="#" onclick="new PopupForm('<?=$this->get_event_handler("on_show_file_description_form") ?>', {ajaxFields: {file_id: '<?=$file->id ?>'}}); return false;" >Update title and description</a>
-<? endif ?>
+	<? if (!$file->description && !$file->title): ?>
+		<a href="javascript:;" onclick="new PopupForm('<?=$this->get_event_handler('on_show_file_description_form') ?>', { ajaxFields: {file_id: '<?=$file->id ?>'} }); return false;" >Set image title and description</a>
+	<? else: ?>
+		<strong>Title:</strong> <?=$file->title ? h($file->title) : '[not specified]' ?> <br/>
+		<strong>Description:</strong> <?=$file->description ? h($file->description) : '[not specified]' ?> 
+		| 
+		<a href="javascript:;" onclick="new PopupForm('<?=$this->get_event_handler('on_show_file_description_form') ?>', { ajaxFields: {file_id: '<?=$file->id ?>'} }); return false;" >Update title and description</a>
+	<? endif ?>
 </p>

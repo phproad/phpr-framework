@@ -3,14 +3,14 @@
 	<div class="form-700 relative">
 		<?= Phpr_Form::open_tag(array('find-record-form')) ?>
 			<? if (!isset($fatal_error)): ?>
-				<input type="hidden" name="record_finder_flag" id="record_finder_flag" value="1"/>
-				<input type="hidden" name="db_name" value="<?= $db_name ?>"/>
-				<input type="hidden" name="class_name" value="<?= get_class($model) ?>"/>
+				<input type="hidden" name="record_finder_flag" id="record_finder_flag" value="1" />
+				<input type="hidden" name="db_name" value="<?= $db_name ?>" />
+				<input type="hidden" name="class_name" value="<?= get_class($model) ?>" />
 				
 				<div class="content">
-					<div class="embeddedList search700">
+					<div class="embedded-list">
 						<?
-							$list_options = $this->form_prepare_record_finder_list($model, $formField);
+							$list_options = $this->form_prepare_record_finder_list($model, $form_field);
 						?>
 		
 						<?= $this->list_render($list_options) ?>
@@ -37,7 +37,7 @@
 							update: '#<?= $this->form_get_record_finder_container_id(get_class($model), post('db_name')) ?>',
 							loadIndicator: { show: true, injectInElement: true },
 							success: function() {
-								$(window).trigger('phpr_recordfinder_update', ['<?= $columnName ?>']);
+								$(window).trigger('phpr_recordfinder_update', ['<?= $column_name ?>']);
 								cancelPopup();
 							}
 						});

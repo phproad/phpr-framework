@@ -3,16 +3,21 @@
 	$list_id = $this->form_get_element_id('form_image_list_'.get_class($form_model).'_'.$db_name); 
 
 	$field_definition = $form_model->find_form_field($db_name);
-	$base_url = root_url('/uploaded/public/');
+	$base_url = root_url('uploaded/public');
 ?>
 <? if ($form_file_list->count): ?>
 	<? if ($form_file_list->count > 3): ?>
-	<div class="scrollable-image-list">
+		<div class="scrollable-image-list">
 	<? endif ?>
 	<ul class="imagelist-sortable" id="<?=$list_id ?>">
-		<? foreach ($form_file_list as $index=>$file): ?>
+		
+		<? foreach ($form_file_list as $index => $file): ?>
 			<li class="<?=$index == $form_file_list->count-1 ? 'last' : null ?> <?=Phpr_Html::zebra('images_'.$list_id) ?>">
-				<a href="#" class="row-drag-handle phpr_image_handle" onclick="return false" title="Reorder options">
+				
+				<input type="hidden" class="image_id" value="<?=$file->id ?>" />
+				<input type="hidden" class="image_order" value="<?=$file->sort_order ?>" />
+				
+				<a href="javascript:;" class="row-drag-handle phpr_image_handle" onclick="return false" title="Reorder options">
 					<i class="icon-resize-vertical"></i>
 				</a>
 				
@@ -23,7 +28,13 @@
 					<p>
 						Uploaded: <?=$file->display_field('created_at') ?> by <?=h($file->created_user_name) ?> |
 
-						<a href="#" onclick="return $(this).getForm().sendPhpr('<?=$this->get_event_handler('on_delete_file') ?>', {extraFields: {db_name: '<?=$db_name ?>', fileId: '<?=$file->id ?>'}, confirm: 'Do you really want to delete this file?', update: '<?=$list_container_id ?>', loadIndicator: {show: false}, onComplete: function(){ realignPopups(); }});" >Delete</a>
+						<a href="javascript:;" onclick="return $(this).phpr().post('<?=$this->get_event_handler('on_delete_file') ?>', {
+								data: {db_name: '<?=$db_name ?>', file_id: '<?=$file->id ?>'}, 
+								confirm: 'Do you really want to delete this file?', 
+								update: '#<?=$list_container_id ?>', 
+								loadIndicator: { show: false }, 
+								afterUpdate: function(){ realignPopups(); }
+							}).send();" >Delete</a>
 					</p>
 					
 					<div id="<?='phpr_file_description_'.$file->id ?>">
@@ -31,15 +42,13 @@
 					</div>
 				</div>
 
-				<input class="image_id" value="<?=$file->id ?>" type="hidden"/>
-				<input class="image_order" value="<?=$file->sort_order ?>" type="hidden"/>
-
 				<div class="clear"></div>
 			</li>
 		<? endforeach ?>
+
 	</ul>
 	<? if ($form_file_list->count > 3): ?>
-	</div>
+		</div>
 	<? endif ?>
 
 	<script type="text/javascript">

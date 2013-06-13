@@ -3,39 +3,31 @@
 	$list_id = $this->form_get_element_id('form_image_list_'.get_class($form_model).'_'.$db_name); 
 	
 	$field_definition = $form_model->find_form_field($db_name);
-	$base_url = root_url('/uploaded/public/');
+	$base_url = root_url('uploaded/public');
 ?>
 <? if ($form_file_list->count): ?>
-	<ul class="imageList" id="<?=$list_id ?>">
+
+	<ul class="image-list" id="<?=$list_id ?>">
 		<? foreach ($form_file_list as $file): ?>
 			<li>
-				<div class="shadow_container">
-					<div class="shadow_1">
-						<div class="shadow_2">
-							<div class="shadow_3">
-								<div class="shadow_inner">
-									<a href="<?=$base_url.urlencode($file->disk_name) ?>" target="_blank"><img src="<?=$file->get_thumbnail_path(100, 100) ?>" alt="<?=h($file->name) ?>"/></a>
-									<a href="#" onclick="return $(this).getForm().sendPhpr('<?=$this->get_event_handler('on_delete_file') ?>', {extraFields: {db_name: '<?=$db_name ?>', fileId: '<?=$file->id ?>'}, confirm: 'Do you really want to delete this file?', update: '<?=$list_container_id ?>', loadIndicator: {show: false}});" class="delete_image hidden">Delete</a>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+				<a href="<?=$base_url.urlencode($file->disk_name) ?>" target="_blank">
+					<img src="<?=$file->get_thumbnail_path(100, 100) ?>" alt="<?=h($file->name) ?>"/>
+				</a>
+				<a href="javascript:;" onclick="return $(this).phpr().post('<?=$this->get_event_handler('on_delete_file') ?>', {
+						data: { db_name: '<?=$db_name ?>', file_id: '<?=$file->id ?>'}, 
+						confirm: 'Do you really want to delete this file?', 
+						update: '#<?=$list_container_id ?>', 
+						loadIndicator: { show: false }
+					}).send();" class="image-delete" style="display: none">Delete</a>
 			</li>
 		<? endforeach ?>
 	</ul>
 	
-	<script type="text/javascript">
-		$('<?=$list_id?>').getElements('li div.shadow_inner').each(function(element) {
-			element.addEvent('mouseenter', function(){ element.getElement('a.delete_image').removeClass('hidden') });
-		});
-		
-		$('<?=$list_id?>').getElements('li div.shadow_inner').each(function(element) {
-			element.addEvent('mouseleave', function(){ element.getElement('a.delete_image').addClass('hidden') });
-		});
-
+	<script>	
+		$('#<?=$list_id?> li').on('mouseleave', function(){ $(this).find('a.image-delete').hide(); })
+			.on('mouseenter', function(){ $(this).find('a.image-delete').show(); });
 	</script>
-	<div class="clear"></div>
+
 <? else: ?>
-	<p><?=h($field_definition->no_attachments_label) ?></p>
+	<p class="muted"><?= h($field_definition->no_attachments_label) ?></p>
 <? endif ?>

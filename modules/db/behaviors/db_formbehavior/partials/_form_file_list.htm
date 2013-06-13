@@ -1,6 +1,7 @@
 <?
 	$list_container_id = $this->form_get_element_id('form_attachments_container_'.get_class($form_model).'_'.$db_name); 
 	$base_url = $form_field->file_download_base_url ? $form_field->file_download_base_url : '/admin/files/get/';
+	// $base_url = root_url('uploaded/public');
 ?>
 
 <? if ($form_file_list->count): ?>
@@ -12,7 +13,12 @@
 						<i class="icon-save"></i> <?=h($file->name) ?>
 					</a> 
 					<span class="file-size">(<?=File::size_from_bytes($file->size) ?>)</span> | 
-					<a href="#" class="file-delete hiddenLink" onclick="return $(this).getForm().sendPhpr('<?=$this->get_event_handler('on_delete_file') ?>', {extraFields: {db_name: '<?=$db_name ?>', fileId: '<?=$file->id ?>'}, confirm: 'Do you really want to delete this file?', update: '<?=$list_container_id ?>', loadIndicator: {show: false}});">
+					<a href="javascript:;" class="file-delete" onclick="return $(this).phpr().post('<?=$this->get_event_handler('on_delete_file') ?>', {
+							data: { db_name: '<?=$db_name ?>', file_id: '<?=$file->id ?>' }, 
+							confirm: 'Do you really want to delete this file?', 
+							update: '#<?=$list_container_id ?>', 
+							loadIndicator: { show: false }
+						}).send();">
 						Delete
 					</a>
 				</li>

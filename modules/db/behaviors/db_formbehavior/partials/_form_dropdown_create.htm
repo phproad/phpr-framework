@@ -5,7 +5,7 @@
 
 	$hint = isset($parent_form_field->render_options['hint']) ? $parent_form_field->render_options['hint'] : null;
 ?>
-<div id="dropdown_create_form">
+<div id="dropdown-create-popup">
 	<h2>New <?=$column_definition->display_name?></h2>
 	<div class="content">
 		<div class="form-600">
@@ -13,24 +13,24 @@
 				<?=$this->hint_render($field_id."_hint", $hint)?>
 			<? endif ?>
 
-			<?=Phpr_Form::open_tag() ?>
+			<?=Phpr_Form::open_tag(array('id'=>'dropdown-create-form')) ?>
 				<? if (!isset($fatal_error)): ?>
 					<? $this->form_render($form_model) ?>
 
 					<?=admin_ajax_button('Save', $this->get_event_handler('on_dropdown_create_form_create'), array(), "
 							update: 'multi',
-							onSuccess: cancelPopup,
-							onAfterUpdate: assign_dropdown_create_".$field_id.",
-							extraFields: { model_class: '".get_class($form_model)."', parent_model_class:'".$parent_model_class."', db_name: '".$db_name."', field_name: '".$field_name."' },
-							loadIndicator: {injectInElement: true},
-							prepareFunction: function(){phprTriggerSave();}
+							success: cancelPopup,
+							data: { model_class: '".get_class($form_model)."', parent_model_class:'".$parent_model_class."', db_name: '".$db_name."', field_name: '".$field_name."' },
+							loadIndicator: { injectInElement: true },
+							beforeSend: function(){ phprTriggerSave(); },
+							afterUpdate: assign_dropdown_create_".$field_id."
 						"
 					) ?>
 					<?=admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
 
 					<script type="text/javascript">
 
-						$('dropdown_create_form').addEvent('onClosePopup', function(){
+						jQuery('#dropdown-create-popup').on('onClosePopup', function(){
 							$('<?=$field_id?>').selectedIndex = 0;
 							$('<?=$field_id?>').select_update();
 						});

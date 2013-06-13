@@ -32,11 +32,14 @@
 			<? if (!$form_field->preview_no_relation): ?>
 				<a class="btn preview-link" href="javascript:;" 
 					title="Preview" 
-					onclick="new PopupForm('<?=$this->get_event_handler('on_preview_popup') ?>', { ajaxFields: {
-						modelClass: '<?=$column_definition->reference_class_name ?>', 
-						modelId: '<?=$key ?>', popupLevel: window.PopupWindows.length, 
-						previewTitle: '<?=h($name) ?>'
-					}}); return false;"><i class="icon-search"></i></a>
+					onclick="new PopupForm('<?=$this->get_event_handler('on_preview_popup') ?>', { 
+						ajaxFields: {
+							model_class: '<?=$column_definition->reference_class_name ?>', 
+							model_id: '<?=$key ?>', 
+							popup_level: window.PopupWindows.length, 
+							preview_title: '<?=h($name) ?>'
+						}
+					}); return false;"><i class="icon-search"></i></a>
 			<? endif ?>
 		</div>
 	<? endforeach ?>

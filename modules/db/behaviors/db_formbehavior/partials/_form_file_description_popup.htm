@@ -30,14 +30,9 @@
 				</div>
 				<div class="footer">
 					<?=admin_ajax_button('Save', $this->get_event_handler("on_save_form_file_description"), array('class'=>'btn btn-success'), "
-						loadIndicator: {show: false},
-						onBeforePost: LightLoadingIndicator.show.pass('Loading...'), 
-						onComplete: LightLoadingIndicator.hide,
-
-						onAfterUpdate: function(){
-							cancelPopup();
-						},
-						update: 'phpr_file_description_".$file->id."'
+						customIndicator: LightLoadingIndicator,
+						afterUpdate: function(){ cancelPopup(); },
+						update: '#phpr_file_description_".$file->id."'
 					") ?>
 					
 					<?=admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>

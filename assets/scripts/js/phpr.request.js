@@ -172,11 +172,10 @@
 
 			$.each(css_list, function(index, source){
 				o.loadCssFile(source, function(){
-						css_counter++;
-						if (js_loaded && css_counter == css_list.length)
-							callback();
-					}
-				)
+					css_counter++;
+					if (js_loaded && css_counter == css_list.length)
+						callback();
+				});
 			});
 		}
 
@@ -190,7 +189,12 @@
 				document.getElementsByTagName('head')[0].appendChild(cssFile);
 			}
 
-			$.getScript(source, callback);
+			$.ajax({
+				url: source,
+				dataType: 'text',
+				success: callback
+			});
+
 			return cssFile;
 		}
 
@@ -205,7 +209,7 @@
 				document.getElementsByTagName('head')[0].appendChild(jsFile);
 			}
 
-			$.getScript(source, function() {
+			$.getScript(source, function() {				
 				if (sources.length > 0)
 					o.loadJavascriptInSequence(sources, callback);
 				else

@@ -115,8 +115,8 @@
 		};
 
 		this.date = function(message) {
-			_rules.ahoyDate = true;
-			_messages.ahoyDate = message;
+			_rules.phprDate = true;
+			_messages.phprDate = message;
 			return this;
 		};
 
@@ -158,8 +158,8 @@
 
 		// Submits a remote action using phpr().post()
 		this.action = function(action, message) {
-			_rules.ahoyRemote = { action:action };
-			_messages.ahoyRemote = message;
+			_rules.phprRemote = { action:action };
+			_messages.phprRemote = message;
 			return this;
 		};
 

@@ -83,7 +83,7 @@
 		}
 
 		o.handler = o.action = function(value) {
-			_handler = handler;
+			_handler = value;
 			return this;
 		}
 
@@ -366,10 +366,10 @@
 			if (/window.location=/.test(o.requestObj.javascript))
 				return;
 
-			if ($.isArray(_context.update) || _context.update == 'multi')
-				o.updatePartialsMulti();
-			else
+			if (typeof _context.update == 'string' && _context.update != 'multi')
 				o.updatePartialsSingle();
+			else
+				o.updatePartialsMulti();
 
 			// On After Update
 			_execute_event('afterUpdate');

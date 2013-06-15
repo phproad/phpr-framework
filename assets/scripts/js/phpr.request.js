@@ -209,7 +209,7 @@
 				document.getElementsByTagName('head')[0].appendChild(jsFile);
 			}
 
-			$.getScript(source, function() {				
+			$.getScript(source, function() {
 				if (sources.length > 0)
 					o.loadJavascriptInSequence(sources, callback);
 				else
@@ -243,7 +243,7 @@
 
 			ajaxObj.data = $.extend(true, ajaxObj.data, _context.data);
 
-			if (_context.update && $.isArray(_context.update))
+			if (_context.cmsMode && _context.update && typeof _context.update != 'string')
 				ajaxObj.data.cms_update_elements = _context.update;
 
 			return $.ajax(ajaxObj);

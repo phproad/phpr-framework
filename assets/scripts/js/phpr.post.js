@@ -64,6 +64,9 @@
 			_form = null,
 			_events = { 
 				beforeSend: [],
+				complete: [],
+				success: [],
+				error: [],
 				afterUpdate: []
 			};
 
@@ -76,21 +79,6 @@
 
 		o.form = function(element) {
 			o.setFormElement(element);
-			return this;
-		}
-
-		o.success = function(func) {
-			_deferred.done(func);
-			return this;
-		}
-
-		o.error = function(func) {
-			_deferred.fail(func);
-			return this;
-		}
-
-		o.complete = function(func) {
-			_deferred.always(func);
 			return this;
 		}
 
@@ -109,20 +97,47 @@
 			return this;
 		}
 
-		o.beforeSend = function(value) {
-			if ($.isArray(_events.beforeSend))
-				_events.beforeSend.push(value);
+		o.success = function(func) {
+			if ($.isArray(_events.success))
+				_events.success.push(func);
 			else
-				_events.beforeSend = value;
+				_events.success = func;
+
+			return this;
+		}
+
+		o.error = function(func) {
+			if ($.isArray(_events.error))
+				_events.error.push(func);
+			else
+				_events.error = func;
+
+			return this;
+		}
+
+		o.complete = function(func) {
+			if ($.isArray(_events.complete))
+				_events.complete.push(func);
+			else
+				_events.complete = func;
+
+			return this;
+		}
+
+		o.beforeSend = function(func) {
+			if ($.isArray(_events.beforeSend))
+				_events.beforeSend.push(func);
+			else
+				_events.beforeSend = func;
 
 			return this;
 		}
 
 		o.afterUpdate = function(func) {
 			if ($.isArray(_events.afterUpdate))
-				_events.afterUpdate.push(value);
+				_events.afterUpdate.push(func);
 			else
-				_events.afterUpdate = value;
+				_events.afterUpdate = func;
 
 			return this;
 		}
@@ -249,8 +264,8 @@
 		o.send = function(context) {
 			context = o.buildOptions(context);
 
-			if (context.beforeSend)
-				_execute_event('beforeSend');
+			// On Before Send
+			_execute_event('beforeSend');
 
 			context = o.buildPostData(context);
 			
@@ -294,26 +309,25 @@
 		}
 
 		o.onComplete = function(requestObj) {
-			_context.complete && _context.complete(requestObj);
-
-			$(PHPR).trigger('complete.post', [requestObj]);
+			// On Complete
+			_execute_event('complete', [requestObj]);
 		}
 
 		o.onSuccess = function(requestObj) {
-
 			// Hide loading indicator
 			if (_context.loadIndicator.show && o.indicatorObj && (_context.customIndicator || _context.loadIndicator.hideOnSuccess)) {
 				o.indicatorObj.hide();
 			} 
 
+			// On Success
+			_execute_event('success', [requestObj]);
+			
+			// Update partials
 			o.updatePartials();
-
-			_context.success && _context.success(requestObj);
 
 			if (_context.evalScripts)
 				$.globalEval(requestObj.javascript);
 
-			$(PHPR).trigger('success.post', [requestObj]);
 			$(window).trigger('onAfterAjaxUpdateGlobal');
 		}
 
@@ -324,13 +338,12 @@
 				o.indicatorObj.hide();
 			} 
 
-			if (_context.error && !_context.error(requestObj))
+			// On Error/Failure
+			if (!_execute_event('error', [requestObj]))
 				return;
 
 			if (requestObj.errorMessage)
 				o.popupError(requestObj);
-
-			$(PHPR).trigger('error.post', [requestObj]);
 		}
 
 		//
@@ -358,8 +371,8 @@
 			else
 				o.updatePartialsSingle();
 
-			if (_context.afterUpdate)
-				_execute_event('afterUpdate');
+			// On After Update
+			_execute_event('afterUpdate');
 		}
 
 		o.updatePartialsSingle = function() {
@@ -415,26 +428,36 @@
 		// 
 
 		var _execute_event = function(eventName, params) {
-			var eventObj;
+			var eventObj,
+				result = true;
 
 			// Fire chained in events
 			eventObj = _events[eventName];
 
 			if ($.isArray(eventObj)) {
 				$.each(eventObj, function(index, func){
-					if (typeof func == 'function')
-						func();
+					if (typeof func == 'function') {
+						if (func.apply(o, params) === false)
+							result = false;
+					}
 				});
 			} 
 			else if (typeof eventObj == 'function') {
-				eventObj();
+				if (eventObj.apply(o, params) === false)
+					result = false;
 			}
 
 			// Fire contextual event
 			eventObj = _context[eventName];
 			if (eventObj && typeof eventObj == 'function') {
-				eventObj();
+				if (eventObj.apply(o, params) === false)
+					result = false;
 			}
+
+			// Trigger jQ event (success.post, error.post, etc)
+			$(PHPR).trigger(eventName + '.post', params);
+
+			return result;
 		}
 
 		// Extend the post object with DOM

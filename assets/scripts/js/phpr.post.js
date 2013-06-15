@@ -195,10 +195,10 @@
 				context.action = _handler;
 
 			// Build partials to update
-			if (typeof context.update == 'object' && typeof _update == 'object')
-				context.update = $.extend(true, context.update, _update);
-			else if (typeof _update == 'string')
+			if (_update instanceof jQuery || typeof _update == 'string')
 				context.update = _update;
+			else if (typeof context.update == 'object' && typeof _update == 'object')
+				context.update = $.extend(true, context.update, _update);
 
 			return _context = context;
 		}
@@ -366,7 +366,7 @@
 			if (/window.location=/.test(o.requestObj.javascript))
 				return;
 
-			if (typeof _context.update == 'string' && _context.update != 'multi')
+			if (_context.update instanceof jQuery || (typeof _context.update == 'string' && _context.update != 'multi'))
 				o.updatePartialsSingle();
 			else
 				o.updatePartialsMulti();

@@ -26,7 +26,7 @@
 		o.imageElement = null;
 
 		o.setDefaultOptions = function(defaultOptions) {
-			PHPR.indicatorDefaults = $.extend(true, PHPR.indicatorDefaults, defaultOptions);
+			PHPR.indicatorDefaults = $.extend(true, {}, PHPR.indicatorDefaults, defaultOptions);
 		}
 
 		/**
@@ -35,8 +35,7 @@
 		 * @return none
 		 */
 		o.show = function(options) {
-			options = $.extend(true, {}, PHPR.indicatorDefaults, _options, options);
-
+			_options = options = $.extend(true, {}, PHPR.indicatorDefaults, _options, options);
 			if (!options.show)
 				return this;
 

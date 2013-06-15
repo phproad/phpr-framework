@@ -27,6 +27,8 @@ function cancelPopups() {
 	while (window.PopupWindows.length) {
 		cancelPopup();
 	}
+	
+	return false;
 }
 
 function addPopup() {
@@ -150,7 +152,7 @@ function realignPopups() {
 					data: $.extend(true, this.options.ajaxFields, { phpr_popup_form_request: 1 }),
 					update: this.tmp.find('>*:first'), 
 					loadIndicator: { show: false }, 
-					success: function(requestObj) {
+					afterUpdate: function(requestObj) {
 						self.formLoaded();
 					}
 				}).send();

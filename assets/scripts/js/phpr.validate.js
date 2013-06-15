@@ -152,9 +152,9 @@ jQuery.validator.addMethod("phprRemote", function(value, element, param) {
 	jQuery(element).phpr().post(param.action)
 		.data('jquery_validate', true)
 		.data(element.name, value)
-		.success(function(requestObj) {
+		.success(function(response) {
 			validator.settings.messages[element.name].remote = previous.originalMessage;
-			var valid = requestObj.text == "true";
+			var valid = response.text == "true";
 			if (valid) {
 				var submitted = validator.formSubmitted;
 				validator.prepareElement(element);
@@ -163,7 +163,7 @@ jQuery.validator.addMethod("phprRemote", function(value, element, param) {
 				validator.showErrors();
 			} else {
 				var errors = {};
-				var message = requestObj.text || validator.defaultMessage(element, "phprRemote");
+				var message = response.text || validator.defaultMessage(element, "phprRemote");
 				errors[element.name] = previous.message = $.isFunction(message) ? message(value) : message;
 				validator.showErrors(errors);
 			}

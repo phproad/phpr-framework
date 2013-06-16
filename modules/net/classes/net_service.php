@@ -28,15 +28,27 @@ class Net_Service
 		$headers = array();
 
 		$blocks = explode("\r\n\r\n", $response_data);
+		$total_blocks = count($blocks);
 
-		$header_data = $blocks[count($blocks)-2]; // use the last header block, ignoring redirects and such
-		$body_data = $blocks[count($blocks)-1]; // the last block is the data
+		if ($total_blocks > 2) {
+			// Use the last header block, ignoring redirects and such
+			$header_data = $blocks[$total_blocks-2]; 
 
-		foreach(explode("\r\n", $header_data) as $header_data_item) {
+			// The last block is the data
+			$body_data = $blocks[$total_blocks-1]; 
+		}
+		else {
+			// Exception handling
+			$header_data = '';
+			$body_data = $response_data;
+		}
+
+		foreach (explode("\r\n", $header_data) as $header_data_item) {
 			$items = explode(": ", $header_data_item);
 
-			if(count($items) < 2)
-				continue; // except for the first line, not sure why this header doesn't have a key and value
+			// Except for the first line, not sure why this header doesn't have a key and value
+			if (count($items) < 2)
+				continue; 
 
 			$key = $items[0];
 			array_shift($items);
@@ -49,37 +61,41 @@ class Net_Service
 
 	public function run($request, $callback = null) 
 	{
-		$c = curl_init();
+		$curl = curl_init();
+		$request_options = $request->get_options();
 
-		foreach ($request->get_options() as $key => $value)
+		foreach ($request_options as $key => $value)
 		{
-			curl_setopt($c, $key, $value);
+			curl_setopt($curl, $key, $value);
 		}
 
 		// Attempt async
 		if ($callback) 
 		{
-			$this->jobs[] = array('request' => $request, 'handle' => $c, 'callback' => $callback);
+			$this->jobs[] = array('request' => $request, 'handle' => $curl, 'callback' => $callback);
 		} 
 		else // Or not
 		{
-			$r = new Net_Response();
+			$response = new Net_Response();
 
 			ob_start();
-			$response_data = curl_exec($c);
+			$response_data = curl_exec($curl);
 			ob_end_clean();
 
-			list($data, $headers) = $this->get_data_and_headers_from_response($response_data);
+			if ($request_options[CURLOPT_HEADER])
+				list($data, $headers) = $this->get_data_and_headers_from_response($response_data);
+			else
+				list($data, $headers) = array($response_data, null);
 
-			$r->data = $data;
-			$r->headers = $headers;
-			$r->request = $request;
-			$r->info = curl_getinfo($c);
-			$r->status_code = $r->info['http_code'];
+			$response->data = $data;
+			$response->headers = $headers;
+			$response->request = $request;
+			$response->info = curl_getinfo($curl);
+			$response->status_code = $response->info['http_code'];
 
-			curl_close($c);
+			curl_close($curl);
 
-			return $r;
+			return $response;
 		}
 
 		$this->last_request = $request;

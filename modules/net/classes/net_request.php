@@ -61,7 +61,7 @@ class Net_Request
 	{
 		$this->options[CURLOPT_RETURNTRANSFER] = true;
 		$this->options[CURLOPT_FOLLOWLOCATION] = true;
-		$this->options[CURLOPT_HEADER] = true;
+		$this->options[CURLOPT_HEADER] = false;
 		$this->options[CURLOPT_USERAGENT] = "Mozilla/5.0 (Windows; U; Windows NT 5.2; en-US; rv:1.9.1.7) Gecko/20091221 Firefox/3.5.7"; // use FF user agent by default
 		$this->options[CURLOPT_CONNECTTIMEOUT] = 15;
 		$this->options[CURLOPT_TIMEOUT] = 15;

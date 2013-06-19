@@ -1,5 +1,5 @@
 //
-// Phpr request
+// Global PHPR object
 //
 
 (function($) {
@@ -66,7 +66,7 @@
 })(jQuery);
 
 //
-// URL functions
+// Helper functions
 // 
 
 function root_url(url) {

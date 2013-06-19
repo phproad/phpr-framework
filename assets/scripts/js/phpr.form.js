@@ -163,6 +163,18 @@
 			return this;
 		};
 
+		// Create a custom rule
+		// 
+
+		this.customRule = function(func, message, params) {
+			var ruleName = 'customrule' + Math.random().toString(36);
+			$.validator.addMethod(ruleName, func, $.validator.format(message));
+
+			_rules[ruleName] = params;
+			_messages[ruleName] = $.validator.format(message);
+			return this;
+		}
+
 		// Setters
 		// 
 

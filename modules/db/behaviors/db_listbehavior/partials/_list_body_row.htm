@@ -1,0 +1,81 @@
+<?
+	$url = $this->list_format_record_url($row);
+	$on_click = $this->list_format_record_on_click($row);
+	$cell_on_click = $this->list_format_cell_on_click($row);
+	
+	if ($this->list_display_as_tree) {
+		$expanded = $this->list_no_interaction ? true : $this->list_node_is_expanded($row);
+		$list_data = $row->list_children($list_sort_column);
+	}
+	
+?>
+
+<tr class="<?=Phpr_Html::zebra($this->list_get_name()) ?> <?=$this->list_get_row_class($row) ?>">
+	<? if ($this->list_display_as_tree && !$this->list_no_interaction): ?>
+		<? $this->list_render_partial('list_body_expand_control', array('expanded'=>$expanded, 'child_count'=>count($list_data), 'row'=>$row)) ?>
+	<? endif ?>
+
+	<?
+		$body_cb_option_set = isset($this->list_options['list_custom_body_cells']);
+		if ($this->list_custom_body_cells !== false || $body_cb_option_set)
+		{
+			if (!strlen($this->list_custom_body_cells) && !$body_cb_option_set)
+				$this->list_render_partial('list_body_front_cells', array('model'=>$row, 'url'=>$url), false);
+			else
+			{
+				if (!$body_cb_option_set && strlen($this->list_custom_body_cells))
+					$this->display_partial($this->list_custom_body_cells, array('model'=>$row), true, true);
+				elseif (strlen($this->list_options['list_custom_body_cells']))
+					$this->display_partial($this->list_options['list_custom_body_cells'], array('model'=>$row), true, true);
+			}
+		}
+	?>
+
+	<? foreach ($list_columns as $index=>$column): ?>
+		<?
+			$cell_style = null;
+			if ($this->list_display_as_tree && $list_tree_level > 0 && $index == 0)
+				$cell_style = 'style="padding-left: '.(20*$list_tree_level).'px"';
+				
+			$cell_on_click_handler = null;
+			if ($url && $this->list_handle_row_click)
+				$cell_on_click_handler = "if (event.which != 2) window.location.href = '".$url."'";
+				
+			if ($on_click)
+				$cell_on_click_handler = $cell_on_click.'; '.$cell_on_click_handler;
+				
+			if ($cell_on_click_handler)
+				$cell_on_click_handler = 'onclick="'.$cell_on_click_handler.'"';
+		?>
+		<td <?=$cell_style ?> class="<?=$this->list_cell_class($column) ?> <?=$url ? 'link' : null ?>" <?=$cell_on_click_handler ?>>
+			<?
+				if (!array_key_exists($column->db_name, $this->list_cell_individual_partial)):
+			?>
+				<?
+					if ($this->list_cell_partial !== false)
+					{
+						if (!strlen($this->list_cell_partial))
+							$this->list_render_partial('list_cell_partial', array('model'=>$row, 'index'=>$index, 'column'=>$column, 'url'=>$url), false);
+						else
+							$this->display_partial($this->list_cell_partial, array('model'=>$row, 'index'=>$index, 'column'=>$column, 'url'=>$url), true, true);
+					}
+				?>
+			
+				<? if ($url): ?><a <?=$on_click ?> href="<?=$url.'?'.uniqid() ?>"><? endif ?>
+				<? if ($column->type !== db_bool): ?>
+					<?=h($row->display_field($column->db_name, 'list')) ?>
+				<? else: ?>
+					<? $this->list_render_partial('list_bool_column', array('value'=>$row->{$column->db_name})); ?>
+				<? endif ?>
+				<? if ($url): ?></a><? endif ?>
+			<? else: ?>
+				<? $this->display_partial($this->list_cell_individual_partial[$column->db_name], array('model'=>$row, 'index'=>$index, 'column'=>$column, 'url'=>$url)) ?>
+			<? endif ?>
+		</td>
+	<? endforeach ?>
+</tr>
+
+<?
+	if ($this->list_display_as_tree && $expanded)
+		$this->list_render_partial('list_body_rows', array('list_data'=>$list_data, 'list_tree_level'=>$list_tree_level+1));
+?>

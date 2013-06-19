@@ -1,0 +1,101 @@
+<?
+	$sort_column_count = count($columns);
+?>
+<div class="form-350">
+	<h2>List Setup</h2>
+	<?=Phpr_Form::open_tag(array('id'=>$this->list_get_popup_form_id())) ?>
+		<div class="content offset-bottom">
+			<p>Use checkboxes to select columns you want to see in the list. You can change position of columns by dragging them up or down.</p>
+
+			<? if ($sort_column_count > 10): ?>
+				<div class="scrollable-list">
+			<? else: ?>
+				<hr />
+			<? endif ?>
+
+			<ul class="simple-list checkbox-list sortable-list" id="list-columns-list">
+				<? foreach ($columns as $column): ?>
+				<?
+					$in_visible_list = in_array($column->db_name, $visible_columns);
+					$in_invisible_list = in_array($column->db_name, $invisible_columns); 
+
+					$is_visible = $in_visible_list || !$in_invisible_list;
+
+					if (!$in_visible_list && !$in_invisible_list && !$column->default_visible)
+						$is_visible = false;
+
+				?>
+					<li>
+						<input type="checkbox" value="1" name="list_visible_colums[<?=$column->db_name ?>]" <?=Phpr_Form::checkbox_state($is_visible) ?> class="checkbox" />
+						<?=strlen($column->list_title) ? h($column->list_title) : h($column->display_name) ?>
+						<input type="hidden" value="<?=$column->db_name ?>" name="ordered_list[]" />
+					</li>
+				<? endforeach ?>
+			</ul>
+			<? if ($sort_column_count > 10): ?>
+				</div>
+			<? endif ?>
+
+			<? if (!$this->list_display_as_tree && !$this->list_no_interaction && !$this->list_no_pagination): ?>
+				<div class="form">
+					<fieldset class="form-elements">
+						<div class="control-group field dropdown full">
+							<label for="list_recordsperpage" class="control-label">
+								Records per page
+							</label>
+							<span class="help-block">Select the number of records per page to display. Please note that high number of records on a single page can reduce performance.</span>
+
+							<div class="controls">
+								<select name="records_per_page" id="list_recordsperpage" autocomplete="off">
+									<?
+										$records_per_page_options = array(20, 40, 80, 100, 120);
+										if (!in_array($records_per_page, $records_per_page_options))
+											$records_per_page_options[] = $records_per_page;
+									
+										sort($records_per_page_options);
+									
+										foreach ($records_per_page_options as $option_value):
+									?>
+										<option <?=Phpr_Form::option_state($option_value, $records_per_page) ?> value="<?=$option_value ?>"><?=$option_value ?></option>
+									<? endforeach ?>
+								</select>
+							</div>
+
+						</div>
+					</fieldset>
+				</div>
+			<? endif ?>
+		
+			<script>
+				jQuery('#list-columns-list').sortable({
+					connectWith: '#list-columns-list',
+					axis: 'y',
+					containment: 'parent',
+					start: function(event, ui) {
+						ui.item.addClass('drag');
+					},
+					stop: function(event, ui) {
+						ui.item.removeClass('drag');
+					}
+				});
+			</script>
+		</div>
+		<div class="footer align-center">
+			<?= admin_button('Save', 
+				array(
+					'onclick' => 'return cancelPopup()',
+					'class' => 'btn-success'
+				), 
+				$this->get_event_handler('on_apply_list_settings'), "
+					update: '#".$this->list_get_container_id()."',
+					success: function(){ \$('#".$this->list_get_container_id()."').trigger('listUpdated'); },
+					customIndicator: LightLoadingIndicator
+				",
+				'#'.$this->list_get_popup_form_id() 
+			) ?>
+
+			<?= admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+		</div>
+
+	</form>
+</div>

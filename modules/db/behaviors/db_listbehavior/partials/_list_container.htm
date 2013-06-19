@@ -1,0 +1,171 @@
+<?
+	$show_toolbar = $this->list_control_panel || ($this->list_search_enabled && !$this->list_no_interaction);
+?>
+<? if ($show_toolbar): ?>
+	<div class="navbar scroll-toolbar">
+		<div class="navbar-inner">
+<? endif ?>
+
+		<? if ($this->list_control_panel): ?>
+			<div class="container">
+
+				<!-- Collapsed button -->
+				<ul class="nav toolbar-expand">
+					<li><a href="javascript:;" data-toggle="collapse" data-target=".nav-collapse"><i class="icon-reorder"></i></a></li>
+				</ul>
+
+				<!-- Main toolbar -->
+				<div class="nav-collapse collapse">
+
+					<ul class="nav scroll-left">
+						<li><a href="javascript:;"><i class="icon-caret-left"></i></a></li>
+					</ul>
+
+					<div class="scroll-area pull-left">
+						<div class="scroll-content">
+							<? $this->display_partial($this->list_control_panel); ?>
+						</div>
+					</div>
+
+					<ul class="nav scroll-right">
+						<li><a href="javascript:;"><i class="icon-caret-right"></i></a></li>
+					</ul>
+
+				</div>
+		<? endif ?>
+
+		<? if (!$this->list_no_interaction || $this->list_search_enabled): ?>
+
+				<? if (!$this->list_no_interaction && !$this->list_no_setup_link): ?>
+					<!-- List setup -->
+					<ul class="nav list-settings">
+						<li class="<?= $this->list_search_enabled ? 'search-enabled' : null ?>">
+							<a class="list-setup" href="javascript:;" title="List setup" onclick="new PopupForm('<?= $this->get_event_handler('on_load_list_setup') ?>'); return false;"><i class="icon-list-alt"></i></a>
+						</li>
+					</ul>
+				<? endif ?>
+
+				<? if ($this->list_search_enabled): ?>
+					<?
+						$search_control_id = $this->list_get_element_id('search_control');
+						$search_field_id = $this->list_get_element_id('search_field');
+						
+						$search_active = strlen($list_search_string);
+					?>
+
+					<!-- List search -->
+					<div class="navbar-form list-search <?= $search_active ? null : 'inactive' ?>" id="<?=h($search_control_id) ?>">
+						<i class="icon-search"></i>
+						<input type="text" name="search_field" class="search-field" value="<?= $search_active ? h($list_search_string) : h($this->list_search_prompt) ?>" id="<?=h($search_field_id) ?>" />
+						<i class="icon-remove search-cancel"></i>
+					</div>
+					
+					<script type="text/javascript">
+						<?
+							$form_id = $this->list_get_form_id();
+							$list_form = $this->list_no_form ? "jQuery('#".$search_control_id."').closest('form')" : "jQuery('#".$form_id."')";
+						?>
+						var searchHandler = jQuery('#<?=h($search_control_id) ?>').searchControl({ defaultText: '<?= $this->list_search_prompt ?>' });
+							
+							searchHandler.on('send', function(){
+								return <?= $list_form ?>.phpr().post('<?= $this->get_event_handler('on_list_search') ?>', {
+									update: '#<?= $this->list_get_container_id() ?>', 
+									data: {
+										search_string: jQuery('#<?= $search_field_id ?>').val()
+									}, 
+									success: function() {
+										jQuery('#<?= $this->list_get_container_id() ?>').trigger('listUpdated');
+									}, 
+									loadIndicator: {
+										injectInElement: true, 
+										element: '#<?= $this->list_get_container_id() ?>', 
+										src: '<?= $list_load_indicator ?>', 
+										hideOnSuccess: true
+									}
+								}).send();
+							});
+
+							searchHandler.on('cancel', function(){
+								return <?= $list_form ?>.phpr().post('<?= $this->get_event_handler('on_list_search_cancel') ?>', {
+									update: '#<?= $this->list_get_container_id() ?>', 
+									success: function() {
+										jQuery('#<?= $this->list_get_container_id() ?>').trigger('listUpdated');
+									}, 
+									loadIndicator: {
+										injectInElement: true, 
+										element: '#<?= $this->list_get_container_id() ?>', 
+										src: '<?= $list_load_indicator ?>', 
+										hideOnSuccess: true
+									}
+								}).send();
+							});
+						
+					</script>
+				<? endif ?>
+	
+		<? endif ?>
+
+		<? if ($this->list_control_panel): ?>
+			</div>
+		<? endif ?>
+
+<? if ($show_toolbar): ?>
+	</div>
+</div>
+<? endif ?>
+
+<div class="list_filter_container">
+<? 
+	if ($this->list_render_filters)
+		$this->filter_render();
+?>
+</div>
+
+<? if ($this->list_sidebar_panel): ?>
+	<table class="listSidebarLayout">
+		<tr>
+			<td class="sidebar"><? $this->display_partial($this->list_sidebar_panel) ?></td>
+			<td class="list">
+<? endif ?>
+<? 
+	if ($this->list_top_partial)
+		$this->display_partial($this->list_top_partial);
+?>
+
+<?
+	if (!$this->list_no_interaction && !$this->list_no_form):
+?>
+	<?=Phpr_Form::open_tag(array('id'=>$this->list_get_form_id())) ?>
+<? endif ?>
+	<? 
+	$scrollable = $this->list_scrollable || (isset($this->list_options['list_scrollable']) && $this->list_options['list_scrollable']);
+?>
+	<div id="<?= $this->list_get_container_id() ?>" class="list-container <? if ($scrollable): ?>scrollable-list<? endif ?>">
+		<? 
+			if (!$this->list_custom_partial)
+				$this->list_render_partial('list_list'); 
+			else
+				$this->display_partial($this->list_custom_partial); 
+		?>
+	</div>
+<? if (!$this->list_no_interaction && !$this->list_no_form): ?>
+	</form>
+<? endif ?>
+
+<? if (!$this->list_no_js_declarations): ?>
+	<script type="text/javascript">
+		function listReload(show_load_indicator) {
+			return jQuery('#<?= $this->list_get_form_id() ?>').phpr().post('<?= $this->get_event_handler('on_list_reload') ?>', { 
+				update: '#<?= $this->list_get_container_id() ?>', 
+				success: function(){ jQuery('#<?= $this->list_get_container_id() ?>').trigger('listUpdated'); },
+				customIndicator: LightLoadingIndicator,
+				hideOnSuccess: true
+			}).send();
+		}
+	</script>
+<? endif ?>
+<? if ($this->list_sidebar_panel): ?>
+			</td>
+		</tr>
+	</table>
+<? endif ?>

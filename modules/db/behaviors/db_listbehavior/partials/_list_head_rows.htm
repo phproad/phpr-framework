@@ -1,0 +1,44 @@
+<tr>
+	<? if ($this->list_display_as_tree && !$this->list_no_interaction): ?>
+		<th class="list-expand"></th>
+	<? endif ?>
+	
+	<?
+		$head_cb_option_set = isset($this->list_options['list_custom_head_cells']);
+
+		if ($this->list_custom_head_cells !== false || $head_cb_option_set) {
+
+			if (!strlen($this->list_custom_head_cells) && !$head_cb_option_set) {
+				$this->list_render_partial('list_head_front_cells', array(), false);
+			}
+			else {
+				if (!$head_cb_option_set && strlen($this->list_custom_head_cells)) {
+					$this->display_partial($this->list_custom_head_cells, null, true, true);
+				}
+				else if (strlen($this->list_options['list_custom_head_cells'])) {
+					$this->display_partial($this->list_options['list_custom_head_cells'], null, true, true);
+				}
+			}
+		}
+	?>
+	
+	<? foreach ($list_columns as $column): ?>
+		<? 
+			$can_sort = (!$column->is_custom && !$this->list_no_interaction && !$this->list_no_sorting && !$column->no_sorting); 
+		?> 
+		<th class="link <?=$this->list_cell_class($column) ?> <?=(!$can_sort)?'no-sort':''?>">
+			<? if ($can_sort): ?>
+				<a href="javascript:;" onclick="return $(this).phpr().post('<?=$this->get_event_handler('on_list_column_click') ?>', {
+					data: { column_name: '<?=$column->db_name ?>' }, 
+					update: '#<?=$this->list_get_container_id() ?>', 
+					customIndicator: LightLoadingIndicator, 
+					success: function(){ jQuery('#<?=$this->list_get_container_id() ?>').trigger('listUpdated'); }
+				}).send();">
+			<? endif ?>
+				<?= strlen($column->list_title) ? h($column->list_title) : h($column->display_name) ?>
+			<? if ($can_sort): ?>
+				</a>
+			<? endif ?>
+		</th>
+	<? endforeach ?>
+</tr>

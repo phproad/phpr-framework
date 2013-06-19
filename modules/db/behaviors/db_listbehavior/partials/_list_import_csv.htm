@@ -1,0 +1,91 @@
+<div class="form-400">
+	<? if (!$completed): ?>
+		<?=Phpr_Form::open_tag(array('enctype'=>'multipart/form-data', 'onsubmit'=>null)) ?>
+			<input type="hidden" name="postback" value="1" />
+
+			<p>You can import data from a previously prepared file, Microsoft Excel.</p>
+			<? if ($this->list_csv_template_url): ?>
+				<p><a class="csv_template_link" href="<?=$this->list_csv_template_url ?>">Download the pattern file</a></p>
+			<? endif ?>
+			
+			<div class="well">
+				<p>To prepare the data, upload the template file to disk and open it in Microsoft Excel. Then:</p>
+			
+				<ul class="simple-list bullets">
+					<li>Fill in the table, without changing the sequence of columns.</li>
+					<li>Remove the second row of the table. In this line, there are no comments.</li>
+					<li>Save the file in CSV (comma - delimited).</li>
+					<li>Load the saved file using the form below.</li>
+				</ul>
+			</div>
+		
+			<div class="form">
+			
+				<? if ($this->view_data_element('form_error')): ?>
+					<div class="alert alert-error form-flash"><?=h($form_error) ?></div>
+				<? endif ?>
+
+				<fieldset class="form-elements">
+					<div class="control-group full">
+						<label for="import_file" class="control-label">
+							File
+							<span class="comment">Select the file. CSV data import.</span>
+						</label>
+						<div class="controls">
+							<input type="file" name="file" id="import_file" />
+						</div>
+					</div>
+					<div class="control-group checkbox full">
+						<label for="first_row_titles" class="control-label">First row in the CSV file contains column titles</label>
+						<div class="controls">
+							<input type="hidden" class="checkbox" value="" name="first_row_titles" />
+							<input type="checkbox" class="checkbox" value="1" name="first_row_titles" id="first_row_titles" checked="checked" />
+						</div>
+
+						<div class="help-block">Use this checkbox if the first row in your CSV file contains column titles. Then it will be ignored during the import.</div>
+					</div>
+				</fieldset>
+			</div>
+
+			<div id="fixed-toolbar" class="top">
+				<div class="form-toolbar">
+					<?= admin_button('Import Data', array('href'=>'javascript:;', 'class'=>'btn-success', 'onclick'=>"$(this).getForm().submit(); return false;")) ?>
+					<?= admin_button('Cancel', $this->list_csv_cancel_url) ?>
+				</div>
+			</div>
+
+		</form>
+	<? else: ?>
+		<p>Data import is complete. Imported records: <strong><?=$success ?></strong>, errors: <strong><?=count($errors) ?></strong>.</p>
+		
+		<? if (count($errors)): ?>
+			<p>Below is a list of errors.</p>
+			
+			<table class="list-table">
+				<thead>
+					<tr>
+						<th>Line</th>
+						<th class="last">Error</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<? foreach ($errors as $line=>$text): ?>
+						<tr>
+							<td><?=$line ?></td>
+							<td class="last"><?=h($text) ?></td>
+						</tr>
+					<? endforeach ?>
+				</tbody>
+			</table>
+		<? endif ?>
+	
+		<div id="fixed-toolbar" class="top">
+			<div class="form-toolbar">
+				<?= admin_button('Back to list', $this->list_csv_cancel_url) ?>
+				<?= admin_button('Import another file', $this->list_csv_import_url) ?>
+			</div>
+		</div>
+		
+	<? endif ?>
+</div>

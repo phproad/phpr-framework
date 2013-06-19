@@ -1,0 +1,27 @@
+<?
+	$title = "";
+
+	if ($child_count == 0) {
+		$src = 'tree_no_expand.gif';
+	}
+	else
+	{
+		if ($expanded) {
+			$src = 'tree_collapse.gif';
+			$title = "Collapse";
+		}
+		else {
+			$src = 'tree_expand.gif';
+			$title = "Expand";
+		}
+	}
+?>
+
+<td class="list-expand">
+	<a title="<?=$title ?>" href="javascript:;" onclick="return $(this).phpr().post('<?=$this->get_event_handler('on_list_toggle_node') ?>', {
+		data: { node_id: '<?=$row->id ?>', status: <?=$expanded ? 1 : 0 ?> }, 
+		update: '#<?=$this->list_get_container_id() ?>', 
+		customIndicator: LightLoadingIndicator,
+		success: function(){ jQuery('#<?=$this->list_get_container_id() ?>').trigger('listUpdated'); } 
+	}).send();"><img class="no_menu" src="<?=Phpr::$config->get('PHPR_URL', 'phpr').'/assets/images/'.$src ?>" alt="<?=$title ?>" /></a>
+</td>

@@ -1,0 +1,16 @@
+<? 
+	foreach ($list_data as $row)
+	{
+		if ($this->list_reuse_model)
+		{
+			$row_data = $row;
+			$row = $reusable_model;
+			$row->reset_relations();
+			$row->fill_external($row_data);
+		}
+		
+		$this->list_before_display_record($row);
+		Phpr::$events->fire_event('db:on_before_list_record_display', $this, $list_model_class, $row);
+		$this->list_render_partial('list_body_row', array('row'=>$row, 'list_tree_level'=>$list_tree_level));
+	}
+?>

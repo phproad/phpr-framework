@@ -1,0 +1,39 @@
+<table class="table list-table">
+	<thead class="sortable">
+		<? $this->list_render_partial('list_head_rows') ?>
+	</thead>
+	<tbody id="<?= $this->list_get_container_id().'_body' ?>">
+		<? if ((is_object($list_data) && !$list_data->count) || (is_array($list_data) && !$list_data)): ?>
+			<tr class="no-data">
+				<td colspan="<?= $list_column_count+5 ?>"><?= h($list_no_data_message) ?></td>
+			</tr>
+		<? else: ?>
+			<? $this->list_render_partial('list_body_rows') ?>
+		<? endif ?>
+	</tbody>
+</table>
+
+<? if (!$this->list_no_interaction && $list_total_row_count > 0 && !$this->list_display_as_tree && !$this->list_no_pagination): ?>
+	<div class="list-pagination">
+		<?=Phpr_Html::ajax_pagination($list_pagination,
+			"$(this).phpr().post('".$this->get_event_handler('on_list_prev_page')."', {
+				update: '#".$this->list_get_container_id() ."', 
+				customIndicator: LightLoadingIndicator,
+				success: function(){\$('#".$this->list_get_container_id()."').trigger('listUpdated'); }
+			}).send();",
+			"$(this).phpr().post('".$this->get_event_handler('on_list_next_page')."', {
+				update: '#".$this->list_get_container_id() ."', 
+				customIndicator: LightLoadingIndicator,
+				success: function(){\$('#".$this->list_get_container_id()."').trigger('listUpdated'); }
+			}).send();",
+			"$(this).phpr().post('".$this->get_event_handler('on_list_set_page')."', {
+				data: { pageIndex: %s }, 
+				update: '#".$this->list_get_container_id() ."', 
+				customIndicator: LightLoadingIndicator,
+				success: function(){\$('#".$this->list_get_container_id()."').trigger('listUpdated'); }
+			}).send();"
+		) ?>
+	</div>
+<? endif ?>
+<input type="hidden" class="list_load_indicator" value="<?= $list_load_indicator ?> "/>
+<script type="text/javascript"> realignPopups(); </script>

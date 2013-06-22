@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Unhandled Exception</title>
+		<meta charset="utf-8" />
+		<base href="<?=Phpr::$request->get_root_url().Phpr::$request->get_subdirectory() ?>" />		
+		<link rel="stylesheet" type="text/css" href="modules/cms/assets/stylesheets/css/error_page.css" />
+		
+		<script type="text/javascript">
+			var application_root_dir = '<?=Phpr::$request->get_subdirectory() ?>';
+		</script>
+
+		<?
+			$phpr_url = Phpr::$config->get('PHPR_URL', 'phpr');
+		?>
+
+		<script type="text/javascript" src="<?= $phpr_url?>/assets/js/jquery.js"></script>
+		
+		<script type="text/javascript" src="<?= $phpr_url?>/vendor/syntaxhighlighter/scripts/shCore.js"></script>
+		<script type="text/javascript" src="<?= $phpr_url?>/vendor/syntaxhighlighter/scripts/shBrushPhp.js"></script>
+		<script type="text/javascript" src="<?= $phpr_url?>/vendor/syntaxhighlighter/scripts/shBrushXml.js"></script>
+
+		<link type="text/css" rel="stylesheet" href="<?= $phpr_url?>/vendor/syntaxhighlighter/styles/shCore.css"/>
+		<link type="text/css" rel="stylesheet" href="<?= $phpr_url?>/vendor/syntaxhighlighter/styles/shThemeDefault.css"/>
+		
+		<script type="text/javascript">
+			SyntaxHighlighter.all();
+			SyntaxHighlighter.defaults.gutter = true;
+		</script>
+	</head>
+	<body>
+		<div id="error-content">
+			<h1>Unhandled Error!</h1>
+			
+			<div id="error-wrapper">
+				<div class="alert alert-error"><?= $error->message ?></div>
+				
+				<? if ($error->hint): ?>
+					<div class="hint">
+						<h3>Hint</h3>
+						<p><?= $error->hint ?></p>
+					</div>
+				<? endif ?>
+				
+				<table class="column_view">
+					<tbody>
+						<tr class="first">
+							<th>Document</th>
+							<td><?= $error->document ?></td>
+						</tr>
+						<tr>
+							<th>Document type</th>
+							<td>
+								<?= $error->document_type ?>
+							</td>
+						</tr>
+						<tr>
+							<th>Line</th>
+							<td><?= $error->line ?></td>
+						</tr>
+						<tr class="last">
+							<th>Exception class</th>
+							<td><?= $error->class_name ?></td>
+						</tr>
+					</tbody>
+				</table>
+
+				<? if (count($error->code_highlight->lines)): ?>
+					<div class="details">
+						<h3>Code Highlight</h3>
+						<div class="code">
+							<pre class="brush:<?= $error->code_highlight->brush ?>;toolbar:false;wrap-lines:false;tab-size:3;first-line:<?= $error->code_highlight->start_line+1 ?>;highlight:[<?= $error->code_highlight->error_line+1 ?>]">
+							<? foreach ($error->code_highlight->lines as $line): ?>
+								<?= strlen(trim($line)) ? Phpr_Html::encode($line) : "&nbsp;".PHP_EOL; ?>
+							<? endforeach ?>
+							</pre>
+						</div>
+					</div>
+				<? endif ?>
+				
+				<div class="details last">
+					<table class="call_stack">
+						<? if ($error->is_document): ?>
+							<thead>
+								<tr>
+									<th class="first record_number">#</th>
+									<th>Document</th>
+									<th class="last">Type</th>
+								</tr>
+							</thead>
+							<tbody>
+							<? 
+								$last_index = count($error->call_stack) - 1;
+							?>
+								
+							<? foreach ($error->call_stack as $index => $stack_item): ?>
+								<tr class="<?=Phpr_Html::zebra('callstack') ?> <?= $index == $last_index ? 'last' : null ?>">
+									<td class="first"><?= $stack_item->id ?></td>
+									<td><?= $stack_item->document ?></td>
+									<td class="last"><?= $stack_item->type ?></td>
+								</tr>
+							<? endforeach ?>
+							</tbody>
+						<? else: ?>
+							<thead>
+								<tr>
+									<th class="first record_number">#</th>
+									<th>Call Stack Code</th>
+									<th>Document</th>
+									<th class="last">Line</th>
+								</tr>
+							</thead>
+							<tbody>
+								<?
+									$last_index = count($error->call_stack) - 1;
+								?>	
+								<? foreach ($error->call_stack as $index => $stack_item): ?>
+									<?
+										if (strlen($stack_item->args))
+											$args = '<span class="arguments">' . Phpr_Html::encode($stack_item->args) . '</span>';
+										else 
+											$args = '()';
+									?>
+								<tr class="<?=Phpr_Html::zebra('callstack') ?> <?= $index == $last_index ? 'last' : null ?>">
+									<td class="first"><?= $stack_item->id ?></td>
+									<td><?= $stack_item->function_name . '(' . $args . ')' ?></td>
+									<td><?= $stack_item->document ?></td>
+									<td class="last"><?= $stack_item->line ?></td>
+								</tr>
+								<? endforeach ?>
+							</tbody>
+						<? endif ?>
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

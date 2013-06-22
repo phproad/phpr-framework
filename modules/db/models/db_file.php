@@ -175,8 +175,7 @@ class Db_File extends Db_ActiveRecord
 	{
 		$results = Phpr::$events->fire_event('phpr:on_before_file_deleted', $this);
 
-		foreach ($results as $result) 
-		{
+		foreach ($results as $result) {
 			if ($result)
 				return;
 		}
@@ -234,10 +233,8 @@ class Db_File extends Db_ActiveRecord
 	public function get_thumbnail_path($width, $height, $return_jpeg = true, $params = array('mode' => 'keep_ratio'))
 	{
 		$processed_images = Phpr::$events->fire_event('phpr:on_process_image', $this, $width, $height, $return_jpeg, $params);
-		foreach ($processed_images as $image)
-		{
-			if (strlen($image))
-			{
+		foreach ($processed_images as $image) {
+			if (strlen($image)) {
 				if (!preg_match(',^(http://)|(https://),', $image))
 					return root_url($image);
 				else

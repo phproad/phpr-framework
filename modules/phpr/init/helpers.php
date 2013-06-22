@@ -11,6 +11,14 @@ if (!function_exists('root_url'))
 	}
 }
 
+if (!function_exists('site_url'))
+{
+	function site_url($resource = null, $suppress_protocol = false)
+	{
+		return Phpr_Url::site_url($resource, $suppress_protocol);
+	}
+}
+
 if (!function_exists('post'))
 {
 	function post($name, $default = null)
@@ -57,6 +65,14 @@ if (!function_exists('module_exists'))
 	function module_exists($module_name)
 	{
 		return Phpr_Module_Manager::module_exists($module_name);
+	}
+}
+
+if (!function_exists('mailto_encode'))
+{
+	function mailto_encode($email, $title = '', $params = '')
+	{
+		return Phpr_Email::mailto_encode($email, $title, $params);
 	}
 }
 
@@ -201,11 +217,28 @@ if (!function_exists('checkbox_state'))
 	}
 }
 
+if (!function_exists('option_state'))
+{
+	function option_state($value1, $value2) 
+	{
+		return Phpr_Form::option_state($value1, $value2);
+	}
+}
+
+if (!function_exists('multi_option_state'))
+{
+	function multi_option_state($items, $name, $value)
+	{
+		return Phpr_Form::multi_option_state($items, $name, $value);
+	}
+}
+
 if (!function_exists('form_value'))
 {
 	function form_value($object, $value, $default = null) 
 	{
-		return (isset($object->$value)) ? $object->$value : $default;
+		$return = (isset($object->$value)) ? $object->$value : $default;
+		return trim($return);
 	}
 }
 

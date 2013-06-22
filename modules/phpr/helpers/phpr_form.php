@@ -7,31 +7,31 @@
  */
 class Phpr_Form
 {
-    /**
-     * Returns the opening form tag.
-     * @param array $attributes Optional list of the opening tag attributes.
-     * @return string
-     */
-    public static function open_tag($attributes = array()) 
-    {
-        $default_url = Phpr_Html::encode(rawurldecode(strip_tags(root_url(Phpr::$request->get_current_uri()))));
+	/**
+	 * Returns the opening form tag.
+	 * @param array $attributes Optional list of the opening tag attributes.
+	 * @return string
+	 */
+	public static function open_tag($attributes = array()) 
+	{
+		$default_url = Phpr_Html::encode(rawurldecode(strip_tags(root_url(Phpr::$request->get_current_uri()))));
 
-        if (($pos = mb_strpos($default_url, '|')) !== false)
-            $default_url = mb_substr($default_url, 0, $pos);
+		if (($pos = mb_strpos($default_url, '|')) !== false)
+			$default_url = mb_substr($default_url, 0, $pos);
 
-        $default_attributes = array(
-            'action' => $default_url, 
-            'method' => 'post', 
-            'id' => 'FormElement', 
-            'onsubmit' => 'return false;'
-        );
+		$default_attributes = array(
+			'action' => $default_url, 
+			'method' => 'post', 
+			'id' => 'form-element', 
+			'onsubmit' => 'return false;'
+		);
 
-        $result = "<form ";
-        $result .= Phpr_Html::format_attributes($attributes, $default_attributes);
-        $result .= ">\n";
+		$result = "<form ";
+		$result .= Phpr_Html::format_attributes($attributes, $default_attributes);
+		$result .= ">\n";
 
-        return $result;
-    }
+		return $result;
+	}
 
 	/**
 	 * Returns the closing form tag.
@@ -78,27 +78,56 @@ class Phpr_Form
 		return $selected_state == $current_state ? 'selected="selected"' : null;
 	}
 
+	public static function multi_option_state($items, $name, $value)
+	{
+
+		foreach ($items as $item) {
+			if ($item->$name == $value)
+				return 'selected="selected"';
+		}
+
+		if (is_array($items) && in_array($value, $items))
+			return 'selected="selected"';
+	}
+	
 	/**
 	 * Form widget
 	 */
 	
-	public static function widget($model, $field_name, $options=array())
+	public static function widget($field_name, $options=array())
 	{
 		if (!isset($options['class']))
-			throw new Phpr_ApplicationException("Missing widget class from Phpr_Form::widget(), please define 'class' in the third parameter");
+			throw new Phpr_ApplicationException("Missing widget class from Phpr_Form::widget(), please define 'class' in options array as the second parameter");
 
 		extract($options);
+
+		// All widgets need a model
+		// 
+
+		if (!isset($model))
+			$model = null;
 
 		if (is_string($model))
 			$model = new $model();
 
 		if (!$model)
-			$model = new User(); // Gotta use something!
+			$model = new Phpr_User(); // Gotta use something!
 
+		// All widgets need a controller
 		$controller = new Phpr_Controller();
-		
+
+		// Create widget
 		$widget = new $class($controller, $model, $field_name, $options);
+
+		// Capture printed output
+		// 
+		
+		ob_start();
 		$widget->render();
+		$result = ob_get_contents();
+		ob_end_clean();
+
+		return $result;
 	}
 
 	/**
@@ -295,8 +324,8 @@ class Phpr_Form
 		$multiple = (count($selected) > 1 && strpos($extra, 'multiple') === false) ? ' multiple="multiple"' : '';
 		$return = '<select name="'.$name.'"'.$extra.$multiple.">".PHP_EOL;
 
-        if ($empty_option !== false)
-            $return .= '<option value="">'.h($empty_option).'</option>'.PHP_EOL;
+		if ($empty_option !== false)
+			$return .= '<option value="">'.h($empty_option).'</option>'.PHP_EOL;
 
 		foreach ($options as $key => $value)
 		{

@@ -163,7 +163,7 @@ class Db_Data_Feed
 	public function paginate($page_index, $records_per_page)
 	{
 		$pagination = new Phpr_Pagination($records_per_page);
-		$pagination->set_row_count($this->requestRowCount());
+		$pagination->set_row_count($this->get_row_count());
 		$pagination->set_current_page_index($page_index);
 
 		$this->limit($records_per_page, ($records_per_page * $page_index)); 
@@ -171,7 +171,7 @@ class Db_Data_Feed
 		return $pagination;
 	}
 
-	public function requestRowCount()
+	public function get_row_count()
 	{
 		return Db_Helper::scalar($this->count_sql());
 	}

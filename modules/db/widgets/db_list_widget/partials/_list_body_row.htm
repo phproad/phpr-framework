@@ -49,17 +49,17 @@
 	<? endforeach ?>
 	<? if ($widget->show_delete_icon): ?>
 		<td class="list-icon last">
-			<a onclick="return $(this).getForm().sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
-				extraFields: { 
+			<a onclick="return $(this).phpr().post('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
+				data: { 
 					<?=$widget->get_event_handler_data('on_form_delete')?>, 
 					primary_id: <?=$row->id?>
 				}, 
 				confirm: 'Do you really want to remove this <?= strtolower($widget->form_title) ?>?', 
-				update: '<?=$widget->get_id()?>', 
-				loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1},
-				onSuccess: cancelPopup, 
-				onAfterUpdate: <?= $widget->get_id() ?>_init
-			});" title="Delete <?= $widget->form_title ?>" class="has-tooltip delete" href="javascript:;"><i class="icon-remove"></i></a>
+				update: '#<?=$widget->get_id()?>', 
+				loadIndicator: { injectInElement: true, element: '#<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: true },
+				success: cancelPopup, 
+				afterUpdate: <?= $widget->get_id() ?>_init
+			}).send();" title="Delete <?= $widget->form_title ?>" class="has-tooltip delete" href="javascript:;"><i class="icon-remove"></i></a>
 		</td>
 	<? endif ?>
 </tr>

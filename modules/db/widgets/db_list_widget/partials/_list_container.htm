@@ -30,7 +30,7 @@
 					<!-- List search -->
 					<div class="navbar-form list-search <?=$search_active ? null : 'inactive' ?>" id="<?=h($search_control_id) ?>">
 						<i class="icon-search"></i>
-						<input type="text" name="search_field" placeholder="<?= h($widget->search_prompt) ?>" value="<?= $search_active ? h($search_string) : null ?>" id="<?= h($search_field_id) ?>" />
+						<input type="text" name="search_field" class="search-field" placeholder="<?= h($widget->search_prompt) ?>" value="<?= $search_active ? h($search_string) : null ?>" id="<?= h($search_field_id) ?>" />
 						<i class="icon-remove search-cancel"></i>
 					</div>
 					
@@ -56,7 +56,7 @@
 									injectInElement: true, 
 									element: '#<?= $widget->get_id() ?>', 
 									src: '<?= $widget->load_indicator ?>', 
-									hideOnSuccess: 1
+									hideOnSuccess: true
 								}
 							}).send();
 						});
@@ -72,9 +72,9 @@
 								}, 
 								loadIndicator: {
 									injectInElement: true, 
-									element: '<?= $widget->get_id() ?>', 
+									element: '#<?= $widget->get_id() ?>', 
 									src: '<?= $widget->load_indicator ?>', 
-									hideOnSuccess: 1
+									hideOnSuccess: true
 								}
 							}).send();
 						});
@@ -121,13 +121,11 @@
 	<? if (!$widget->no_js_declarations): ?>
 		<script>
 			function listWidgetReload(show_load_indicator) {
-				return jQuery('#<?= $widget->get_form_id() ?>').get(0).sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
-					extraFields: { <?=$widget->get_event_handler_data('on_list_reload')?> },
-					update: '<?= $widget->get_id() ?>', 
-					onSuccess: function(){ jQuery('#<?= $widget->get_id() ?>').trigger('listUpdated'); }, 
-					onBeforePost: LightLoadingIndicator.show.pass('Loading...'), 
-					onComplete: LightLoadingIndicator.hide, 
-					loadIndicator: {show: false, injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1}
+				return jQuery('#<?= $widget->get_form_id() ?>').phpr().post('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
+					data: { <?=$widget->get_event_handler_data('on_list_reload')?> },
+					update: '#<?= $widget->get_id() ?>', 
+					success: function(){ jQuery('#<?= $widget->get_id() ?>').trigger('listUpdated'); }, 
+					customIndicator: LightLoadingIndicator
 				});
 			}
 

@@ -2,28 +2,28 @@
 	<?
 		$head_cb_option_set = $widget->custom_head_cells;
 
-		if ($widget->custom_head_cells !== false || $head_cb_option_set)
-		{	
-			if (!$head_cb_option_set && strlen($widget->custom_head_cells))
+		if ($widget->custom_head_cells !== false || $head_cb_option_set) {	
+			
+			if (!$head_cb_option_set && strlen($widget->custom_head_cells)) {
 				$widget->display_partial($widget->custom_head_cells, null, true, true);
-			elseif ($widget->custom_head_cells)
+			}
+			else if ($widget->custom_head_cells) {
 				$widget->display_partial($widget->custom_head_cells, null, true, true);
+			}
 		}
 	?>
 	
 	<? foreach ($list_columns as $column): ?>
 		<th class="link <?= $widget->list_cell_class($column) ?> <?=($column->is_custom || $widget->no_interaction || $widget->no_sorting || $column->no_sorting)?'no-sort':''?> <?=($column->list_no_title)?'no-title':''?>" <? if($column->list_no_title): ?>title="<?= strlen(trim($column->list_title)) ? h($column->list_title) : h($column->display_name) ?>"<? endif ?>>
 			<? if (!$column->is_custom && !$widget->no_interaction && !$widget->no_sorting && !$column->no_sorting): ?>
-				<a href="#" onclick="return $(this).getForm().sendPhpr('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
-					extraFields: {
+				<a href="javascript:;" onclick="return $(this).phpr().post('<?= $controller->get_event_handler('on_form_widget_event') ?>', {
+					data: {
 						<?=$widget->get_event_handler_data('on_list_column_click')?>, 
-						columnName: '<?= $column->db_name ?>'
+						column_name: '<?= $column->db_name ?>'
 					}, 
-					update: '<?= $widget->get_id() ?>', 
-					loadIndicator: {injectInElement: true, element: '<?= $widget->get_id() ?>', src: '<?= $widget->load_indicator ?>', hideOnSuccess: 1, show: false}, 
-					onBeforePost: LightLoadingIndicator.show.pass('Loading...'), 
-					onComplete: LightLoadingIndicator.hide, 
-					onSuccess: function(){$('<?= $widget->get_id() ?>').fireEvent('listUpdated')}
+					update: '#<?= $widget->get_id() ?>', 
+					loadIndicator: LightLoadingIndicator, 
+					success: function(){ $('#<?= $widget->get_id() ?>').trigger('listUpdated'); }
 				});">
 			<? endif ?>
 			<? if ($column->list_no_title): ?>

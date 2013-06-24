@@ -7,18 +7,18 @@
 				<div class="content">
 					<div class="form-flash"></div>
 
-					<div class="embeddedList search700">
+					<div class="embedded-list">
 						<?= $widget->render_finder() ?>
 					</div>
 				</div>
 				<div class="footer">
 					<?= admin_ajax_button('Add selected', $this->getEventHandler('onFormWidgetEvent'), 
 						array('class'=>'btn btn-success'), "
-						extraFields: { ".$widget->get_event_handler_data('on_form_add')." }, 
-						update: '".$widget->get_id($widget->column_name)."', 
-						loadIndicator: {injectInElement: true}, 
-						onSuccess: cancelPopup, 
-						onAfterUpdate: ".$widget->get_id($widget->column_name)."_init
+						data: { ".$widget->get_event_handler_data('on_form_add')." }, 
+						update: '#".$widget->get_id($widget->column_name)."', 
+						loadIndicator: { injectInElement: true }, 
+						success: cancelPopup, 
+						afterUpdate: ".$widget->get_id($widget->column_name)."_init
 					") ?>
 
 					<?= admin_button('Close', array('onclick'=>'return cancelPopup()')) ?>

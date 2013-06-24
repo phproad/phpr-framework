@@ -171,7 +171,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		$this->view_data['list_column_definitions'] = $this->create_child_model_object()->get_column_definitions();
 
 		// Pagination
-		$total_row_count = $model->requestRowCount();
+		$total_row_count = $model->get_row_count();
 		if (!$no_pagination && !$this->no_pagination)
 		{
 			$pagination = new Phpr_Pagination($this->items_per_page);
@@ -309,22 +309,22 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		}
 
 		$attributes = (isset($options['attributes'])) ? $options['attributes'] : array();
-		$attributes['onclick'] = "return $('".$this->get_id()."').getForm().sendPhpr(
+		$attributes['onclick'] = "return $('".$this->get_id()."').phpr().post(
 		'".$this->controller->get_event_handler('on_form_widget_event')."',
 		{
-			extraFields: {
+			data: {
 				".$ajax_fields."
 				".$this->get_event_handler_data('on_list_delete_selected')."
 			},
-			update: '".$this->get_id()."',
+			update: '#".$this->get_id()."',
 			loadIndicator: {
 				show: true,
-				element: '".$this->get_id()."',
+				element: '#".$this->get_id()."',
 				hideOnSuccess: true
 			},
 			confirm: 'Do you really want to remove these ".strtolower(Phpr_Inflector::pluralize($this->form_title))."?',
-			onAfterUpdate: ".$this->get_id()."_init
-		})";
+			afterUpdate: ".$this->get_id()."_init
+		}).send()";
 
 		$label = (isset($options['label'])) ? $options['label'] : 'Delete '.Phpr_Inflector::pluralize($this->form_title);
 
@@ -525,7 +525,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 	public function on_list_column_click()
 	{
 		$this->load_relations();
-		$column = post('columnName');
+		$column = post('column_name');
 		if (strlen($column))
 		{
 			$sorting_column = $this->eval_sorting_column();

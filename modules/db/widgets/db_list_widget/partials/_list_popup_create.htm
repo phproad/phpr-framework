@@ -10,23 +10,23 @@
 				<div class="footer">
 					<?= admin_ajax_button(($new_record_flag) ? 'Add' : 'Save', $this->get_event_handler('on_form_widget_event'), 
 							array('class'=>"btn btn-success"), "
-							extraFields: { ".$widget->get_event_handler_data('on_form_update')." }, 
-							update: '".$widget->get_id()."', 
-							loadIndicator: {injectInElement: true}, 
-							onSuccess: cancelPopup, 
-							onAfterUpdate: ".$widget->get_id()."_init
+							data: { ".$widget->get_event_handler_data('on_form_update')." }, 
+							update: '#".$widget->get_id()."', 
+							loadIndicator: { injectInElement: true }, 
+							success: cancelPopup, 
+							afterUpdate: ".$widget->get_id()."_init
 						") ?>
 					<?= admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
 
 					<?= (!$new_record_flag)
 						? admin_ajax_button('Delete', $this->get_event_handler('on_form_widget_event'), 
 							array('class'=>"btn btn-danger pull-right"), "
-							extraFields: { ".$widget->get_event_handler_data('on_form_delete')." }, 
+							data: { ".$widget->get_event_handler_data('on_form_delete')." }, 
 							confirm: 'Do you really want to delete this ".strtolower($form_title)."?', 
-							update: '".$widget->get_id()."', 
-							loadIndicator: {injectInElement: true}, 
-							onSuccess: cancelPopup, 
-							onAfterUpdate: ".$widget->get_id()."_init
+							update: '#".$widget->get_id()."', 
+							loadIndicator: { injectInElement: true }, 
+							success: cancelPopup, 
+							afterUpdate: ".$widget->get_id()."_init
 						")
 						: '' ?>
 				</div>

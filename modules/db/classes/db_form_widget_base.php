@@ -110,11 +110,19 @@ class Db_Form_Widget_Base
 		$this->controller->view_data = $this->view_data + $this->controller->view_data;
 		$controller_view_path = $controller_view_path.'/_'.$view_name.'.htm';
 
-		if (!$override_controller && file_exists($controller_view_path))
+		if (!$override_controller && file_exists($controller_view_path)) {
 			$this->controller->display_partial($controller_view_path, $params, true, true);
-		else
-		{
-			$view_path = $this->view_path.'/_'.$view_name.'.htm';
+		} else {
+
+			//
+			// Absolute reference
+			//   NB: In Phpr_Controller_Base this expression is determined by the presence of a forwardslash (/).
+			//   
+			if (strpos($view_name, PATH_APP) !== false)
+				$view_path = $view_name;
+			else
+				$view_path = $this->view_path.'/_'.$view_name.'.htm';
+
 			if (!$throw && !file_exists($view_path))
 				return;
 

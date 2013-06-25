@@ -144,16 +144,19 @@
 
 		o.update = function(element, partial) {
 			if (partial) {
-				if(element instanceof jQuery) { // this key is a jQuery object so let's give it a random ID so we can update it after AJAX
-					var rand_id = Math.random().toString(36).substring(7);
 
-					element.addClass('phpr_element_id_' + rand_id);
+				// jQuery object ensure it has an ID so we can update it
+				if (element instanceof jQuery) { 
+					
+					if (!element.attr('id')) {
+						var randId = Math.random().toString(36).substring(7);
+						element.attr('id', 'phpr_element_id_' + randId);
+					}
 
-					_update['.phpr_element_id_' + rand_id] = partial;
+					element = '#' + element.attr('id');
 				}
-				else {
-					_update[element] = partial;
-				}
+
+				_update[element] = partial;
 			}
 			else
 				_update = element;

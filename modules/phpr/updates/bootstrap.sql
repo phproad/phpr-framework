@@ -17,13 +17,6 @@ CREATE TABLE `phpr_module_update_history` (
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-CREATE TABLE `phpr_module_install_history` (
-  `id` int(11) NOT NULL auto_increment,
-  `date` date default NULL,
-  `module_id` varchar(255) default NULL,
-  PRIMARY KEY  (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
 CREATE TABLE `phpr_module_applied_updates` (
   `id` int(11) NOT NULL auto_increment,
   `module_id` varchar(255) default NULL,

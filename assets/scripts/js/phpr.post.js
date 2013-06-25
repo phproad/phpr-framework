@@ -143,10 +143,21 @@
 		}
 
 		o.update = function(element, partial) {
-			if (partial)
-				_update[element] = partial;
+			if (partial) {
+				if(element instanceof jQuery) { // this key is a jQuery object so let's give it a random ID so we can update it after AJAX
+					var rand_id = Math.random().toString(36).substring(7);
+
+					element.addClass('phpr_element_id_' + rand_id);
+
+					_update['.phpr_element_id_' + rand_id] = partial;
+				}
+				else {
+					_update[element] = partial;
+				}
+			}
 			else
 				_update = element;
+
 			return this;
 		}
 
@@ -294,14 +305,14 @@
 			o.requestObj = new PHPR.request(o.getFormUrl(), context.action, tmpOptions);
 			o.requestObj.postObj = o;
 
-			// On Complete
-			o.requestObj.always(o.onComplete);
-
 			// On Success
 			o.requestObj.done(o.onSuccess);
 
 			// On Failure
 			o.requestObj.fail(o.onFailure);
+
+			// On Complete
+			o.requestObj.always(o.onComplete);
 
 			// Execute the request
 			o.requestObj.send();

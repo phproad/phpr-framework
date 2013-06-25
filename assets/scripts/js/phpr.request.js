@@ -52,12 +52,6 @@
 			var context = o.buildOptions(),
 				ajax = _get_ajax_object();
 
-			// On Complete
-			ajax.always(function(){
-				_locked = false;
-				o.onComplete();
-			});
-
 			// On Success
 			ajax.done(function(data) {
 				o.parseResponse(data);
@@ -65,7 +59,8 @@
 				if (o.isSuccess()) {
 					o.onSuccess();
 				} else {
-					o.onFailure('error', o.html.replace('@AJAX-ERROR@', ''));
+					var message = o.html.substr(o.html.indexOf('@AJAX-ERROR@') + '@AJAX-ERROR@'.length);
+					o.onFailure('error', message);
 				}
 			});
 
@@ -73,6 +68,12 @@
 			ajax.fail(function(data, status, message) {
 				o.parseResponse(data);
 				o.onFailure(status, message);
+			});
+
+			// On Complete
+			ajax.always(function(){
+				_locked = false;
+				o.onComplete();
 			});
 
 			if (context.lock)

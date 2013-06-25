@@ -115,7 +115,10 @@ function realignPopups() {
 				'padding': '10px'
 			});
 
-			this.tmp = $('<div />').css({'visibility': 'hidden', 'position': 'absolute'});
+			this.tmp = $('<div />').css({
+				visibility: 'hidden', 
+				position: 'absolute'
+			});
 			
 			this.tmp.prepend($('<div />').addClass('popupForm'));
 
@@ -143,7 +146,7 @@ function realignPopups() {
 				}).error(function() {
 					alert('Unable to load AJAX page: ' + self.options.ajaxPage); 
 					cancelPopup();
-				});				
+				});
 			} else {
 				if (this.options.ajaxFields instanceof jQuery)
 					this.options.ajaxFields = this.options.ajaxFields.serializeElement();
@@ -154,6 +157,9 @@ function realignPopups() {
 					loadIndicator: { show: false }, 
 					afterUpdate: function(requestObj) {
 						self.formLoaded();
+					},
+					error: function(requestObj) {
+						self.formFailure();
 					}
 				}).send();
 			}
@@ -177,10 +183,10 @@ function realignPopups() {
 			var allow_close = true;
 
 			try {
-				var inner_element = this._get_popup_inner();
-				if (inner_element) {
+				var innerElement = this._get_popup_inner();
+				if (innerElement) {
 					try {
-						inner_element.trigger('onClosePopup');
+						innerElement.trigger('onClosePopup');
 					} catch (e) {
 						allow_close = false;
 					}
@@ -199,15 +205,28 @@ function realignPopups() {
 				newWidth = this.tmp.width();
 
 			this.formContainer.animate({
-					'height': newHeight,
-					'width': newWidth+1
+					height: newHeight,
+					width: newWidth+1
 			}, {
 				progress: $.proxy(self.alignForm, this),
 				complete: $.proxy(self.loadComplete, this),
 				duration: 500
 			});
 		},
-		
+
+		formFailure: function() { var self = this;
+			this.tmp.wrapInner('<div />');
+			
+			self.loadComplete();
+			self.alignForm();
+
+			var innerElement = this._get_popup_inner();
+			if (innerElement) {
+				innerElement.trigger('popupFailure');
+				$(window).trigger('popupFailure', [innerElement]);
+			}
+		},
+
 		loadComplete: function() {
 			var first = this.tmp.find('>*:first');
 			if (first.length > 0)
@@ -217,20 +236,23 @@ function realignPopups() {
 			
 			this.formContainer
 				.removeClass('popupLoading')
-				.css({'width': 'auto', 'height': 'auto'});
+				.css({
+					width: 'auto', 
+					height: 'auto'
+				});
 			
-			var inner_element = this._get_popup_inner();
+			var innerElement = this._get_popup_inner();
 			
-			if (inner_element) {
-				inner_element.trigger('popupLoaded');
-				$(window).trigger('popupLoaded', [inner_element]);
-				inner_element.addClass('popup_content');
+			if (innerElement) {
+				innerElement.trigger('popupLoaded');
+				$(window).trigger('popupLoaded', [innerElement]);
+				innerElement.addClass('popup_content');
 				
 				var a = $('<a />').addClass('popup-close')
 					.attr('title', 'Close')
-					.attr('href', '#')
+					.attr('href', 'javascript:;')
 					.click(function() { cancelPopup(); return false; })
-					.prependTo(inner_element);
+					.prependTo(innerElement);
 			}
 		},
 		
@@ -275,7 +297,7 @@ function realignPopups() {
 			this.formContainer.remove();
 			window.PopupWindows.pop();
 			$.Widget.prototype.destroy.call(this);
-		}		
+		}
 
 
 	});

@@ -18,7 +18,7 @@ class Phpr_Events extends Phpr_Extension
 		if (is_string($options)) 
 		{
 			// First param being the event name
-			//
+			// 			
 			$options = array(
 				'name' => $options
 			);

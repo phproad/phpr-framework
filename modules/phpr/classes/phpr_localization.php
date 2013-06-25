@@ -54,14 +54,14 @@ class Phpr_Localization
 		$locale = $this->locale_code;
 		$definition = null;
 		
-		// Try to load exact value
+		// Load exact value
 		if ($this->definition_exists($locale, $container, $source, $options['variation'])) 
 		{
 			$definition = $this->get_definition($locale, $container, $source, $options['variation']);
 		}
 		else 
 		{
-			// Try to fallback to a neutral culture
+			// Fallback to a neutral culture
 			if ($pos = strpos($this->locale_code, '_')) 
 			{
 				$language = substr($this->locale_code, 0, $pos);
@@ -108,7 +108,7 @@ class Phpr_Localization
 		
 		if ($definition === null) 
 		{
-			throw new Phpr_ApplicationException("Could not find locale definition: {$container}, {$source} ({$this->locale_code}).");
+			throw new Phpr_ApplicationException("Could not find locale definition: ".$container.", ".$source." (".$this->locale_code.").");
 		}
 		
 		return $definition;
@@ -121,14 +121,14 @@ class Phpr_Localization
 		$locale = $this->locale_code;
 		$pluralization = null;
 		
-		// try to load exact locale
+		// Load exact locale
 		if ($this->pluralization_exists($locale)) 
 		{
 			$pluralization = $this->get_pluralization($locale);
 		}
 		else 
 		{
-			// try to fallback to a neutral culture
+			// Fallback to a neutral culture
 			if ($pos = strpos($this->locale_code, '_')) 
 			{
 				$language = substr($this->locale_code, 0, $pos);
@@ -152,8 +152,8 @@ class Phpr_Localization
 			else 
 			{
 				$locale = self::default_locale_code;
-				// try to fallback to a default language
 				
+				// Fallback to a default language
 				if ($this->pluralization_exists($locale)) 
 				{
 					$pluralization = $this->get_pluralization($locale);
@@ -194,16 +194,13 @@ class Phpr_Localization
 		
 		foreach ($placeholders as $key => $value) 
 		{
-			if (is_numeric($value)) 
-			{
+			if (is_numeric($value))  {
 				$value = (float)$value;
 				
-				if ($value === 0) 
-				{
+				if ($value === 0)  {
 					$variation = 0;
 				}
-				else 
-				{
+				else {
 					$result = eval($pluralization);
 					$variation = $result['current'];
 				}
@@ -461,10 +458,10 @@ class Phpr_Localization
 			$this->load($locale);
 
 		if (!isset($this->definitions[$locale][$container]))
-			throw new Phpr_ApplicationException("Could not find locale container: {$container} ({$locale}).");
+			throw new Phpr_ApplicationException("Could not find locale container: ".$container." (".$locale.").");
 		
 		if (!isset($this->definitions[$locale][$container][$source][$variation]))
-			throw new Phpr_ApplicationException("Could not find locale definition: {$container}, {$source}, {$variation} ({$locale}).");
+			throw new Phpr_ApplicationException("Could not find locale definition: ".$container.", ".$source.", ".$variation." (".$locale.").");
 		
 		return $this->definitions[$locale][$container][$source][$variation];
 	}
@@ -497,7 +494,7 @@ class Phpr_Localization
 
 		// does it exist yet?
 		if (!$this->pluralization_exists($locale))
-			throw new Phpr_ApplicationException("Could not find locale pluralization: {$locale}.");
+			throw new Phpr_ApplicationException("Could not find locale pluralization: ".$locale);
 		
 		$pluralization = $this->pluralizations[$locale];
 
@@ -546,7 +543,7 @@ class Phpr_Localization
 				continue;
 			
 			if (!is_readable($directory_path))
-				throw new Phpr_SystemException("Localization directory {$directory_path} is not readable.");
+				throw new Phpr_SystemException("Localization directory ".$directory_path." is not readable.");
 		
 			$this->directory_paths[] = $directory_path;
 		}
@@ -594,18 +591,19 @@ class Phpr_Localization
 
 			foreach ($iterator as $file) 
 			{
-				if ($file->isDir() || !preg_match("/^([^\.]*)\.([^\.]*)\.{$extension}$/i", $file->getFilename(), $m1))
+				if ($file->isDir() || !preg_match("/^([^\.]*)\.([^\.]*)\.".$extension."$/i", $file->getFilename(), $m1))
 					continue;
 					
 				$partial_locale = $this->get_partial_locale($m1[2]);
 				
+				// This isn't the locale you are looking for
 				if ($locale && !array_intersect($partial_locale, $locale))
-					continue; // this isn't the locale you are looking for
+					continue;
 			
 				$file_path = $path . '/' . $file->getFilename();
 				
 				if (!is_readable($file_path))
-					throw new Phpr_SystemException("Localization file {$file_path} is not readable.");
+					throw new Phpr_SystemException("Localization file ".$file_path." is not readable.");
 			
 				$this->file_paths[$locale_code . $extension][] = $file_path;
 			}
@@ -623,9 +621,12 @@ class Phpr_Localization
 	{
 		$results = Phpr::$events->fire_event('phpr:on_before_locale_loaded', $this, $locale_code);
 		
-		foreach ($results as $result)
+		foreach ($results as $result) {
+
+			// Hook has handled locale
 			if ($result)
-				return; // hook has handled locale
+				return; 
+		}
 		
 		$this->load_definitions($locale_code);
 		$this->load_pluralizations($locale_code);
@@ -703,7 +704,8 @@ class Phpr_Localization
 						continue;
 					}
 					
-					if (count($row) < 3) // not a definition. perhaps a comment or heading.
+					// Not a definition, perhaps a comment or heading?
+					if (count($row) < 3)
 						continue;
 					
 					if (count($row) === 4)

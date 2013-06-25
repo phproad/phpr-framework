@@ -138,8 +138,8 @@ class Phpr_Extension
 		foreach ($new_extensions as $extension_name => $extension_object) {
 			$this->extension_extract_methods($extension_name, $extension_object);
 
-			// since we cannot process things from extensions in our constructor, we do it in the init_extension method.
-			if($extension_object->method_exists('init_extension'))
+			// Since we cannot process things from extensions in our constructor, we do it in the init_extension method.
+			if ($extension_object->method_exists('init_extension'))
 				$extension_object->init_extension();
 		}
 		

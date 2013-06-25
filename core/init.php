@@ -104,6 +104,9 @@ function init_phpr_modules()
 		{
 			if (!$directory->isDir() || $directory->isDot())
 				continue;
+
+			if (!file_exists($module_file = $directory->getPathname() . '/classes/' . basename($directory->getPathname()) . '_module.php'))
+				continue;
 			
 			if (!file_exists($init_dir = $directory->getPathname() . '/init'))
 				continue;

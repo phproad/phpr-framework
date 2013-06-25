@@ -1,0 +1,30 @@
+<?
+	$field_id = $widget->field_id;
+	$days = Phpr_Html::get_locale_dates_array('A_weekday_', 7);
+	$days_short = Phpr_Html::get_locale_dates_array('a_weekday_', 7, 7);
+	$days_min = Phpr_Html::get_locale_dates_array('a_weekday_', 7, 7, 2);
+	$months = Phpr_Html::get_locale_dates_array('n_month_', 12);
+	$months_short = Phpr_Html::get_locale_dates_array('b_month_', 12);
+	$date_format = str_replace(array('%d', '%m', '%Y'), array('dd','mm','yy'), Phpr::$locale->get_string('phpr.dates', "short_date_format"));
+
+?>
+<input type="text" id="<?=$field_id?>" 
+	class="<?=$widget->css_class?>" 
+	name="<?=$widget->field_name?>" 
+	value="<?=$widget->field_value?>" />
+<script>
+	$('#<?=$field_id?>').datepicker({
+		<? if ($widget->on_select): ?>onSelect: function() { <?=$widget->on_select?> },<? endif ?>
+		<? if (strlen($widget->min_date)): ?>minDate: '<?=$widget->min_date?>',<? endif ?>
+		<? if (strlen($widget->max_date)): ?>maxDate: '<?=$widget->max_date?>',<? endif ?>
+		<? if (strlen($widget->year_range)): ?>yearRange: '<?=$widget->year_range?>',<? endif ?>
+		<? if ($widget->allow_year_change): ?>changeYear: true,<? endif ?>
+		<? if ($widget->allow_month_change): ?>changeMonth: true,<? endif ?>
+		dateFormat: '<?=$date_format?>',
+		dayNamesShort: [<?=$days_short?>],
+		dayNamesMin: [<?=$days_min?>],
+		dayNames: [<?=$days?>],
+		monthNames: [<?=$months?>],
+		monthNamesShort: [<?=$months_short?>]
+	});
+</script>

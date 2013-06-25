@@ -36,13 +36,13 @@
 				<div class="alert alert-error"><?= $error->message ?></div>
 				
 				<? if ($error->hint): ?>
-					<div class="hint">
+					<div class="alert alert-hint">
 						<h3>Hint</h3>
 						<p><?= $error->hint ?></p>
 					</div>
 				<? endif ?>
 				
-				<table class="column_view">
+				<table class="error-summary">
 					<tbody>
 						<tr class="first">
 							<th>Document</th>
@@ -67,7 +67,7 @@
 
 				<? if (count($error->code_highlight->lines)): ?>
 					<div class="details">
-						<h3>Code Highlight</h3>
+						<h3 class="separated">Code Highlight</h3>
 						<div class="code">
 							<pre class="brush:<?= $error->code_highlight->brush ?>;toolbar:false;wrap-lines:false;tab-size:3;first-line:<?= $error->code_highlight->start_line+1 ?>;highlight:[<?= $error->code_highlight->error_line+1 ?>]">
 							<? foreach ($error->code_highlight->lines as $line): ?>
@@ -79,6 +79,7 @@
 				<? endif ?>
 				
 				<div class="details last">
+					<h3 class="separated">Call Stack</h3>
 					<table class="call_stack">
 						<? if ($error->is_document): ?>
 							<thead>
@@ -105,7 +106,7 @@
 							<thead>
 								<tr>
 									<th class="first record_number">#</th>
-									<th>Call Stack Code</th>
+									<th>Code</th>
 									<th>Document</th>
 									<th class="last">Line</th>
 								</tr>

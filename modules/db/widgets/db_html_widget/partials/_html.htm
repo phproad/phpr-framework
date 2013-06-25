@@ -1,0 +1,14 @@
+<?
+	$field_id = $widget->field_id;
+?>
+<textarea type="text" id="<?=$field_id?>" 
+	class="<?=$widget->css_class?>" 
+	name="<?=$widget->field_name?>">
+	<?=$widget->field_value?>
+</textarea>
+
+<script>
+	jQuery(document).ready(function($) { 
+		$('#<?=$field_id?>').redactor({ autoresize: false });
+	});
+</script>

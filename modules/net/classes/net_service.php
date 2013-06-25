@@ -30,7 +30,7 @@ class Net_Service
 		$blocks = explode("\r\n\r\n", $response_data);
 		$total_blocks = count($blocks);
 
-		if ($total_blocks > 2) {
+		if ($total_blocks > 1) {
 			// Use the last header block, ignoring redirects and such
 			$header_data = $blocks[$total_blocks-2]; 
 

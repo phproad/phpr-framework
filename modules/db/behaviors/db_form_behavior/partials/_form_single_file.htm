@@ -14,7 +14,12 @@
 ?>
 	<p>Uploaded file: <a href="<?=$base_url.$file->id.'/'.urlencode($file->name) ?>" target="_blank"><?=h($file->name) ?></a> (<?=File::size_from_bytes($file->size) ?>)  <span id="file_custom_message_<?=get_class($form_model) ?>_<?=$db_name ?>"></span>
 	<? if ($allow_delete): ?>
-		| <a href="javascript:;" class="file-delete" onclick="return $(this).getForm().sendPhpr('<?=$this->get_event_handler('on_delete_file') ?>', {extraFields: {db_name: '<?=$db_name ?>', file_id: '<?=$file->id ?>'}, confirm: 'Do you really want to delete this file?', update: '<?=$list_container_id ?>', loadIndicator: {show: false}});">delete</a>
+		| <a href="javascript:;" class="file-delete" onclick="return $(this).phpr().post('<?=$this->get_event_handler('on_delete_file') ?>', { 
+			data: { db_name: '<?=$db_name ?>', file_id: '<?=$file->id ?>'}, 
+			confirm: 'Do you really want to delete this file?', 
+			update: '#<?=$list_container_id ?>', 
+			loadIndicator: {show: false}
+		}).send();">delete</a>
 	<? endif ?>
 	</p>
 <? else: ?>

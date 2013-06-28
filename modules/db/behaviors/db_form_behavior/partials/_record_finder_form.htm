@@ -32,7 +32,7 @@
 						
 						window.recordFinderRecordClicked = true;
 						
-						$('#record_finder_flag').sendPhpr('<?= $this->get_event_handler('on_set_record_finder_record')?>', {
+						$('#record_finder_flag').phpr().post('<?= $this->get_event_handler('on_set_record_finder_record')?>', {
 							data: { recordId: recordId },
 							update: '#<?= $this->form_get_record_finder_container_id(get_class($model), post('db_name')) ?>',
 							loadIndicator: { show: true, injectInElement: true },
@@ -40,7 +40,7 @@
 								$(window).trigger('phpr_recordfinder_update', ['<?= $column_name ?>']);
 								cancelPopup();
 							}
-						});
+						}).send();
 						
 						return false;
 					}

@@ -1,13 +1,12 @@
 <?
 	$field_id = $this->form_get_element_id($form_model_class.'_'.$form_field->db_name).uniqid();
-	$resize_cookie_name = 'TinyMce_'.$this->form_get_element_id($form_model_class.'_'.$form_field->db_name).$this->form_get_unique_prefix().'_size';
+	$resize_cookie_name = 'wysiwyg_'.$this->form_get_element_id($form_model_class.'_'.$form_field->db_name).$this->form_get_unique_prefix().'_size';
 ?>
 
-<textarea 
-	class="<?=$form_field->size ?> html_field" id="<?=$field_id ?>" 
+<textarea class="<?=$form_field->size ?> html_field" id="<?=$field_id ?>" 
 	name="<?=$form_model_class ?>[<?=$form_field->db_name ?>]"><?=h($form_model->display_field($form_field->db_name)) ?></textarea>
 
-<script type="text/javascript">
+<script>
 	jQuery('#<?=$field_id ?>').redactor({ autoresize: false });
 </script>
 

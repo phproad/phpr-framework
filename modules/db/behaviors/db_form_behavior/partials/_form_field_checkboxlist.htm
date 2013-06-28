@@ -48,7 +48,7 @@
 	?>
 	<div class="option">
 		<div class="option-inner" style="<?= $level > 0 ? 'margin-left:'.(10 * $level).'px' : null ?>">
-			<input <?=Phpr_Form::checkbox_state($checked) ?> type="checkbox" id="<?= $field_id ?>" name="<?= $form_model_class ?>[<?= $db_name ?>][]" value="<?= h($value) ?>" class="checkbox"/>
+			<input <?=Phpr_Form::checkbox_state($checked) ?> type="checkbox" id="<?= $field_id ?>" name="<?= $form_model_class ?>[<?= $db_name ?>][]" value="<?= h($value) ?>" class="checkbox" />
 			<label class="choice" for="<?= $field_id ?>">
 				<?=h($name) ?>
 				<? if (strlen($description)): ?><span class="description"><?=h($description) ?></span><? endif ?>

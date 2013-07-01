@@ -1,11 +1,13 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
 
 /**
  * PHPR DateTimeFormat Class
  *
- * Phpr_DateTime_Format provides methods for converting date/time values to strings vice versa.
+ * Phpr\DateTime_Format provides methods for converting date/time values to strings vice versa.
  */
-class Phpr_DateTime_Format
+class DateTime_Format
 {
 	const sp_type = 'spt';
 	const sp_type_string = 'string';
@@ -172,12 +174,12 @@ class Phpr_DateTime_Format
 	}
 
 	/**
-	 * Converts the specified Phpr_DateTime object value to string according the specified format.
+	 * Converts the specified Phpr\DateTime object value to string according the specified format.
 	 * @param DateTime $datetime Specifies the value to format
 	 * @param string $format Specifies the format string
 	 * @return string
 	 */
-	public static function format_datetime(Phpr_DateTime $datetime, $format)
+	public static function format_datetime(DateTime $datetime, $format)
 	{
 		self::init();
 
@@ -328,12 +330,12 @@ class Phpr_DateTime_Format
 	}
 
 	/**
-	 * Parses the string and returns the Phpr_DateTime value.
+	 * Parses the string and returns the Phpr\DateTime value.
 	 * If a specified string can not be converted to a date/time value, returns boolean false.
 	 * @param string $string Specifies the string to parse
 	 * @param string $format Specieis the date format expected
 	 * @param DateTimeZone $timezone Optional. Specifies a time zone to assign to a new object.
-	 * @return Phpr_DateTime
+	 * @return Phpr\DateTime
 	 */
 	public static function parse_datetime($string, $format, $timezone = null)
 	{
@@ -364,7 +366,7 @@ class Phpr_DateTime_Format
 			self::sp_pr_mn_second => null
 		);
 
-		$Now = Phpr_DateTime::now();
+		$Now = DateTime::now();
 
 		$ampm = null;
 
@@ -486,7 +488,7 @@ class Phpr_DateTime_Format
 			}
 		}
 
-		$result = new Phpr_DateTime(null, $timezone);
+		$result = new DateTime(null, $timezone);
 		$result->set_datetime($year, $month, $day, $hour, $minute, $second);
 
 		return $result;

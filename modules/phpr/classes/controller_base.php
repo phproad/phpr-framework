@@ -1,11 +1,14 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
+use Phpr\SystemException;
 
 /**
  * PHPR Controller Base Class
  *
- * Phpr_Controller_Base is a base class for the application and component controllers.
+ * Controller_Base is a base class for the application and component controllers.
  */
-class Phpr_Controller_Base extends Phpr_Validate_Extension
+class Controller_Base extends Validate_Extension
 {
 	protected $_suppress_view = false;
 	protected $_event_post_prefix = 'ev';
@@ -22,7 +25,7 @@ class Phpr_Controller_Base extends Phpr_Validate_Extension
 
 	/**
 	 * The Validation object. Use it to validate a form data.
-	 * @var Phpr_Validation
+	 * @var Phpr\Validation
 	 */
 	public $validation;
 
@@ -31,7 +34,7 @@ class Phpr_Controller_Base extends Phpr_Validate_Extension
 	 */
 	public function __construct()
 	{
-		$this->validation = new Phpr_Validation($this);
+		$this->validation = new Validation($this);
 		
 		parent::__construct();
 	}
@@ -104,7 +107,7 @@ class Phpr_Controller_Base extends Phpr_Validate_Extension
 			include $view_file;
 		} 
 		else if ($partial_mode) {
-			throw new Phpr_SystemException('Partial file not found: '.$view_file);
+			throw new SystemException('Partial file not found: '.$view_file);
 		}
 	}
 
@@ -174,10 +177,10 @@ class Phpr_Controller_Base extends Phpr_Validate_Extension
 		$obj = Phpr::$class_loader->load_controller($controller, $folder);
 
 		if (!$obj)
-			throw new Phpr_SystemException("Controller ".$controller." is not found");
+			throw new SystemException("Controller ".$controller." is not found");
 
 		if (!$obj->_action_exists($action, true))
-			throw new Phpr_SystemException("Action ".$action." is not found in the controller ".$controller);
+			throw new SystemException("Action ".$action." is not found in the controller ".$controller);
 
 		if ($params !== null)
 			$parameters = $params;
@@ -215,7 +218,7 @@ class Phpr_Controller_Base extends Phpr_Validate_Extension
 	public function _exec_event_handler($method_name, $parameters = array(), $action = null)
 	{
 		if (!$this->method_exists($method_name))
-			throw new Phpr_SystemException("The event handler ".$method_name." does not exist in the controller.");
+			throw new SystemException("The event handler ".$method_name." does not exist in the controller.");
 
 		foreach ($parameters as &$param) {
 			$param = str_replace("\"", "\\\"", $param);

@@ -1,6 +1,9 @@
-<?php
+<?php namespace Phpr;
 
-class Phpr_Request
+use Phpr;
+use Phpr\String;
+
+class Request
 {
 	public $get_fields = null;
 
@@ -256,8 +259,8 @@ class Phpr_Request
 	public function is_backend() 
 	{
 		$request_param_name = Phpr::$config->get('REQUEST_PARAM_NAME', 'q');
-		$backend_url = '/' . Phpr_String::normalize_uri(Phpr::$config->get('ADMIN_URL', 'admin'));
-		$current_url = '/' . Phpr_String::normalize_uri(isset($_REQUEST[$request_param_name]) ? $_REQUEST[$request_param_name] : '');
+		$backend_url = '/' . String::normalize_uri(Phpr::$config->get('ADMIN_URL', 'admin'));
+		$current_url = '/' . String::normalize_uri(isset($_REQUEST[$request_param_name]) ? $_REQUEST[$request_param_name] : '');
 
 		return (stristr($current_url, $backend_url) !== false);
 	}

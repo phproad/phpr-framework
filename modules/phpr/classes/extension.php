@@ -1,4 +1,6 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr\SystemException;
 
 /**
  * PHPR Extension class
@@ -14,11 +16,11 @@
 // 
 // 
 // Would be:
-// class my_model_class extends Phpr_Extension 
+// class my_model_class extends Phpr\Extension 
 // { }
 // 
 
-class Phpr_Extension
+class Extension
 {
 
 	// Equivilent of "use", define this attribute instead
@@ -63,7 +65,7 @@ class Phpr_Extension
 			$uses = array_merge($uses, $this->implement);
 		}
 		else {
-			throw new Phpr_SystemException('Class '.get_class($this).' contains an invalid '.$implement.' value');
+			throw new SystemException('Class '.get_class($this).' contains an invalid '.$implement.' value');
 		}
 
 		$this->extend_with($uses);
@@ -117,17 +119,17 @@ class Phpr_Extension
 					continue;
 
 				if (array_key_exists($extension_name, $this->extension_data['extensions'])) 
-					throw new Phpr_SystemException(sprintf('Extension "%s" already added', $extension_name));
+					throw new SystemException(sprintf('Extension "%s" already added', $extension_name));
 
 				$extension_object = new $extension_name($this, $proxy_model_class);
 				
 				$this->extension_data['extensions'][$extension_name] = $extension_object;
 			}
 			else if (is_object($extension_object)) {
-				$extension_name = get_class($extension_object);
+				$extension_name = \get_class_id($extension_object);
 
 				if (array_key_exists($extension_name, $this->extension_data['extensions'])) 
-					throw new Phpr_SystemException(sprintf('Extension "%s" already added', $extension_name));
+					throw new SystemException(sprintf('Extension "%s" already added', $extension_name));
 					
 				$this->extension_data['extensions'][$extension_name] = $extension_object;
 			}
@@ -145,7 +147,7 @@ class Phpr_Extension
 		
 		if ($recursion_extension) {
 			foreach ($new_extensions as $extension_name => $extension_object) {
-				if (is_subclass_of($extension_object, 'Phpr_Extension')) {
+				if (is_subclass_of($extension_object, 'Phpr\Extension')) {
 					$extension_object->extend_with($this, false, $proxy_model_class);
 				}
 			}
@@ -164,7 +166,7 @@ class Phpr_Extension
 			'extensions' => array()
 		);
 
-		$result = self::extension_extract_methods_recursive($extension_name, $extension_object, get_class($this), get_class($extension_object), $result);
+		$result = self::extension_extract_methods_recursive($extension_name, $extension_object, \get_class_id($this), \get_class_id($extension_object), $result);
 		$this->extension_data['methods'] = array_merge($this->extension_data['methods'], $result['methods']);
 	}
 
@@ -269,7 +271,7 @@ class Phpr_Extension
 			return call_user_func_array(array($extension_object, $actual_name), $params);
 		}
 
-		throw new Exception('Class '. get_class($this) .' does not have a method definition for ' . $name);
+		throw new SystemException('Class '. get_class($this) .' does not have a method definition for ' . $name);
 	}
 
 }

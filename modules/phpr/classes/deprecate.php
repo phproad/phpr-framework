@@ -1,11 +1,13 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr\DeprecateException;
 
 /**
  * PHPR Deprecate class
  *  
  * Used for deprecating classes, methods and arguements internally
  */
-class Phpr_Deprecate 
+class Deprecate 
 {
 	public function set_class($class_name, $replacement = null) 
 	{
@@ -16,9 +18,9 @@ class Phpr_Deprecate
 		
 		try 
 		{
-			throw new Phpr_DeprecateException($message);
+			throw new DeprecateException($message);
 		}
-		catch (Phpr_DeprecateException $ex) 
+		catch (DeprecateException $ex) 
 		{
 			Phpr::$error_log->log_exception($ex);
 		}
@@ -33,9 +35,9 @@ class Phpr_Deprecate
 
 		try 
 		{
-			throw new Phpr_DeprecateException($message);
+			throw new DeprecateException($message);
 		}
-		catch (Phpr_DeprecateException $ex) 
+		catch (DeprecateException $ex) 
 		{
 			Phpr::$error_log->log_exception($ex);
 		}
@@ -50,9 +52,9 @@ class Phpr_Deprecate
 		
 		try 
 		{
-			throw new Phpr_DeprecateException($message);
+			throw new DeprecateException($message);
 		}
-		catch (Phpr_DeprecateException $ex) 
+		catch (DeprecateException $ex) 
 		{
 			Phpr::$error_log->log_exception($ex);
 		}

@@ -1,4 +1,4 @@
-<?php
+<?php namespace Phpr;
 
 /*
  * Events extension
@@ -9,7 +9,7 @@
  * Class method handler: $tester->add_event('on_after_show', $reciever, 'on_show_message');
  */
 
-class Phpr_Events extends Phpr_Extension
+class Events extends Extension
 {
 	public $events = array();
 	

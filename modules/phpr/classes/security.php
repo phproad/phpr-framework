@@ -1,4 +1,7 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
+use Db\Helper as Db_Helper;
 
 /**
  * PHPR security class.
@@ -9,7 +12,7 @@
  *
  * @see Phpr
  */
-class Phpr_Security
+class Security
 {
 	/**
 	 * The name of the user class. 
@@ -125,7 +128,7 @@ class Phpr_Security
 	/**
 	 * Validates user login name and password and logs user in.
 	 *
-	 * @param Phpr_Validation $validation Optional validation object to report errors.
+	 * @param Phpr\Validation $validation Optional validation object to report errors.
 	 * @param string $redirect Optional URL to redirect the user browser in case of successful login.
 	 *
 	 * @param string $login Specifies the user login name.
@@ -136,7 +139,7 @@ class Phpr_Security
 	 *
 	 * @return boolean
 	 */
-	public function login(Phpr_Validation $validation = null, $redirect = null, $login = null, $password = null)
+	public function login(Validation $validation = null, $redirect = null, $login = null, $password = null)
 	{
 		/*
 		 * Load the login form data
@@ -303,7 +306,7 @@ class Phpr_Security
 		$cookie_name = Phpr::$config->get('LOGIN_COOKIE_NAME', $this->login_cookie_name);
 		$result = Phpr::$request->cookie($cookie_name);
 
-		return $html ? Phpr_Html::encode($result) : $result;
+		return $html ? Html::encode($result) : $result;
 	}
 
 	/**
@@ -376,7 +379,7 @@ class Phpr_Security
 		
 		$expiration = time() + $lifetime;
 
-		$key = hash_hmac('md5', $id.$expiration, Phpr_SecurityFramework::create()->salt());
+		$key = hash_hmac('md5', $id.$expiration, SecurityFramework::create()->salt());
 		$hash = hash_hmac('md5', $id.$expiration, $key);
 		$ticket = base64_encode(base64_encode($id).'|'.$expiration.'|'.$hash);
 
@@ -406,7 +409,7 @@ class Phpr_Security
 		if ($expiration < time())
 			return null;
 
-		$key = hash_hmac('md5', $id_decoded.$expiration, Phpr_SecurityFramework::create()->salt());
+		$key = hash_hmac('md5', $id_decoded.$expiration, SecurityFramework::create()->salt());
 		$hash = hash_hmac('md5', $id_decoded.$expiration, $key);
 
 		if ($hmac != $hash)

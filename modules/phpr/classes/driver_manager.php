@@ -1,4 +1,6 @@
-<?php
+<?php namespace Phpr;
+
+use ReflectionProperty;
 
 /**
  * PHPR driver manager
@@ -6,7 +8,7 @@
  * Used to locate and interact with module drivers
  */
 
-class Phpr_Driver_Manager
+class Driver_Manager
 {
 
 	const drivers_directory = 'drivers';
@@ -36,7 +38,7 @@ class Phpr_Driver_Manager
 		if (array_key_exists($driver_class, self::$_class_cache))
 			return self::$_class_cache[$driver_class];
 
-		$modules = Core_Module_Manager::get_modules();
+		$modules = Module_Manager::get_modules();
 		foreach ($modules as $id => $module_info)
 		{
 			$class_path = PATH_APP."/".PHPR_MODULES."/".$id."/".self::drivers_directory."/".$driver_folder;
@@ -44,7 +46,7 @@ class Phpr_Driver_Manager
 			if (!file_exists($class_path))
 				continue;
 
-			$iterator = new DirectoryIterator($class_path);
+			$iterator = new \DirectoryIterator($class_path);
 
 			foreach ($iterator as $file)
 			{
@@ -96,7 +98,7 @@ class Phpr_Driver_Manager
 			if ($driver->get_code() == $code)
 				return $driver;
 		}
-		return new Phpr_Driver_Base();
+		return new Driver_Base();
 	}    
 
 }

@@ -1,4 +1,8 @@
-<?php
+<?php namespace Phpr;
+
+use DirectoryIterator;
+
+use Phpr;
 
 /**
  * PHPR module manager
@@ -6,7 +10,7 @@
  * Used to locate and interact with modules
  */
 
-class Phpr_Module_Manager
+class Module_Manager
 {
 	protected static $module_objects = null;
 

@@ -1,9 +1,12 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
+use Phpr\SystemException;
 
 /**
  * PHPR Controller Base Class
  */
-class Phpr_Controller extends Phpr_Controller_Base
+class Controller extends Controller_Base
 {
 	/**
 	 * Contains a reference to a currently executing controller.
@@ -85,16 +88,16 @@ class Phpr_Controller extends Phpr_Controller_Base
 		// If there is no layout provided, just render the view
 		if ($this->layout == '' || $suppress_layout)
 		{
-			Phpr_Controller_Base::load_view($view);
+			Controller_Base::load_view($view);
 			return;
 		}
 
 		// Catch the layout blocks
-		Phpr_View::begin_block("outside_block");
+		View::begin_block("outside_block");
 		parent::load_view($view);
-		Phpr_View::end_block();
+		View::end_block();
 
-		Phpr_View::append_block('view', Phpr_View::get_block('outside_block'));
+		View::append_block('view', View::get_block('outside_block'));
 
 		// Render the layout
 		$this->display_layout();
@@ -177,7 +180,7 @@ class Phpr_Controller extends Phpr_Controller_Base
 
 		if ($own_method)
 		{
-			$method_info = new ReflectionMethod($this, $action_name);
+			$method_info = new \ReflectionMethod($this, $action_name);
 			$public = $method_info->isPublic();
 			if ($public)
 				return true;
@@ -259,7 +262,7 @@ class Phpr_Controller extends Phpr_Controller_Base
 			$layout_path = $layout;
 
 		if (!file_exists($layout_path))
-			throw new Phpr_SystemException('The layout file "'.$layout_path.'" does not exist');
+			throw new SystemException('The layout file "'.$layout_path.'" does not exist');
 
 		include $layout_path;
 	}

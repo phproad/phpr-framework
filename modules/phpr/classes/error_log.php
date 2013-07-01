@@ -1,4 +1,12 @@
-<?php
+<?php namespace Phpr;
+
+use Db;
+use Phpr;
+use Phpr\Exception;
+use Phpr\SystemException;
+use Phpr\DatabaseException;
+use Phpr\DeprecateException;
+use File;
 
 /**
  * PHPR Error Log Class
@@ -15,7 +23,7 @@
  *   $CONFIG['ERROR_LOG_FILE'] = "/home/logs/private_errors.txt". 
  *
  */
-class Phpr_Error_Log
+class Error_Log
 {
 	private $log_file_name;
 	private $is_enabled;
@@ -42,7 +50,7 @@ class Phpr_Error_Log
 			{
 				if (!is_writable($this->log_file_name))
 				{
-					$exception = new Phpr_SystemException('The error log file is not writable: '.$this->log_file_name);
+					$exception = new SystemException('The error log file is not writable: '.$this->log_file_name);
 					$exception->hint_message = 'Please assign writing permissions on the error log file for the Apache user.';
 					throw $exception;
 				}
@@ -52,7 +60,7 @@ class Phpr_Error_Log
 				$directory = dirname($this->log_file_name);
 				if (!is_writable($directory))
 				{
-					$exception = new Phpr_SystemException('The error log file directory is not writable: '.$directory);
+					$exception = new SystemException('The error log file directory is not writable: '.$directory);
 					$exception->hint_message = 'Please assign writing permissions on the error log directory for the Apache user.';
 					throw $exception;
 				}
@@ -67,7 +75,7 @@ class Phpr_Error_Log
 
 
 	// Formats an exception for writing to the log file
-	public function log_exception(Exception $exception)
+	public function log_exception(\Exception $exception)
 	{
 		if (!$this->is_enabled)
 			return false;
@@ -80,7 +88,7 @@ class Phpr_Error_Log
 
 		switch ($exception)
 		{
-			case ($exception instanceof Phpr_DeprecateException):
+			case ($exception instanceof DeprecateException):
 				$message = sprintf("%s: %s. ", 
 					get_class($exception), 
 					$exception->getMessage());
@@ -110,7 +118,7 @@ class Phpr_Error_Log
 		}
 		
 		$error = self::get_exception_details($exception);
-		$log_to_db = !($exception instanceof Phpr_DatabaseException);
+		$log_to_db = !($exception instanceof DatabaseException);
 		
 		$details = null;
 		
@@ -125,21 +133,21 @@ class Phpr_Error_Log
 	{
 		$record_id = null;
 		
-		if (!class_exists('File_Log') && !Phpr::$class_loader->load('File_Log'))
+		if (!class_exists('\File\Log') && !Phpr::$class_loader->load('\File\Log'))
 			echo $message;
 		
 		if ((Phpr::$config->get('LOG_TO_DB') || $this->log_file_name == null) && Db::$connection && !self::$disable_db_logging && $log_to_db)
 		{
-			if (!class_exists('Phpr_Trace_Log_Record') && !Phpr::$class_loader->load('Phpr_Trace_Log_Record'))
+			if (!class_exists('Trace_Log_Record') && !Phpr::$class_loader->load('Trace_Log_Record'))
 				return;
 			
-			$record_id = Phpr_Trace_Log_Record::add('ERROR', $message, $details)->id;
+			$record_id = Trace_Log_Record::add('ERROR', $message, $details)->id;
 		}
 		
 		if (Phpr::$config->get('ENABLE_ERROR_STRING', true))
 			$message .= ($details) ? ' Encoded details: ' . $details : '';
 		
-		return array('id' => $record_id, 'status' => File_Log::write_line($this->log_file_name, $message));
+		return array('id' => $record_id, 'status' => \File\Log::write_line($this->log_file_name, $message));
 	}
 
 	public static function get_exception_details($exception) 
@@ -152,7 +160,7 @@ class Phpr_Error_Log
 			'message'        => ucfirst(nl2br(htmlentities($exception->getMessage()))),
 			'hint'           => isset($exception->hint_message) && strlen($exception->hint_message) ? $exception->hint_message : null,
 			'is_document'    => $exception instanceof Cms_ExecutionException,
-			'document'       => $exception instanceof Cms_ExecutionException ? $exception->document_name() : File_Path::get_public_path($exception->getFile()),
+			'document'       => $exception instanceof Cms_ExecutionException ? $exception->document_name() : \File\Path::get_public_path($exception->getFile()),
 			'document_type'  => $exception instanceof Cms_ExecutionException ? $exception->document_type() : 'PHP document',
 			'line'           => $exception instanceof Cms_ExecutionException ? $exception->code_line : $exception->getLine(),
 			'code_highlight' => (object)array(
@@ -230,15 +238,15 @@ class Phpr_Error_Log
 					? $event['class'].$event['type'].$event['function'] 
 					: $event['function'];
 
-				if ($function_name == 'Phpr_SysErrorHandler' || $function_name == 'Phpr_SysExceptionHandler')
+				if ($function_name == 'Phpr\SysErrorHandler' || $function_name == 'Phpr\SysExceptionHandler')
 					continue;
 				
-				$file = isset($event['file']) ? File_Path::get_public_path($event['file']) : null;
+				$file = isset($event['file']) ? \File\Path::get_public_path($event['file']) : null;
 				$line = isset($event['line']) ? $event['line'] : null;
 
 				$args = null;
 				if (isset($event['args']) && count($event['args']))
-					$args = Phpr_Exception::format_trace_arguements($event['args'], false);
+					$args = Exception::format_trace_arguements($event['args'], false);
 				
 				$error->call_stack[] = (object) array(
 					'id' => $last_index-$index+1,
@@ -261,9 +269,9 @@ class Phpr_Error_Log
 		
 		$value = json_encode($value);
 
-		if (class_exists('Phpr_SecurityFramework')) 
+		if (class_exists('SecurityFramework')) 
 		{
-			$security = Phpr_SecurityFramework::create();
+			$security = SecurityFramework::create();
 			list($key_1, $key_2) = Phpr::$config->get('ADDITIONAL_ENCRYPTION_KEYS', array('jd$5ka#1', '9ao@!d4k'));
 			$value = $security->encrypt($value, $key_1, $key_2);
 		}
@@ -276,9 +284,9 @@ class Phpr_Error_Log
 		
 		$value = base64_decode($value);
 
-		if (class_exists('Phpr_SecurityFramework')) 
+		if (class_exists('SecurityFramework')) 
 		{
-			$security = Phpr_SecurityFramework::create();
+			$security = SecurityFramework::create();
 			list($key_1, $key_2) = Phpr::$config->get('ADDITIONAL_ENCRYPTION_KEYS', array('jd$5ka#1', '9ao@!d4k'));
 			$value = $security->decrypt($value, $key_1, $key_2);
 		}

@@ -1,6 +1,10 @@
-<?php
+<?php namespace Phpr;
 
-class Phpr_SecurityFramework
+use Phpr;
+use Phpr\SystemException;
+use Phpr\ApplicationException;
+
+class SecurityFramework
 {
 	private static $instance;
 
@@ -102,7 +106,7 @@ class Phpr_SecurityFramework
 
 		$config_data = $this->get_config_content();
 		if (!array_key_exists('config_key', $config_data))
-			throw new Phpr_SystemException('Invalid configuration file.');
+			throw new SystemException('Invalid configuration file.');
 	
 		return $this->key = $config_data['config_key'];
 	}
@@ -189,7 +193,7 @@ class Phpr_SecurityFramework
 		
 		$file_path = Phpr::$config->get('SECURE_CONFIG_PATH', PATH_APP.'/config/config.dat');
 		if (!file_exists($file_path))
-			throw new Phpr_ApplicationException('Secure configuration file is not found.');
+			throw new ApplicationException('Secure configuration file is not found.');
 
 		try
 		{
@@ -201,7 +205,7 @@ class Phpr_SecurityFramework
 		} 
 		catch (Exception $ex)
 		{
-			throw new Phpr_SystemException('Error loading configuration file.');
+			throw new SystemException('Error loading configuration file.');
 		}
 			
 		if (!is_array($data))
@@ -220,7 +224,7 @@ class Phpr_SecurityFramework
 
 		$config_data = $this->get_config_content();
 		if (!array_key_exists('config_key', $config_data))
-			throw new Phpr_SystemException('Invalid configuration file.');
+			throw new SystemException('Invalid configuration file.');
 
 		return $this->salt = md5($config_data['config_key']);
 	}

@@ -1,4 +1,8 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
+use Phpr\SystemException;
+use File\Log as File_Log;
 
 /**
  * PHPR Trace Log Class
@@ -22,7 +26,7 @@
  *
  */
 
-class Phpr_Trace_Log
+class Trace_Log
 {
 	private $listeners;
 
@@ -54,7 +58,7 @@ class Phpr_Trace_Log
 				{
 					if (!is_writable($file_path))
 					{
-						$exception = new Phpr_SystemException( 'The trace log file is not writable: '.$file_path );
+						$exception = new SystemException( 'The trace log file is not writable: '.$file_path );
 						$exception->hint_message = 'Please assign writing permissions on the trace log file for the Apache user.';
 						throw $exception;
 					}
@@ -64,7 +68,7 @@ class Phpr_Trace_Log
 					$directory = dirname($file_path);
 					if (!is_writable($directory))
 					{
-						$exception = new Phpr_SystemException( 'The trace log file directory is not writable: '.$directory );
+						$exception = new SystemException( 'The trace log file directory is not writable: '.$directory );
 						$exception->hint_message = 'Please assign writing permissions on the trace log directory for the Apache user.';
 						throw $exception;
 					}
@@ -107,10 +111,10 @@ class Phpr_Trace_Log
 			return File_Log::write_line($this->listeners[$listener], $message);
 		else
 		{
-			if (!class_exists('Phpr_Trace_Log_Record') && !Phpr::$class_loader->load('Phpr_Trace_Log_Record'))
+			if (!class_exists('Trace_Log_Record') && !Phpr::$class_loader->load('Trace_Log_Record'))
 				return;
 
-			Phpr_Trace_Log_Record::add($listener, $message);
+			Trace_Log_Record::add($listener, $message);
 		}
 	}
 

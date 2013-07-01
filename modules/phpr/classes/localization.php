@@ -1,4 +1,9 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
+use Phpr\DateTime;
+use Phpr\SystemException;
+use Phpr\ApplicationException;
 
 /**
  * Phpr_Localization class assists in application lozalization.
@@ -10,7 +15,7 @@
  * this case the language specified in the user browser configuration will be used.
  * If locale is not set the default value en_US will be used.
  */
-class Phpr_Localization 
+class Localization 
 {
 	const default_locale_code = 'en_US';
 
@@ -108,7 +113,7 @@ class Phpr_Localization
 		
 		if ($definition === null) 
 		{
-			throw new Phpr_ApplicationException("Could not find locale definition: ".$container.", ".$source." (".$this->locale_code.").");
+			throw new ApplicationException("Could not find locale definition: ".$container.", ".$source." (".$this->locale_code.").");
 		}
 		
 		return $definition;
@@ -163,7 +168,7 @@ class Phpr_Localization
 		
 		if ($pluralization === null) 
 		{
-			throw new Phpr_ApplicationException("Could not find locale pluralization ({$this->locale_code}).");
+			throw new ApplicationException("Could not find locale pluralization ({$this->locale_code}).");
 		}
 		
 		return $pluralization;
@@ -304,12 +309,12 @@ class Phpr_Localization
 
 	/**
 	 * Returns a string representation of a date, corresponding a current language dates format.
-	 * @param Phpr_DateTime $date Specifies a date value.
+	 * @param Phpr\DateTime $date Specifies a date value.
 	 * @param string $format. Optional, output format. 
 	 * By default the short date format used(11/6/2006 - for en_US).
 	 * @return string
 	 */
-	public function date(Phpr_DateTime $date, $format = "%x") 
+	public function date(DateTime $date, $format = "%x") 
 	{
 		$this->init_locale();
 
@@ -317,7 +322,7 @@ class Phpr_Localization
 	}
 
 	/**
-	 * Converts a string to a Phpr_DateTime object, corresponding a current language dates format.
+	 * Converts a string to a Phpr\DateTime object, corresponding a current language dates format.
 	 * If the specified value may not be converted to date/time, returns boolean false.
 	 * @param float $str Specifies a string to parse.
 	 * @param string $format Specifies the date/time format.
@@ -327,7 +332,7 @@ class Phpr_Localization
 	 */
 	public function string_to_date($str, $format = "%x", $timezone = null) 
 	{
-		return Phpr_DateTime::parse($str, $format, $timezone);
+		return DateTime::parse($str, $format, $timezone);
 	}
 
 	/**
@@ -396,7 +401,7 @@ class Phpr_Localization
 
 		// $locale_code = Phpr::$config->get('LOCALE', self::default_locale_code);
 		try {
-			$locale_code = Core_Config::create()->locale_code;
+			$locale_code = \Core_Config::create()->locale_code;
 		} 
 		catch (Exception $ex) {
 			$locale_code = self::default_locale_code;
@@ -458,10 +463,10 @@ class Phpr_Localization
 			$this->load($locale);
 
 		if (!isset($this->definitions[$locale][$container]))
-			throw new Phpr_ApplicationException("Could not find locale container: ".$container." (".$locale.").");
+			throw new ApplicationException("Could not find locale container: ".$container." (".$locale.").");
 		
 		if (!isset($this->definitions[$locale][$container][$source][$variation]))
-			throw new Phpr_ApplicationException("Could not find locale definition: ".$container.", ".$source.", ".$variation." (".$locale.").");
+			throw new ApplicationException("Could not find locale definition: ".$container.", ".$source.", ".$variation." (".$locale.").");
 		
 		return $this->definitions[$locale][$container][$source][$variation];
 	}
@@ -494,7 +499,7 @@ class Phpr_Localization
 
 		// does it exist yet?
 		if (!$this->pluralization_exists($locale))
-			throw new Phpr_ApplicationException("Could not find locale pluralization: ".$locale);
+			throw new ApplicationException("Could not find locale pluralization: ".$locale);
 		
 		$pluralization = $this->pluralizations[$locale];
 
@@ -526,7 +531,7 @@ class Phpr_Localization
 		
 		foreach ($module_paths as $module_path) 
 		{
-			$iterator = new DirectoryIterator($module_path);
+			$iterator = new \DirectoryIterator($module_path);
 			
 			foreach ($iterator as $directory) 
 			{
@@ -543,7 +548,7 @@ class Phpr_Localization
 				continue;
 			
 			if (!is_readable($directory_path))
-				throw new Phpr_SystemException("Localization directory ".$directory_path." is not readable.");
+				throw new SystemException("Localization directory ".$directory_path." is not readable.");
 		
 			$this->directory_paths[] = $directory_path;
 		}
@@ -587,7 +592,7 @@ class Phpr_Localization
 		
 		foreach ($paths as $path) 
 		{
-			$iterator = new DirectoryIterator($path);
+			$iterator = new \DirectoryIterator($path);
 
 			foreach ($iterator as $file) 
 			{
@@ -603,7 +608,7 @@ class Phpr_Localization
 				$file_path = $path . '/' . $file->getFilename();
 				
 				if (!is_readable($file_path))
-					throw new Phpr_SystemException("Localization file ".$file_path." is not readable.");
+					throw new SystemException("Localization file ".$file_path." is not readable.");
 			
 				$this->file_paths[$locale_code . $extension][] = $file_path;
 			}
@@ -694,7 +699,7 @@ class Phpr_Localization
 				{
 					++$line_number;
 
-					if (File_Csv::csv_row_is_empty($row))
+					if (\File\Csv::csv_row_is_empty($row))
 						continue;
 
 					if (!$first_row_found) 
@@ -719,7 +724,7 @@ class Phpr_Localization
 						$variation = $row[2];
 						
 						if ((int)$variation != $variation)
-							throw new Phpr_ApplicationException("Invalid locale definition. Most likely the definition is incompatible CSV. Please verify the variation column.");
+							throw new ApplicationException("Invalid locale definition. Most likely the definition is incompatible CSV. Please verify the variation column.");
 						
 						$destination = $row[3];
 					}

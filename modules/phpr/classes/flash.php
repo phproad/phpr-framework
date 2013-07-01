@@ -1,4 +1,12 @@
-<?php
+<?php namespace Phpr;
+
+use ArrayAccess;
+use ArrayIterator;
+use IteratorAggregate;
+use Countable;
+
+use Phpr;
+
 /**
  * PHPR Flash Class
  *
@@ -8,14 +16,14 @@
  *
  * @see Phpr
  */
-class Phpr_Flash implements ArrayAccess, IteratorAggregate, Countable
+class Flash implements ArrayAccess, IteratorAggregate, Countable
 {
 	const flash_key = '__flash';
 
 	public $flash = array();
 
 	/**
-	 * Creates a new Phpr_Flash instance
+	 * Creates a new Phpr\Flash instance
 	 */
 	public function __construct()
 	{

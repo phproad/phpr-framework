@@ -1,11 +1,13 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr\SystemException;
 
 /**
  * PHPR Router Class
  *
  * Router maps an URI string to the PHPR controllers and actions.
  */
-class Phpr_Router
+class Router
 {
 	private $_rules = array();
 	private $_action_index = false;
@@ -135,7 +137,7 @@ class Phpr_Router
 
 				if ($rule->folder !== null)
 				{
-					$folderParams = Phpr_Router::get_uri_params(explode("/", $rule->folder));
+					$folderParams = Router::get_uri_params(explode("/", $rule->folder));
 					foreach ($folderParams as $param_name => $param_index)
 					{
 						if ($param_name == self::_url_controller)
@@ -153,7 +155,7 @@ class Phpr_Router
 			}
 			catch (Exception $ex)
 			{
-				throw new Phpr_SystemException("Error routing rule [".$rule->uri."]: ".$ex->getMessage());
+				throw new SystemException("Error routing rule [".$rule->uri."]: ".$ex->getMessage());
 			}
 		}
 	}
@@ -230,7 +232,7 @@ class Phpr_Router
 	 * Returns a name of the controller or action.
 	 * @param string $TargetType Specifies a type of the target - controller or action.
 	 * @param array &$rule_params List of the rule parameters.
-	 * @param Phpr_Router_Rule &$rule Specifies the rule.
+	 * @param Phpr\Router_Rule &$rule Specifies the rule.
 	 * @param array &$segments A list of the URI segments.
 	 * @return string
 	 */
@@ -314,12 +316,12 @@ class Phpr_Router
 	/**
 	 * Adds a routing rule.
 	 * Use this method to define custom URI mappings to your application controllers.
-	 * After adding a rule use the Phpr_Router_Rule class methods to configure the rule. For example: AddRule("archive/:year")->controller("blog")->action("Archive")->def("year", 2006).
-	 * @return Phpr_Router_Rule
+	 * After adding a rule use the Phpr\Router_Rule class methods to configure the rule. For example: AddRule("archive/:year")->controller("blog")->action("Archive")->def("year", 2006).
+	 * @return Phpr\Router_Rule
 	 */
 	public function add_rule($uri)
 	{
-		return $this->_rules[] = new Phpr_Router_Rule($uri);
+		return $this->_rules[] = new Router_Rule($uri);
 	}
 
 	/**

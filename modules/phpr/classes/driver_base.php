@@ -1,11 +1,13 @@
-<?php
+<?php namespace Phpr;
+
+use File\Path;
 
 /**
  * PHPR module driver base class
  * 
  * This class assists in working with module drivers
  */
-class Phpr_Driver_Base extends Phpr_Extension
+class Driver_Base extends Extension
 {
 	// Driver folder name
 	public static $driver_folder;
@@ -38,22 +40,22 @@ class Phpr_Driver_Base extends Phpr_Extension
 			$path = '/'.$path;
 		
 		$class_name = get_class($this);
-		$class_path = File_Path::get_path_to_class($class_name);
+		$class_path = Path::get_path_to_class($class_name);
 		return $class_path.'/'.strtolower($class_name).'/vendor'.$path;
 	}  
 
 	public function get_partial_path($partial_name = null)
 	{
 		$class_name = get_class($this);
-		$class_path = File_Path::get_path_to_class($class_name);
+		$class_path = Path::get_path_to_class($class_name);
 		return $class_path.'/'.strtolower($class_name).'/partials/'.$partial_name;
 	}
 
 	public function get_public_asset_path($partial_name = null)
 	{
 		$class_name = get_class($this);
-		$class_path = File_Path::get_path_to_class($class_name);
+		$class_path = Path::get_path_to_class($class_name);
 		$local_path = $class_path.'/'.strtolower($class_name).'/assets/'.$partial_name;
-		return File_Path::get_public_path($local_path);
+		return Path::get_public_path($local_path);
 	}    
 }

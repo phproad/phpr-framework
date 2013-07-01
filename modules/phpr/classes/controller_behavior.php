@@ -1,9 +1,11 @@
-<?php
+<?php namespace Phpr;
+
+use ReflectionObject;
 
 /**
  * Controller behaviors base class
  */
-class Phpr_Controller_Behavior extends Phpr_Extension
+class Controller_Behavior extends Extension
 {
 	protected $_controller;
 	protected $_view_path;
@@ -19,7 +21,7 @@ class Phpr_Controller_Behavior extends Phpr_Extension
 		$this->_controller = $controller;
 		
 		$ref_obj = new ReflectionObject($this);
-		$this->_view_path = dirname($ref_obj->getFileName()).'/'.strtolower(get_class($this)).'/partials';
+		$this->_view_path = dirname($ref_obj->getFileName()).'/'.strtolower(\get_real_class($this)).'/partials';
 	}
 	
 	/**
@@ -32,7 +34,7 @@ class Phpr_Controller_Behavior extends Phpr_Extension
 	 */
 	protected function hide_action($method_name)
 	{
-		$methods = Phpr_Util::splat($method_name, ',');
+		$methods = Util::splat($method_name, ',');
 		foreach ($methods as $method)
 			$this->_controller->_internal_methods[] = trim($method);
 	}
@@ -108,9 +110,9 @@ class Phpr_Controller_Behavior extends Phpr_Extension
 			$controller = $this->_controller_cache[$controller_class];
 		else
 		{
-			Phpr_Controller::$skip_permission_check = true;
+			Controller::$skip_permission_check = true;
 			$controller = $this->_controller_cache[$controller_class] = new $controller_class();
-			Phpr_Controller::$skip_permission_check = false;
+			Controller::$skip_permission_check = false;
 		}
 
 		$this->display_partial_file($controller->get_views_path(), $view_name, $params, $override_controller, $throw_not_found);

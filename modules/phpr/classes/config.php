@@ -1,4 +1,6 @@
-<?php
+<?php namespace Phpr;
+
+use ArrayAccess;
 
 /**
  * PHPR configuration base class
@@ -9,7 +11,7 @@
  *
  * @see Phpr
  */
-class Phpr_Config implements ArrayAccess
+class Config implements ArrayAccess
 {
 	protected $_configuration = array();
 

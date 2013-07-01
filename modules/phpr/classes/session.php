@@ -1,4 +1,12 @@
-<?php
+<?php namespace Phpr;
+
+use ArrayAccess;
+use ArrayIterator;
+use IteratorAggregate;
+use Countable;
+
+use Phpr;
+use Db\Helper as Db_Helper;
 
 /**
  * PHPR Session Class
@@ -7,12 +15,12 @@
  *
  * The instance of this class is available in the Phpr global object: Phpr::$session.
  */
-class Phpr_Session implements ArrayAccess, IteratorAggregate, Countable
+class Session implements ArrayAccess, IteratorAggregate, Countable
 {
 	/**
 	 * Flash object
 	 *
-	 * @var Phpr_Flash
+	 * @var Phpr\Flash
 	 */
 	public $flash = null;
 
@@ -41,7 +49,7 @@ class Phpr_Session implements ArrayAccess, IteratorAggregate, Countable
 		
 		if ($result = session_start())
 		{
-			$this->flash = new Phpr_Flash();
+			$this->flash = new Flash();
 			if ($this->flash)
 			{
 				if (array_key_exists('flash_partial', $_POST) && strlen($_POST['flash_partial']))

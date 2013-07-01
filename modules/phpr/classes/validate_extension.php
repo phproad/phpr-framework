@@ -1,11 +1,13 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr\SystemException;
 
 /**
  * Base class for extension validation
- * @see Phpr_Extension
+ * @see Phpr\Extension
  */
 
-class Phpr_Validate_Extension extends Phpr_Extension
+class Validate_Extension extends Extension
 {
 
 	public function _execute_validation($method, $name, $value)
@@ -13,7 +15,7 @@ class Phpr_Validate_Extension extends Phpr_Extension
 		if (method_exists($this, $method))
 			return $this->$method($name, $value);
 
-		throw new Phpr_SystemException('Validation method '.$method.' not found in '.get_class($this));
+		throw new SystemException('Validation method '.$method.' not found in '.get_class($this));
 	}
 
 }

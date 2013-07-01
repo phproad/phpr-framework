@@ -1,4 +1,8 @@
-<?php
+<?php namespace Phpr;
+
+use ReflectionClass;
+
+use Phpr;
 
 /**
  * Class loader
@@ -6,7 +10,7 @@
  * This class is used by the PHPR internally for finding and loading classes.
  * The instance of this class is available in the Phpr global object: Phpr::$class_loader.
  */
-class Phpr_ClassLoader 
+class ClassLoader 
 {
 	private $paths;
 	private $auto_init = null;
@@ -31,7 +35,10 @@ class Phpr_ClassLoader
 	 */
 	public function load($class, $force_disabled = false)
 	{
-		$loaded = false;        
+		// Debug
+		// echo $class."<br>";
+
+		$loaded = false;
 
 		if (!$this->auto_init)
 			$this->auto_init = $class;
@@ -45,9 +52,12 @@ class Phpr_ClassLoader
 
 		if (!$loaded)
 			$loaded = $this->load_local($class);
-		
+
 		if (!$loaded) 
 			$loaded = $this->load_module($class, $force_disabled);
+
+		if (!$loaded) 
+			$loaded = $this->load_module_classic($class, $force_disabled);
 
 		// Prevents a failed init from breaking workflow
 		if ($this->auto_init == $class)
@@ -63,6 +73,10 @@ class Phpr_ClassLoader
 	 */
 	private function load_local($class)
 	{
+		// Local cannot use namespaces
+		if (strpos($class, '\\') !== false)
+			return false;
+
 		$file_name = strtolower($class).'.'.PHPR_EXT;
 
 		foreach ($this->paths['library'] as $path)
@@ -92,6 +106,80 @@ class Phpr_ClassLoader
 	private function load_module($class, $force_disabled = false)
 	{
 		global $CONFIG;
+
+		$disabled_modules = isset($CONFIG['DISABLE_MODULES']) ? $CONFIG['DISABLE_MODULES'] : array();
+
+		$class_alias = null;
+		$namespace_pos = strpos($class, '\\');
+		
+		//
+		// Requested class contains no namespace, so spoof one
+		// Phpr_Class_Name -> Phpr\Class_Name
+		// 
+		if ($namespace_pos === false) {
+			$class_alias = $class;
+			$class = preg_replace('/\\_/', '\\', $class, 1);
+			$namespace_pos = strpos($class, '\\');
+		}
+
+		//
+		// If we are calling an alias, check the spoofed class
+		// hasn't already been loaded
+		// 
+
+		if ($class_alias !== null && class_exists($class)) {
+			class_alias($class, $class_alias);
+			return true;
+		}
+
+		//
+		// Proceed with loading
+		//
+
+		$file_name = strtolower(substr($class, $namespace_pos + 1)).'.'.PHPR_EXT;
+		$module_name = strtolower(substr($class, 0, $namespace_pos));
+
+		// Is disabled?
+		if (in_array($module_name, $disabled_modules) && !$force_disabled)
+			return false;
+
+		foreach ($this->paths['application'] as $module_path)
+		{
+			foreach ($this->paths['module'] as $path)
+			{
+				$full_path = $module_path.DS 
+					. PHPR_MODULES.DS 
+					. $module_name.DS 
+					. $path.DS 
+					. $file_name;
+
+				if (!$this->file_exists($full_path))
+					continue;
+
+				include_once($full_path);
+
+				if (class_exists($class)) {
+					// Create a class alias for cleaner naming
+					if ($class_alias !== null && !class_exists($class_alias))
+						class_alias($class, $class_alias);
+
+					$this->init_class($class);
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Looks for a class located within a module
+	 * @param string $class Class name
+	 * @return bool If the class is found
+	 */
+	private function load_module_classic($class, $force_disabled = false)
+	{
+		global $CONFIG;
 		$disabled_modules = isset($CONFIG['DISABLE_MODULES']) ? $CONFIG['DISABLE_MODULES'] : array();
 
 		$file_name = strtolower($class).'.'.PHPR_EXT;
@@ -117,7 +205,7 @@ class Phpr_ClassLoader
 				if (!$this->file_exists($full_path))
 					continue;
 
-				include($full_path);
+				include_once($full_path);
 
 				if (class_exists($class))
 				{
@@ -134,7 +222,7 @@ class Phpr_ClassLoader
 	 * Loads an application controller by the class name and returns the controller instance.
 	 * @param string $class_name Specifies a name of the controller to load.
 	 * @param string $controller_path Specifies a path to the controller directory.
-	 * @return Phpr_Controller The controller instance or null.
+	 * @return Phpr\Controller The controller instance or null.
 	 */
 	public function load_controller($class_name, $controller_directory = null) 
 	{
@@ -148,16 +236,16 @@ class Phpr_ClassLoader
 
 			if (!class_exists($class_name)) 
 			{
-				require_once $controller_path;
+				require_once($controller_path);
 
 				if (!class_exists($class_name))
 					continue;
 				
-				Phpr_Controller::$current = new $class_name();
+				Controller::$current = new $class_name();
 				
-				Phpr::$events->fire_event('phpr:on_configure_' . Phpr_Inflector::underscore($class_name) . '_controller', Phpr_Controller::$current);
+				Phpr::$events->fire_event('phpr:on_configure_' . Inflector::underscore($class_name) . '_controller', Controller::$current);
 				
-				return Phpr_Controller::$current;
+				return Controller::$current;
 			}
 
 			// Make sure the class requested is in the application controllers directory
@@ -165,11 +253,11 @@ class Phpr_ClassLoader
 			if ($class_info->getFileName() !== $controller_path)
 				continue;
 				
-			Phpr_Controller::$current = new $class_name();
+			Controller::$current = new $class_name();
 				
-			Phpr::$events->fire_event('phpr:on_configure_' . Phpr_Inflector::underscore($class_name) . '_controller', Phpr_Controller::$current);
+			Phpr::$events->fire_event('phpr:on_configure_' . Inflector::underscore($class_name) . '_controller', Controller::$current);
 			
-			return Phpr_Controller::$current;
+			return Controller::$current;
 		}
 	}
 
@@ -269,7 +357,6 @@ class Phpr_ClassLoader
 	 */
 	private function file_exists($path)
 	{
-
 		try 
 		{       
 			$dir = dirname($path);
@@ -284,6 +371,7 @@ class Phpr_ClassLoader
 		} 
 		catch (exception $ex) 
 		{
+			// Debug
 			echo $file_path.' '.$ex->getMessage();
 		}
 

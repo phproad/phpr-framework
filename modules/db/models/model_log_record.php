@@ -1,10 +1,13 @@
-<?php
+<?php namespace Db;
+
+use Phpr\Xml;
+use Phpr\DateTime;
 
 /**
  * DB Model log record class
  */
 
-class Db_Model_Log_Record extends Db_ActiveRecord
+class Model_Log_Record extends ActiveRecord
 {
 	public $table_name = "db_model_logs";
 
@@ -21,7 +24,7 @@ class Db_Model_Log_Record extends Db_ActiveRecord
 
 	public function before_validation_on_create($deferred_session_key = null)
 	{
-		$this->record_datetime = Phpr_DateTime::now();
+		$this->record_datetime = DateTime::now();
 	}
 	
 	public function define_columns($context = null)
@@ -40,17 +43,17 @@ class Db_Model_Log_Record extends Db_ActiveRecord
 	{
 		switch ($this->type)
 		{
-			case Db_Model_Log::type_create: return $this->model_log_create_name; break;
-			case Db_Model_Log::type_update: return $this->model_log_update_name; break;
-			case Db_Model_Log::type_delete: return $this->model_log_delete_name; break;
-			case Db_Model_Log::type_custom: return $this->get_data_value('message', $this->model_log_custom_name); break;
+			case Model_Log::type_create: return $this->model_log_create_name; break;
+			case Model_Log::type_update: return $this->model_log_update_name; break;
+			case Model_Log::type_delete: return $this->model_log_delete_name; break;
+			case Model_Log::type_custom: return $this->get_data_value('message', $this->model_log_custom_name); break;
 		}
 		return "";
 	}
 
 	public function is_custom()
 	{
-		return ($this->type == Db_Model_Log::type_custom);
+		return ($this->type == Model_Log::type_custom);
 	}
 
 	// Custom Log Type
@@ -66,7 +69,7 @@ class Db_Model_Log_Record extends Db_ActiveRecord
 		{
 			try
 			{
-				$result = Phpr_Xml::to_plain_array($this->param_data, true);
+				$result = Xml::to_plain_array($this->param_data, true);
 			}
 			catch (Exception $ex) 
 			{

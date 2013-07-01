@@ -1,6 +1,13 @@
-<?php
+<?php namespace Db;
 
-class Db_File extends Db_ActiveRecord
+use Phpr;
+use Phpr\SystemException;
+use Phpr\ApplicationException;
+use File\Image;
+use File\Upload;
+use Db\Helper as Db_Helper;
+
+class File extends ActiveRecord
 {
 	public $table_name = 'db_files';
 	public $simple_caching = true;
@@ -9,7 +16,7 @@ class Db_File extends Db_ActiveRecord
 	public $uploaded_path = '/uploaded'; // Absolute path
 	public $thumbnail_error =  null;
 
-	public $implement = 'Db_AutoFootprints';
+	public $implement = 'Db\AutoFootprints';
 
 	protected $auto_mime_types = array(
 		'docx' => 'application/msword',
@@ -32,7 +39,7 @@ class Db_File extends Db_ActiveRecord
 
 	public function __construct($values = null, $options = array())
 	{
-		$front_end = Db_ActiveRecord::$execution_context == 'front-end';
+		$front_end = ActiveRecord::$execution_context == 'front-end';
 		if ($front_end)
 			unset($this->calculated_columns['user_name']);
 
@@ -50,7 +57,7 @@ class Db_File extends Db_ActiveRecord
 
 	public function from_xhr($file_info)
 	{	
-		$file_info = File_Upload::validate_xhr_info($file_info);
+		$file_info = Upload::validate_xhr_info($file_info);
 		
 		$this->mime_type = $this->eval_mime_type($file_info);
 		$this->size = $file_info['size'];
@@ -66,14 +73,14 @@ class Db_File extends Db_ActiveRecord
 		}
 
 		$dest_path = $this->get_file_save_path($this->disk_name);
-		File_Upload::save_xhr_file($file_info, $dest_path);
+		Upload::save_xhr_file($file_info, $dest_path);
 
 		return $this;
 	}
 
 	public function from_post($file_info)
 	{
-		File_Upload::validate_uploaded_file($file_info);
+		Upload::validate_uploaded_file($file_info);
 
 		$this->mime_type = $this->eval_mime_type($file_info);
 		$this->size = $file_info['size'];
@@ -91,7 +98,7 @@ class Db_File extends Db_ActiveRecord
 		$dest_path = $this->get_file_save_path($this->disk_name);
 
 		if (!@move_uploaded_file($file_info["tmp_name"], $dest_path))
-			throw new Phpr_SystemException("Error copying file to $dest_path.");
+			throw new SystemException("Error copying file to $dest_path.");
 
 		return $this;
 	}
@@ -119,7 +126,7 @@ class Db_File extends Db_ActiveRecord
 		$dest_path = $this->get_file_save_path($this->disk_name);
 
 		if (!@copy($file_path, $dest_path))
-			throw new Phpr_SystemException("Error copying file to $dest_path.");
+			throw new SystemException("Error copying file to $dest_path.");
 
 		return $this;
 	}
@@ -206,7 +213,7 @@ class Db_File extends Db_ActiveRecord
 
 		$path = $this->get_file_save_path($this->disk_name);
 		if (!file_exists($path))
-			throw new Phpr_ApplicationException('Error: file not found.');
+			throw new ApplicationException('Error: file not found.');
 
 		$encoding = Phpr::$config["FILESYSTEM_CODEPAGE"];
 		$filename = mb_convert_encoding($this->name, $encoding);
@@ -251,7 +258,7 @@ class Db_File extends Db_ActiveRecord
 			return root_url($thumb_path);
 
 		try {
-			File_Image::make_thumb($this->get_file_save_path($this->disk_name), $thumb_file, $width, $height, false, $params['mode'], $return_jpeg);
+			Image::make_thumb($this->get_file_save_path($this->disk_name), $thumb_file, $width, $height, false, $params['mode'], $return_jpeg);
 		}
 		catch (Exception $ex) {
 			@copy(PATH_APP . $this->thumbnail_error, $thumb_file);
@@ -283,7 +290,7 @@ class Db_File extends Db_ActiveRecord
 		$obj->is_public = $this->is_public;
 
 		if (!copy($src_path, $obj->get_file_save_path($dest_name)))
-			throw new Phpr_SystemException('Error copying file');
+			throw new SystemException('Error copying file');
 
 		return $obj;
 	}

@@ -1,10 +1,10 @@
-<?php
+<?php namespace Net;
 
 /**
  * Class for handling creating outgoing socket requests
  * @package PHPR
  */
-class Net_Request 
+class Request 
 {
 	protected $options;
 

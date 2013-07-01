@@ -1,10 +1,10 @@
-<?php
+<?php namespace Net;
 
 /**
  * Class for receiving a Net_Request response
  * @package PHPR
  */
-class Net_Response 
+class Response 
 {
 	public $data;
 	public $request;

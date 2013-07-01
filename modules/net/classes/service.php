@@ -1,6 +1,6 @@
-<?php
+<?php namespace Net;
 
-class Net_Service 
+class Service 
 {
 	protected $settings;
 	protected $mc;
@@ -76,7 +76,7 @@ class Net_Service
 		} 
 		else // Or not
 		{
-			$response = new Net_Response();
+			$response = new Response();
 
 			ob_start();
 			$response_data = curl_exec($curl);
@@ -164,7 +164,7 @@ class Net_Service
 
 			list($data, $headers) = $this->get_data_and_headers_from_response($response_data);
 
-			$response = new Net_Response();
+			$response = new Response();
 			$response->request = $connection['request'];
 			$response->headers = $headers;
 			$response->data = $data;

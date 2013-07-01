@@ -1,4 +1,6 @@
-<?php
+<?php namespace Net;
+
+use Phpr\SystemException;
 
 require_once(PATH_SYSTEM."/modules/net/vendor/phpmailer/class.phpmailer.php");
 
@@ -6,7 +8,7 @@ require_once(PATH_SYSTEM."/modules/net/vendor/phpmailer/class.phpmailer.php");
  * Class for handling creating outgoing socket requests
  * @package PHPR
  */
-class Net_Email 
+class Email 
 {
 	protected $options;
     protected $mailer;
@@ -113,7 +115,7 @@ class Net_Email
         $mail->AltBody = $text_body;
 
         if (!$mail->Send())
-            throw new Phpr_SystemException('Error sending message '.$subject.': '.$mail->ErrorInfo);
+            throw new SystemException('Error sending message '.$subject.': '.$mail->ErrorInfo);
 
 	}
 

@@ -1,11 +1,14 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
+use Phpr\ApplicationException;
 
 /**
  * PHPR Form helper
  *
  * This class contains functions for working with HTML forms.
  */
-class Phpr_Form
+class Form
 {
 	/**
 	 * Returns the opening form tag.
@@ -14,7 +17,7 @@ class Phpr_Form
 	 */
 	public static function open_tag($attributes = array()) 
 	{
-		$default_url = Phpr_Html::encode(rawurldecode(strip_tags(root_url(Phpr::$request->get_current_uri()))));
+		$default_url = Html::encode(rawurldecode(strip_tags(root_url(Phpr::$request->get_current_uri()))));
 
 		if (($pos = mb_strpos($default_url, '|')) !== false)
 			$default_url = mb_substr($default_url, 0, $pos);
@@ -27,7 +30,7 @@ class Phpr_Form
 		);
 
 		$result = "<form ";
-		$result .= Phpr_Html::format_attributes($attributes, $default_attributes);
+		$result .= Html::format_attributes($attributes, $default_attributes);
 		$result .= ">\n";
 
 		return $result;
@@ -97,7 +100,7 @@ class Phpr_Form
 	public static function widget($field_name, $options=array())
 	{
 		if (!isset($options['class']))
-			throw new Phpr_ApplicationException("Missing widget class from Phpr_Form::widget(), please define 'class' in options array as the second parameter");
+			throw new ApplicationException("Missing widget class from Phpr_Form::widget(), please define 'class' in options array as the second parameter");
 
 		extract($options);
 
@@ -111,10 +114,10 @@ class Phpr_Form
 			$model = new $model();
 
 		if (!$model)
-			$model = new Phpr_User(); // Gotta use something!
+			$model = new User(); // Gotta use something!
 
 		// All widgets need a controller
-		$controller = new Phpr_Controller();
+		$controller = new Controller();
 
 		// Create widget
 		$widget = new $class($controller, $model, $field_name, $options);
@@ -153,7 +156,7 @@ class Phpr_Form
 			$attributes = array_merge($extra, $attributes);
 			$extra = '';
 		}
-		return "<input ".Phpr_Html::format_attributes($attributes)." ".$extra." />";
+		return "<input ".Html::format_attributes($attributes)." ".$extra." />";
 	}
 
 	/**
@@ -296,7 +299,7 @@ class Phpr_Form
 			$extra = '';
 		}
 
-		return "<textarea ".Phpr_Html::format_attributes($attributes)." ".$extra.">".$value."</textarea>";
+		return "<textarea ".Html::format_attributes($attributes)." ".$extra.">".$value."</textarea>";
 	}
 
 	/**
@@ -317,7 +320,7 @@ class Phpr_Form
 			$selected = array($_POST[$name]);
 
 		if (is_array($extra)) 
-			$extra = Phpr_Html::format_attributes($extra);
+			$extra = Html::format_attributes($extra);
 		else if ($extra != '')
 			$extra = ' '.$extra;
 
@@ -368,7 +371,7 @@ class Phpr_Form
 			$extra = '';
 		}
 
-		return "<button ".Phpr_Html::format_attributes($attributes)." ".$extra.">".$text."</button>";
+		return "<button ".Html::format_attributes($attributes)." ".$extra.">".$text."</button>";
 	}
 
 	/**
@@ -384,7 +387,7 @@ class Phpr_Form
 		$for = ($id != '') ? ' for="'.$id.'" ' : '';
 
 		if (is_array($extra)) 
-			$extra = Phpr_Html::format_attributes($extra);
+			$extra = Html::format_attributes($extra);
 		else if ($extra != '')
 			$extra = ' '.$extra;
 

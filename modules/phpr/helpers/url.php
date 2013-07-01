@@ -1,16 +1,18 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
 
 /**
  * PHPR URL helper
  *
  * This class contains functions that may be useful for working with URLs.
  */
-class Phpr_Url
+class Url
 {
 	/**
 	 * Returns an URL of a specified resource relative to the application domain root
 	 */
-	public static function root_url($resource, $add_host_name_and_protocol = false, $protocol = null)
+	public static function root_url($resource = '/', $add_host_name_and_protocol = false, $protocol = null)
 	{
 		if (substr($resource, 0, 1) == '/')
 			$resource = substr($resource, 1);

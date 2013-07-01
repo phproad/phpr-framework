@@ -1,9 +1,9 @@
-<?php
+<?php namespace Phpr;
 
 /**
  * Core array helpers
  */
-class Phpr_Array
+class Array
 {
 	
 	/**
@@ -13,7 +13,7 @@ class Phpr_Array
 	 * @return array Returns the value of the specified key.
 	 * @example 1
 	 * You can sanitized an array like this:
-	 * $result = Phpr_Array::get_key_value('a', array('a' => 1, 'b' => 2));
+	 * $result = Phpr\Array::get_key_value('a', array('a' => 1, 'b' => 2));
 	 * The result will be 1, the value of the 'a' key.
 	 */
 	public static function get_key_value($key, $list) 
@@ -70,7 +70,7 @@ class Phpr_Array
 	 * @return array Returns the filtered array.
 	 * @example 1
 	 * You can serialize and filter a $model like this:
-	 * Phpr_Array::filter_by_keys(Phpr_Array::get_key_value('fields', $model->serialize()), array('id', 'name', 'url_name'));
+	 * Phpr\Array::filter_by_keys(Phpr\Array::get_key_value('fields', $model->serialize()), array('id', 'name', 'url_name'));
 	 */
 	public static function filter_by_keys($list, $keys = array()) 
 	{
@@ -95,7 +95,7 @@ class Phpr_Array
 	 * @return array Returns the sanitized array.
 	 * @example 1
 	 * You can sanitized an array like this:
-	 * $result = Phpr_Array::sanitize_value_types(array('1', '1.0'));
+	 * $result = Phpr\Array::sanitize_value_types(array('1', '1.0'));
 	 * The result will be an array of 1 and 1.0, an int and a float.
 	 */
 	public static function sanitize_value_types($list) 

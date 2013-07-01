@@ -1,9 +1,9 @@
-<?php
+<?php namespace Phpr;
 
 /**
  * PHPR Debug Helper Class
  */
-class Phpr_Debug
+class Debug
 {
 	protected static $start_times = array();
 	protected static $incremental = array();
@@ -65,4 +65,4 @@ class Phpr_Debug
 	}
 }
 
-Phpr_Debug::start_timing('Application');
+Debug::start_timing('Application');

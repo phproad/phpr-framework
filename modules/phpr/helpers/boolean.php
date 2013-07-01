@@ -1,11 +1,11 @@
-<?php
+<?php namespace Phpr;
 
 /**
  * PHPR Boolean helper
  *
  * This class contains functions that may be useful for working with booleans.
  */
-class Phpr_Boolean
+class Boolean
 {
 	public static function from($obj)
 	{

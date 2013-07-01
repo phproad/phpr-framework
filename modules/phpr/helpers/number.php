@@ -1,6 +1,6 @@
-<?php
+<?php namespace Phpr;
 
-class Phpr_Number 
+class Number 
 {
 	/**
 	 * Returns true if the passed value is a floating point number

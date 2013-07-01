@@ -1,4 +1,6 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
 
 /**
  * PHPR HTML helper
@@ -6,7 +8,7 @@
  * This class contains functions that may be useful for working with HTML.
  */
 
-class Phpr_Html
+class Html
 {
 	/**
 	 * Converts all applicable characters to HTML entities. For example: "<-" becomes "&lt;-"
@@ -648,7 +650,7 @@ class Phpr_Html
 		$week = Phpr::$locale->get_string('phpr.dates', 'week_abbr');
 		$days = self::get_locale_dates_array('A_weekday_', 7);
 		$days_short = self::get_locale_dates_array('a_weekday_', 7, 7);
-		$days_min = Phpr_Html::get_locale_dates_array('a_weekday_', 7, 7, 2);
+		$days_min = Html::get_locale_dates_array('a_weekday_', 7, 7, 2);
 		$months = self::get_locale_dates_array('n_month_', 12);
 		$months_short = self::get_locale_dates_array('b_month_', 12);
 

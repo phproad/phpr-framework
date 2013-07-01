@@ -1,10 +1,10 @@
-<?php
+<?php namespace Phpr;
 
 /*
  * Email helper
  */
 
-class Phpr_Email
+class Email
 {
 	// Encodes an email address using JavaScript
 	// 

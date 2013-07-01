@@ -1,11 +1,11 @@
-<?php
+<?php namespace Phpr;
 
 /**
  * PHPR general-purpose utility
  *
  * This class contains functions used by other PHPR classes.
  */
-class Phpr_Util
+class Util
 {
 	/**
 	 * Converts the argument passed in to an array if it is defined and not already an array.
@@ -149,7 +149,7 @@ class Phpr_Util
 	public static function array_to_object($array = array())
 	{
 		if (is_array($array)) 
-			return (object) array_map(array('Phpr_Util', __FUNCTION__), $array);    
+			return (object) array_map(array('Phpr\Util', __FUNCTION__), $array);    
 		else 
 			return $array;
 	}
@@ -165,7 +165,7 @@ class Phpr_Util
 			$object = get_object_vars($object);
  
 		if (is_array($object)) 
-			return array_map(array('Phpr_Util', __FUNCTION__), $object);
+			return array_map(array('Phpr\Util', __FUNCTION__), $object);
 		else 
 			return $object;
 	}

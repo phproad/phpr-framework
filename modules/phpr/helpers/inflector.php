@@ -1,6 +1,6 @@
-<?php
+<?php namespace Phpr;
 
-class Phpr_Inflector 
+class Inflector 
 {
 	protected static $cache = array();
 

@@ -1,11 +1,14 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
+use Phpr\SystemException;
 
 /**
  * PHPR View helper
  *
  * This class contains functions for working with views.
  */
-class Phpr_View
+class View
 {
 	private static $block_stack = array();
 	private static $blocks = array();
@@ -37,7 +40,7 @@ class Phpr_View
 			$script_name = urlencode($script_name);
 
 			if ($script_name == 'defaults') {
-				foreach (Phpr_Response::$default_js_scripts as $default_script) {
+				foreach (Response::$default_js_scripts as $default_script) {
 					$result .= '<script type="text/javascript" src="'.$javascript_url.'/'.$default_script.'?'.$version_mark.'"></script>'.PHP_EOL;
 				}
 			} else {
@@ -66,7 +69,7 @@ class Phpr_View
 	public static function end_block($append = false) 
 	{
 		if (!count(self::$block_stack))
-			throw new Phpr_SystemException("Invalid layout blocks nesting");
+			throw new SystemException("Invalid layout blocks nesting");
 
 		$name = array_pop(self::$block_stack);
 		$contents = ob_get_clean();
@@ -154,7 +157,7 @@ class Phpr_View
 			if (is_null($controller))
 				return null;
 
-			$message = Phpr_Html::encode($controller->validation->error_message);
+			$message = Html::encode($controller->validation->error_message);
 		}
 
 		if (strlen($message))
@@ -163,12 +166,12 @@ class Phpr_View
 
 	/**
 	 * Returns a current controller
-	 * @return Phpr_Controller_Base
+	 * @return Phpr\Controller_Base
 	 */
 	private static function get_controller()
 	{
-		if (Phpr_Controller::$current !== null)
-			return Phpr_Controller::$current;
+		if (Controller::$current !== null)
+			return Controller::$current;
 	}
 
 	/**

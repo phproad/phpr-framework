@@ -1,4 +1,6 @@
-<?php
+<?php namespace Phpr;
+
+use SimpleXMLElement;
 
 /**
  * PHPR XML helper
@@ -6,7 +8,7 @@
  * This class contains functions for working with XML
  */
 
-class Phpr_Xml
+class Xml
 {
 	public static function create_node($document, $parent=null, $field, $value = null, $use_cdata = false)
 	{
@@ -65,7 +67,7 @@ class Phpr_Xml
 			self::create_node($document, null, $field, $value, $use_cdata);
 		}
 
-		return Phpr_Xml::beautify_xml($document);
+		return Xml::beautify_xml($document);
 	}
 
 	// Plain array is a single dimension array
@@ -112,7 +114,7 @@ class Phpr_Xml
 			}
 		}
 
-		return Phpr_Xml::beautify_xml($document);
+		return Xml::beautify_xml($document);
 	}
 
 	public static function to_array($xml_data) 

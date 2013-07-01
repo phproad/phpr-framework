@@ -1,11 +1,11 @@
-<?php
+<?php namespace Phpr;
 
 /**
  * PHPR Parse class
  *
  * This helpful class allows text to have data parsed in.
  */
-class Phpr_Parser
+class Parser
 {
 	const key_open = '{';
 	const key_close = '}';
@@ -52,7 +52,7 @@ class Phpr_Parser
 	private static function process_key($key, $value, $string)
 	{
 		if (isset(self::$_options['encode_html']) && self::$_options['encode_html'])
-			$value = Phpr_Html::encode($value);
+			$value = Html::encode($value);
 
 		$return_string = str_replace(self::key_open.$key.self::key_close, $value, $string);
 

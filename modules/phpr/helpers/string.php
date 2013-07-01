@@ -1,11 +1,14 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr;
+use Phpr\Inflector;
 
 /**
  * PHPR String helper
  *
  * This class contains functions that may be useful for working with strings.
  */
-class Phpr_String
+class String
 {
 	/**
 	 * Returns a single or plural form of a word
@@ -19,7 +22,7 @@ class Phpr_String
 		$interval_place = Phpr::$locale->get_string('phpr.dates', 'interval_place');		
 
 		 if ($n < 1 || $n > 1)
-			$word = Phpr_Inflector::pluralize($word);
+			$word = Inflector::pluralize($word);
 		 if ($add_number && $interval_place == 0)
 			$word = $n . ' ' . $word;
 		 else if ($add_number && $interval_place == 1)
@@ -227,7 +230,7 @@ class Phpr_String
 			$end_char = '';
 
 		$str = rtrim($matches[0]).$end_char;
-		return ($is_html) ? $str.Phpr_Html::get_orphan_tags($str) : $str;
+		return ($is_html) ? $str.Html::get_orphan_tags($str) : $str;
 	}
 
 	public static function highlight_words($string, $phrase, $tag_open = '<strong>', $tag_close = '</strong>')

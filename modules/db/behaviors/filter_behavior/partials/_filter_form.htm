@@ -16,7 +16,7 @@
 			<? else: ?>
 				<div class="content">
 					<?
-						$is_sliding_list = $model->is_extended_with('Db_Act_As_Tree');
+						$is_sliding_list = $model->is_extended_with('Db\Act_As_Tree');
 					?>
 					<p><?= isset($filter_info['prompt']) ? h($filter_info['prompt']) : h($this->filter_prompt) ?></p>
 
@@ -40,8 +40,8 @@
 								'list_display_as_sliding_list' => $is_sliding_list,
 								'list_scrollable' => false,
 								'list_custom_prepare_func' => 'filter_prepare_data',
-								'list_custom_body_cells' => PATH_SYSTEM.'/modules/db/behaviors/db_filter_behavior/partials/_filter_body_control.htm',
-								'list_custom_head_cells' => PATH_SYSTEM.'/modules/db/behaviors/db_filter_behavior/partials/_filter_head_control.htm',
+								'list_custom_body_cells' => PATH_SYSTEM.'/modules/db/behaviors/filter_behavior/partials/_filter_body_control.htm',
+								'list_custom_head_cells' => PATH_SYSTEM.'/modules/db/behaviors/filter_behavior/partials/_filter_head_control.htm',
 								'list_search_fields' => $search_fields,
 								'list_search_prompt' => 'search',
 								'list_reuse_model' => false,

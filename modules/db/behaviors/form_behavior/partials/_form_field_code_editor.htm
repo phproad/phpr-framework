@@ -1,7 +1,7 @@
 <?
 	$field_id = $this->form_get_element_id($form_model_class.'_'.$form_field->db_name.uniqid());
-	if (class_exists('Backend_CodeEditorConfiguration'))
-		$config = Backend_CodeEditorConfiguration::create()->render_settings();
+	if (class_exists('Admin_CodeEditorConfiguration'))
+		$config = Admin_CodeEditorConfiguration::create()->render_settings();
 	else
 		$config = '{"showInvisibles":false,"highlightActiveLine":true,"showGutter":true,"showPrintMargin":false,"useSoftTabs":false,"tabSize":4,"fontSize":12,"theme":"textmate","folding":"manual","wrapMode":null}';
 ?>

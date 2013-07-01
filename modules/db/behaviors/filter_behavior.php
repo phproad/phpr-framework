@@ -1,6 +1,12 @@
-<?php
+<?php namespace Db;
 
-class Db_Filter_Behavior extends Phpr_Controller_Behavior
+use Phpr;
+use Phpr\Util;
+use Phpr\User_Parameters;
+use Phpr\Controller_Behavior;
+use Phpr\ApplicationException;
+
+class Filter_Behavior extends Controller_Behavior
 {
 	public $filter_list_title = 'Filters';
 	public $filter_filters = array();
@@ -34,25 +40,25 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 			$filter_id = post('filter_id_value');
 			$filter_obj = $this->get_filter_object($filter_id);
 			$model_obj = $this->create_model_object($filter_obj);
-			$filter_columns = Phpr_Util::splat($filter_obj->list_columns);
+			$filter_columns = Util::splat($filter_obj->list_columns);
 
 			$search_fields = $filter_columns;
 			foreach ($search_fields as $index => &$field) {
 				$field = "@".$field;
 			}
 
-			$this->_controller->list_custom_body_cells = PATH_SYSTEM.'/modules/db/behaviors/db_filter_behavior/partials/_filter_body_control.htm';
-			$this->_controller->list_custom_head_cells = PATH_SYSTEM.'/modules/db/behaviors/db_filter_behavior/partials/_filter_head_control.htm';
+			$this->_controller->list_custom_body_cells = PATH_SYSTEM.'/modules/db/behaviors/filter_behavior/partials/_filter_body_control.htm';
+			$this->_controller->list_custom_head_cells = PATH_SYSTEM.'/modules/db/behaviors/filter_behavior/partials/_filter_head_control.htm';
 
-			$is_tree = $model_obj->is_extended_with('Db_Act_As_Tree');
+			$is_tree = $model_obj->is_extended_with('Db\Act_As_Tree');
 
 			$this->_controller->list_options['list_model_class'] = get_class($model_obj);
 			$this->_controller->list_options['list_no_setup_link'] = true;
 			$this->_controller->list_options['list_columns'] = $filter_columns;
 			$this->_controller->list_options['list_display_as_tree'] = $is_tree;
 			$this->_controller->list_options['list_custom_prepare_func'] = 'filter_prepare_data';
-			$this->_controller->list_options['list_custom_body_cells'] = PATH_SYSTEM.'/modules/db/behaviors/db_filter_behavior/partials/_filter_body_control.htm';
-			$this->_controller->list_options['list_custom_head_cells'] = PATH_SYSTEM.'/modules/db/behaviors/db_filter_behavior/partials/_filter_head_control.htm';
+			$this->_controller->list_options['list_custom_body_cells'] = PATH_SYSTEM.'/modules/db/behaviors/filter_behavior/partials/_filter_body_control.htm';
+			$this->_controller->list_options['list_custom_head_cells'] = PATH_SYSTEM.'/modules/db/behaviors/filter_behavior/partials/_filter_head_control.htm';
 			$this->_controller->list_options['list_search_fields'] = $search_fields;
 			$this->_controller->list_options['list_search_prompt'] = 'search';
 			$this->_controller->list_options['list_no_form'] = true;
@@ -78,8 +84,8 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 	protected function filter_load_resources()
 	{
 		$phpr_url = '/' . Phpr::$config->get('PHPR_URL', 'phpr');
-		$this->_controller->add_css($phpr_url.'/modules/db/behaviors/db_filter_behavior/assets/stylesheets/css/filters.css?'.module_build('core'));
-		$this->_controller->add_javascript($phpr_url.'/modules/db/behaviors/db_filter_behavior/assets/scripts/js/filters.js?'.module_build('core'));
+		$this->_controller->add_css($phpr_url.'/modules/db/behaviors/filter_behavior/assets/stylesheets/css/filters.css?'.module_build('core'));
+		$this->_controller->add_javascript($phpr_url.'/modules/db/behaviors/filter_behavior/assets/scripts/js/filters.js?'.module_build('core'));
 	}
 
 	//
@@ -110,7 +116,7 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 
 	public function filter_apply_to_model($model, $context = null)
 	{
-		$filters = Phpr_User_Parameters::get($this->get_filters_name(), null, array());
+		$filters = User_Parameters::get($this->get_filters_name(), null, array());
 		
 		foreach ($filters as $filter_id => $filter_set) {
 			if (array_key_exists($filter_id, $this->_controller->filter_filters))
@@ -118,7 +124,7 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 		}
 
 		$swicher_values = array();
-		$enabled_switchers = Phpr_User_Parameters::get($this->get_filters_name('switchers'), null, array());
+		$enabled_switchers = User_Parameters::get($this->get_filters_name('switchers'), null, array());
 		
 		foreach ($this->_controller->filter_switchers as $switcher_id=>$switcher_info) {
 		
@@ -136,13 +142,13 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 
 	public function filter_as_string($context = null)
 	{
-		$filters = Phpr_User_Parameters::get($this->get_filters_name(), null, array());
+		$filters = User_Parameters::get($this->get_filters_name(), null, array());
 		$result = null;
 		foreach ($filters as $filter_id => $filter_set) {
 			$result .= ' '.$this->get_filter_object($filter_id)->as_string(array_keys($filter_set), $context);
 		}
 
-		$enabled_switchers = Phpr_User_Parameters::get($this->get_filters_name('switchers'), null, array());
+		$enabled_switchers = User_Parameters::get($this->get_filters_name('switchers'), null, array());
 		foreach ($this->_controller->filter_switchers as $switcher_id => $switcher_info) {
 
 			$switcher_obj = $this->get_switcher_object($switcher_id);
@@ -158,12 +164,12 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 
 	public function filter_reset()
 	{
-		Phpr_User_Parameters::set($this->get_filters_name(), array());
+		User_Parameters::set($this->get_filters_name(), array());
 	}
 
 	public function filter_get_keys($filter_id)
 	{
-		$filters = Phpr_User_Parameters::get($this->get_filters_name(), null, array());
+		$filters = User_Parameters::get($this->get_filters_name(), null, array());
 		if (!array_key_exists($filter_id, $filters))
 			return array();
 
@@ -208,7 +214,7 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 				}
 
 				if ($checked_records) {
-					$list_columns = Phpr_Util::splat($obj->list_columns);
+					$list_columns = Util::splat($obj->list_columns);
 					$primary_key = $model->primary_key;
 					$this->view_data['filter_checked_records'] = $model->where($primary_key." in (?)", array($checked_records))->order($list_columns[0])->find_all();
 				}
@@ -227,18 +233,18 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 		try
 		{
 			$filter_id = post('filter_id');
-			$ids = Phpr_Util::splat(post('filter_ids', array()));
+			$ids = Util::splat(post('filter_ids', array()));
 
 			if (!count($ids)) {
 				if (post('filter_existing'))
-					throw new Phpr_ApplicationException('Please select at least one record, or click Cancel Filter button to clear the filter.');
+					throw new ApplicationException('Please select at least one record, or click Cancel Filter button to clear the filter.');
 				else
-					throw new Phpr_ApplicationException('Please select at least one record.');
+					throw new ApplicationException('Please select at least one record.');
 			}
 
-			$filters = Phpr_User_Parameters::get($this->get_filters_name(), null, array());
+			$filters = User_Parameters::get($this->get_filters_name(), null, array());
 			$filter_obj = $this->get_filter_object($filter_id);
-			$filter_columns = Phpr_Util::splat($filter_obj->list_columns);
+			$filter_columns = Util::splat($filter_obj->list_columns);
 
 			$model_obj = $this->create_model_object($filter_obj);
 			$record_num = $model_obj->get_row_count();
@@ -247,7 +253,7 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 
 				if (array_key_exists($filter_id, $filters)) {
 					unset($filters[$filter_id]);
-					Phpr_User_Parameters::set($this->get_filters_name(), $filters);
+					User_Parameters::set($this->get_filters_name(), $filters);
 				}
 			} 
 			else {
@@ -268,7 +274,7 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 				}
 
 				$filters[$filter_id] = $filter_set;
-				Phpr_User_Parameters::set($this->get_filters_name(), $filters);
+				User_Parameters::set($this->get_filters_name(), $filters);
 			}
 
 			$this->load_filter_settings();
@@ -285,11 +291,11 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 		try
 		{
 			$filter_id = post('filter_id');
-			$filters = Phpr_User_Parameters::get($this->get_filters_name(), null, array());
+			$filters = User_Parameters::get($this->get_filters_name(), null, array());
 
 			if (array_key_exists($filter_id, $filters)) {
 				unset($filters[$filter_id]);
-				Phpr_User_Parameters::set($this->get_filters_name(), $filters);
+				User_Parameters::set($this->get_filters_name(), $filters);
 			}
 
 			$this->load_filter_settings();
@@ -320,7 +326,7 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 		try
 		{
 			$switchers = array_keys(post('filter_switchers', array()));
-			Phpr_User_Parameters::set($this->get_filters_name('switchers'), $switchers);
+			User_Parameters::set($this->get_filters_name('switchers'), $switchers);
 		}
 		catch (Exception $ex)
 		{
@@ -334,8 +340,8 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 
 	private function load_filter_settings()
 	{
-		$filters = Phpr_User_Parameters::get($this->get_filters_name(), null, array());
-		$switchers = Phpr_User_Parameters::get($this->get_filters_name('switchers'), null, array());
+		$filters = User_Parameters::get($this->get_filters_name(), null, array());
+		$switchers = User_Parameters::get($this->get_filters_name('switchers'), null, array());
 		$this->view_data['filter_checked_switchers'] = $switchers;
 		return $this->view_data['filter_settings_info'] = $filters;
 	}
@@ -348,7 +354,7 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 	private function get_filter_object($id)
 	{
 		if (!array_key_exists($id, $this->_controller->filter_filters))
-			throw new Phpr_ApplicationException("Filter '".$id."' not found");
+			throw new ApplicationException("Filter '".$id."' not found");
 
 		$class_name = $this->_controller->filter_filters[$id]['class_name'];
 		return new $class_name();
@@ -357,7 +363,7 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 	private function get_switcher_object($id)
 	{
 		if (!array_key_exists($id, $this->_controller->filter_switchers))
-			throw new Phpr_ApplicationException("Switcher '".$id."' not found");
+			throw new ApplicationException("Switcher '".$id."' not found");
 
 		$class_name = $this->_controller->filter_switchers[$id]['class_name'];
 		if (class_exists($class_name))
@@ -369,7 +375,7 @@ class Db_Filter_Behavior extends Phpr_Controller_Behavior
 	private function filter_cancel_if_all($id)
 	{
 		if (!array_key_exists($id, $this->_controller->filter_filters))
-			throw new Phpr_ApplicationException("Filter '".$id."' not found");
+			throw new ApplicationException("Filter '".$id."' not found");
 
 		$filter_info = $this->_controller->filter_filters[$id];
 		return isset($filter_info['cancel_if_all']) ? $filter_info['cancel_if_all'] : true;

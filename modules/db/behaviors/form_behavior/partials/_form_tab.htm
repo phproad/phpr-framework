@@ -10,7 +10,7 @@
 			<fieldset class="form-elements">
 			<? foreach ($collapsible as $element): ?>
 				<? 
-					if ($this->form_preview_mode && $element instanceof Db_Form_Field_Definition && $element->no_preview)
+					if ($this->form_preview_mode && $element instanceof \Db\Form_Field_Definition && $element->no_preview)
 				 		continue;
 				?>
 	
@@ -39,7 +39,7 @@
 <fieldset class="form-elements">
 	<? foreach ($non_collapsible as $element): ?>
 		<? 
-			if ($this->form_preview_mode && $element instanceof Db_Form_Field_Definition && $element->no_preview)
+			if ($this->form_preview_mode && $element instanceof \Db\Form_Field_Definition && $element->no_preview)
 				continue;
 		?>
 		

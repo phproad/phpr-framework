@@ -1,10 +1,13 @@
-<?php
+<?php namespace Db;
+
+use Phpr;
+use Db;
 
 /**
  * PHPR Database Driver base class
  */
 
-class Db_Driver_Base
+class Driver_Base
 {
 	protected $config = array();
 
@@ -23,7 +26,7 @@ class Db_Driver_Base
 				$config_source = Phpr::$config->get('DB_CONNECTION', array());
 			else
 			{
-				$params = Db_Secure_Settings::get();
+				$params = Secure_Settings::get();
 				$config_source = array(
 					'host'     => $params['host'],
 					'port'     => $params['port'],

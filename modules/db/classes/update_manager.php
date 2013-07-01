@@ -1,10 +1,14 @@
-<?php
+<?php namespace Db;
+
+use Phpr\Module_Manager;
+use Phpr\ApplicationException;
+use Db\Helper as Db_Helper;
 
 /**
  * PHPR Update manager
  * Manages module update chain
  */
-class Db_Update_Manager 
+class Update_Manager 
 {
 	private static $versions = null;
 	private static $updates = null;
@@ -39,7 +43,7 @@ class Db_Update_Manager
 		// 
 
 		if ($has_updates) {
-			Db_Structure::save_all();
+			Structure::save_all();
 		}
 
 		// 3. Apply database version upgrade files (to be deprecated in future)
@@ -53,7 +57,7 @@ class Db_Update_Manager
 		// 
 		
 		if ($has_updates)  {
-			Db_ActiveRecord::clear_describe_cache();
+			ActiveRecord::clear_describe_cache();
 		}
 	}
 
@@ -69,7 +73,7 @@ class Db_Update_Manager
 		//
 
 		$modules_path = PATH_SYSTEM . DS . PHPR_MODULES;
-		$iterator = new DirectoryIterator($modules_path);
+		$iterator = new \DirectoryIterator($modules_path);
 
 		foreach ($iterator as $dir) 
 		{
@@ -84,7 +88,7 @@ class Db_Update_Manager
 		// Update application modules
 		// 
 		
-		$modules = Phpr_Module_Manager::get_modules(true);
+		$modules = Module_Manager::get_modules(true);
 		$module_ids = array();
 
 		foreach ($modules as $module)
@@ -136,7 +140,7 @@ class Db_Update_Manager
 	{
 		$result = array();
 
-		$modules = Phpr_Module_Manager::get_modules(false);
+		$modules = Module_Manager::get_modules(false);
 		foreach ($modules as $module)
 		{
 			$module_id = $module->get_module_info()->id;
@@ -250,7 +254,7 @@ class Db_Update_Manager
 
 	public static function apply_db_structure($base_path, $module_id)
 	{
-		Db_Structure::$module_id = $module_id;
+		Structure::$module_id = $module_id;
 		
 		$structure_file =  $base_path . DS . PHPR_MODULES . DS . $module_id . DS . 'updates' . DS . 'structure.php';
 		if (file_exists($structure_file))
@@ -258,7 +262,7 @@ class Db_Update_Manager
 			include $structure_file;
 		}
 
-		Db_Structure::$module_id = null;
+		Structure::$module_id = null;
 	}
 
 	public static function create_meta_table()
@@ -454,7 +458,7 @@ class Db_Update_Manager
 				$pos = mb_strpos($update_content, ' ');
 
 				if ($pos === false)
-					throw new Phpr_ApplicationException('Error parsing version file ('.$file_path.'). Version string should have a description: '.$update_content);
+					throw new ApplicationException('Error parsing version file ('.$file_path.'). Version string should have a description: '.$update_content);
 
 				$version_info = trim(mb_substr($update_content, 0, $pos));
 				$description = trim(mb_substr($update_content, $pos+1));

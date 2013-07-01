@@ -1,8 +1,11 @@
-<?php
+<?php namespace Db;
 
-class Db_Sql extends Db_Where
+use Phpr;
+use Phpr\Util;
+
+class Sql extends Where
 {
-	const default_driver = 'Db_MySQL_Driver';
+	const default_driver = 'Db\MySQL_Driver';
 
 	protected $_driver = null;
 
@@ -85,7 +88,7 @@ class Db_Sql extends Db_Where
 		if (!$replace_columns)
 			$this->set_part('fields', $columns);
 		else
-			$this->parts['fields'] = Phpr_Util::splat($columns);
+			$this->parts['fields'] = Util::splat($columns);
 
 		return $this;
 	}

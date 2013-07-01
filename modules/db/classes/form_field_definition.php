@@ -1,4 +1,7 @@
-<?php
+<?php namespace Db;
+
+use Phpr;
+use Phpr\SystemException;
 
 define('frm_text', 'text');
 define('frm_password', 'password');
@@ -25,7 +28,7 @@ define('frm_widget', 'widget');
 define('frm_tags', 'tags');
 define('frm_dropdown_create', 'dropdown_create');
 
-class Db_Form_Field_Definition extends Db_Form_Element
+class Form_Field_Definition extends Form_Element
 {
 	public $db_name;
 	public $form_side;
@@ -93,12 +96,12 @@ class Db_Form_Field_Definition extends Db_Form_Element
 
 		$column_definitions = $model->get_column_definitions();
 		if (!array_key_exists($db_name, $column_definitions))
-			throw new Phpr_SystemException("Column ".$model_class.".".$db_name." cannot be added to a form because it is not defined with define_column method call.");
+			throw new SystemException("Column ".$model_class.".".$db_name." cannot be added to a form because it is not defined with define_column method call.");
 
 		$this->_column_definition = $column_definitions[$db_name];
 
 		if ($this->_column_definition->is_reference && !in_array($this->_column_definition->reference_type, array('belongs_to', 'has_many', 'has_and_belongs_to_many')))
-			throw new Phpr_SystemException("Error adding form field ".$db_name.". Form fields can only be defined for the belongs_to, has_and_belongs_to_many and has_many relations. ".$this->_column_definition->reference_type." associations are not supported.");
+			throw new SystemException("Error adding form field ".$db_name.". Form fields can only be defined for the belongs_to, has_and_belongs_to_many and has_many relations. ".$this->_column_definition->reference_type." associations are not supported.");
 
 		$this->db_name = $db_name;
 		$this->form_side = $side;

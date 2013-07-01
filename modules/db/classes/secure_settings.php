@@ -1,10 +1,12 @@
-<?php
+<?php namespace Db;
 
-class Db_Secure_Settings
+use Phpr\SecurityFramework;
+
+class Secure_Settings
 {
 	public static function get()
 	{
-		$framework = Phpr_SecurityFramework::create();
+		$framework = SecurityFramework::create();
 		$config_content = $framework->get_config_content();
 
 		$mysql_params = array_key_exists('mysql_params', $config_content) 
@@ -28,7 +30,7 @@ class Db_Secure_Settings
 
 	public static function set($parameters)
 	{
-		$framework = Phpr_SecurityFramework::create();
+		$framework = SecurityFramework::create();
 		
 		$config_content = $framework->get_config_content();
 		$config_content['mysql_params'] = $parameters;

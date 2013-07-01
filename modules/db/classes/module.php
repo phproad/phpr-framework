@@ -1,14 +1,14 @@
-<?php
+<?php namespace Db;
 
-class Db_Module extends Core_Module_Base
+class Module extends Core_Module_Base
 {
-  protected function set_module_info()
-  {
-    return new Core_Module_Detail(
-      "DB",
-      "Database interface",
-      "PHPRoad",
-      "http://phproad.com/"
-    );
-  }
+	protected function set_module_info()
+	{
+		return new Core_Module_Detail(
+			"DB",
+			"Database interface",
+			"PHPRoad",
+			"http://phproad.com/"
+		);
+	}
 }

@@ -1,11 +1,14 @@
-<?php
+<?php namespace Db;
+
+use Phpr\Pagination;
+use Db\Helper as Db_Helper;
 
 /**
  * This model type allows you to combine various models in a query,
  * paginate them and return as one data set.
  */
 
-class Db_Data_Feed
+class Data_Feed
 {
 	public $context_var = 'context_name';
 	public $classname_var = 'class_name';
@@ -157,12 +160,12 @@ class Db_Data_Feed
 			$data_array[] = $obj;
 		}
 
-		return new Db_Data_Collection($data_array);
+		return new Data_Collection($data_array);
 	}
 
 	public function paginate($page_index, $records_per_page)
 	{
-		$pagination = new Phpr_Pagination($records_per_page);
+		$pagination = new Pagination($records_per_page);
 		$pagination->set_row_count($this->get_row_count());
 		$pagination->set_current_page_index($page_index);
 

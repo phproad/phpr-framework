@@ -1,11 +1,18 @@
-<?php
+<?php namespace Db;
+
+use DOMDocument;
+use DOMElement;
+
+use Phpr\Extension;
+use Phpr\Xml;
+use Db\Helper as Db_Helper;
 
 /**
  * Adds logging functionality to model classes.
  * Only fields defined with the method define_column are considered.
  */
 
-class Db_Model_Log extends Phpr_Extension
+class Model_Log extends Extension
 {
 	const type_create = 'create';
 	const type_update = 'update';
@@ -143,7 +150,7 @@ class Db_Model_Log extends Phpr_Extension
 	public function model_log_custom($name, $params=array())
 	{
 		$params['message'] = $name;
-		$param_data = Phpr_Xml::from_plain_array($params, 'record', true);
+		$param_data = Xml::from_plain_array($params, 'record', true);
 		$this->create_log_record(self::type_custom, $param_data);
 		return $this->_model;
 	}
@@ -168,7 +175,7 @@ class Db_Model_Log extends Phpr_Extension
 	public function model_log_find()
 	{
 		$primary_key = $this->_model->primary_key;
-		$records = Db_Model_Log_Record::create();
+		$records = Model_Log_Record::create();
 		$records->where('master_object_class=?', get_class($this->_model));
 		$records->where('master_object_id=?', $this->_model->$primary_key);
 		return $records;
@@ -180,7 +187,7 @@ class Db_Model_Log extends Phpr_Extension
 	private function create_log_record($type, $data)
 	{
 		$primary_key = $this->_model->primary_key;
-		$record = Db_Model_Log_Record::create();
+		$record = Model_Log_Record::create();
 		$record->master_object_class = get_class($this->_model);
 		$record->master_object_id = $this->_model->$primary_key;
 		$record->param_data = $data;

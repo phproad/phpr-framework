@@ -1,9 +1,11 @@
-<?php
+<?php namespace Db;
+
+use Phpr\Extension;
 
 /**
  * Adds created_at, update_at, created_user_name, updated_user_name invisible columns to model
  */
-class Db_AutoFootprints extends Phpr_Extension
+class AutoFootprints extends Extension
 {
 	protected $_model;
 	
@@ -29,7 +31,7 @@ class Db_AutoFootprints extends Phpr_Extension
 	
 	public function auto_footprints_columns_defined()
 	{
-		if (Db_ActiveRecord::$execution_context == 'front-end')
+		if (ActiveRecord::$execution_context == 'front-end')
 			return;
 		
 		$user_model = new $this->auto_footprints_user_model();

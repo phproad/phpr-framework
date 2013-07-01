@@ -1,10 +1,10 @@
-<?php
+<?php namespace Db;
 
 /**
  * @deprecated 
  * See Db_Helper
  */
-class Db_DbHelper extends Db_Helper 
+class DbHelper extends Db_Helper 
 { 
 
 	public static function init()

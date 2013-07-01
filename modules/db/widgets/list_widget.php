@@ -1,4 +1,10 @@
-<?php
+<?php namespace Db;
+
+use Phpr;
+use Phpr\Pagination;
+use Phpr\Inflector;
+use Phpr\SystemException;
+use Phpr\ApplicationException;
 
 /*
 // Usage
@@ -19,12 +25,12 @@ $this->add_form_field('quotes')->display_as(frm_widget, array(
 	'form_foreign_key' => 'request_id',
 	'conditions' => 'request_id=:id',
 	'show_checkboxes' => false,
-	'show_reorder' => false, // Requires model is extended with Db_Model_Sortable
+	'show_reorder' => false, // Requires model is extended with Db\Model_Sortable
 ))->tab('Quotes');
 
 */
 
-class Db_List_Widget extends Db_Form_Widget_Base
+class List_Widget extends Form_Widget_Base
 {
 	protected $child_model = null;
 	public $class_name = null;
@@ -174,7 +180,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		$total_row_count = $model->get_row_count();
 		if (!$no_pagination && !$this->no_pagination)
 		{
-			$pagination = new Phpr_Pagination($this->items_per_page);
+			$pagination = new Pagination($this->items_per_page);
 			$pagination->set_row_count($total_row_count);
 
 			$pagination->set_current_page_index($this->load_preference('page'));
@@ -230,7 +236,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			if (isset($model->has_many[$relation_name]['foreign_key']))
 				$foreign_key = $model->has_many[$relation_name]['foreign_key'];
 			else
-				$foreign_key = Phpr_Inflector::singularize($model->table_name) . "_" . $model->primary_key;
+				$foreign_key = Inflector::singularize($model->table_name) . "_" . $model->primary_key;
 
 			$this->form_foreign_key = $foreign_key;
 		}
@@ -322,11 +328,11 @@ class Db_List_Widget extends Db_Form_Widget_Base
 				element: '#".$this->get_id()."',
 				hideOnSuccess: true
 			},
-			confirm: 'Do you really want to remove these ".strtolower(Phpr_Inflector::pluralize($this->form_title))."?',
+			confirm: 'Do you really want to remove these ".strtolower(Inflector::pluralize($this->form_title))."?',
 			afterUpdate: ".$this->get_id()."_init
 		}).send()";
 
-		$label = (isset($options['label'])) ? $options['label'] : 'Delete '.Phpr_Inflector::pluralize($this->form_title);
+		$label = (isset($options['label'])) ? $options['label'] : 'Delete '.Inflector::pluralize($this->form_title);
 
 		return cp_button($label, $icon, $attributes);
 	}
@@ -455,7 +461,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 
 			$model_ids = post('list_ids', array());
 			if (!count($model_ids))
-				throw new Phpr_ApplicationException('Please select '.$this->form_title.'(s) to add.');
+				throw new ApplicationException('Please select '.$this->form_title.'(s) to add.');
 
 			$model_class = $this->class_name;
 			$models = call_user_func(array($model_class, 'create'));
@@ -494,7 +500,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			$model_id = post('primary_id', null);
 
 			if (!$model_id)
-				throw new Phpr_ApplicationException("Missing item or item has already been deleted");
+				throw new ApplicationException("Missing item or item has already been deleted");
 
 			$relation_type = $this->form_relation_type;
 			$relation_name = $this->form_relation_name;
@@ -597,7 +603,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		$this->load_relations();
 		$search_string = trim(post('search_string'));
 		if ($this->min_search_query_length > 0 && mb_strlen($search_string) < $this->min_search_query_length)
-			throw new Phpr_ApplicationException(sprintf('The entered search query is too short. Please enter at least %s symbols', $this->min_search_query_length));
+			throw new ApplicationException(sprintf('The entered search query is too short. Please enter at least %s symbols', $this->min_search_query_length));
 		
 		$this->save_preference('search', $search_string);
 		$this->display_table();
@@ -639,7 +645,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			
 			$model_ids = post('list_ids', array());
 			if (!count($model_ids))
-				throw new Phpr_ApplicationException('Please select '.$this->form_title.'(s) to delete.');
+				throw new ApplicationException('Please select '.$this->form_title.'(s) to delete.');
 
 			$models = $child_model->where('id in (?)', array($model_ids))->find_all();
 
@@ -739,7 +745,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			return $this->child_model;
 
 		if (!strlen($this->class_name))
-			throw new Phpr_SystemException('Data model class is not specified for List Widget. Use the class_name option to set it');
+			throw new SystemException('Data model class is not specified for List Widget. Use the class_name option to set it');
 			
 		$model_class = $this->class_name;
 		$result = $this->child_model = new $model_class();
@@ -765,7 +771,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 		if ($this->search_enabled)
 		{
 			if (!$this->search_fields)
-				throw new Phpr_ApplicationException('List search is enabled, but search fields are not specified in the list settings. Please use $search_fields option to define an array of fields to search in');
+				throw new ApplicationException('List search is enabled, but search fields are not specified in the list settings. Please use $search_fields option to define an array of fields to search in');
 			
 			if (!strlen($search_string) && !$this->search_show_empty_query)
 			{
@@ -822,7 +828,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 
 		$definitions = $model->get_column_definitions($this->data_context);
 		if (!count($definitions))
-			throw new Phpr_ApplicationException('Error rendering list: model columns are not defined.');
+			throw new ApplicationException('Error rendering list: model columns are not defined.');
 
 		$visible_found = false;
 		foreach ($definitions as $definition)
@@ -834,7 +840,7 @@ class Db_List_Widget extends Db_Form_Widget_Base
 			}
 		}
 		if (!$visible_found)
-			throw new Phpr_ApplicationException('Error rendering list: there are no visible columns defined in the model.');
+			throw new ApplicationException('Error rendering list: there are no visible columns defined in the model.');
 
 		if (count($this->columns))
 			$ordered_list = $this->columns;

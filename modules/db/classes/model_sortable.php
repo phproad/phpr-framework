@@ -1,4 +1,8 @@
-<?php
+<?php namespace Db;
+
+use Phpr\Extension;
+use Phpr\ApplicationException;
+use Db\Helper as Db_Helper;
 
 /*
  * Sortable model extension
@@ -10,7 +14,7 @@
  * Model table must have sort_order table column.
  * In the model class definition: 
  *
- *   public $implement = 'Db_Model_Sortable';
+ *   public $implement = 'Db\Model_Sortable';
  *
  * To set orders: 
  *
@@ -22,7 +26,7 @@
  *
  */
 
-class Db_Model_Sortable extends Phpr_Extension
+class Model_Sortable extends Extension
 {
 	protected $_model;
 	protected $_field_name = "sort_order";
@@ -56,7 +60,7 @@ class Db_Model_Sortable extends Phpr_Extension
 			$item_orders = explode(',', $item_orders);
 
 		if (count($item_ids) != count($item_orders))
-			throw new Phpr_ApplicationException('Invalid set_item_orders call - count of item_ids does not match a count of item_orders');
+			throw new ApplicationException('Invalid set_item_orders call - count of item_ids does not match a count of item_orders');
 
 		foreach ($item_ids as $index=>$id)
 		{

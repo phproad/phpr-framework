@@ -1,6 +1,6 @@
-<?php
+<?php namespace Db;
 
-class Db_Form_Custom_Area extends Db_Form_Element
+class Form_Custom_Area extends Form_Element
 {
 	public $id;
 	

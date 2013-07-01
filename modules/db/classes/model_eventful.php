@@ -1,4 +1,6 @@
-<?php
+<?php namespace Db;
+
+use Phpr\Extension;
 
 /**
  * Eventful behavior
@@ -17,14 +19,14 @@
  *
  * Usage:
  *
- * public $implement = 'Db_Model_Eventful';
+ * public $implement = 'Db\Model_Eventful';
  * 
  * public $eventful_model_prefix = "location";
  * public $eventful_model_name = "country";
  *
  */
 
-class Db_Model_Eventful extends Phpr_Extension
+class Model_Eventful extends Extension
 {
 	protected $_model;
 	protected $api_added_columns = array();

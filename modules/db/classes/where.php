@@ -1,6 +1,6 @@
-<?php
+<?php namespace Db;
 
-class Db_Where extends Db_Base 
+class Where extends Base 
 {
 	public static function create()
 	{
@@ -36,7 +36,7 @@ class Db_Where extends Db_Base
 		// 
 		array_shift($args);
 
-		if ($cond instanceof Db_Where)
+		if ($cond instanceof Where)
 			$cond = $cond->build_where();
 		else 
 		{

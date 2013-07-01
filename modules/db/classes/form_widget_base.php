@@ -1,10 +1,16 @@
-<?php
+<?php namespace Db;
+
+use ReflectionObject;
+
+use Phpr;
+use Phpr\SystemException;
+use File\Path;
 
 /**
  * Base class for form widgets. Form widgets can render custom form controls,
  * and provide their life cycle operations.
  */
-class Db_Form_Widget_Base
+class Form_Widget_Base
 {
 	public $unique_id;
 	public $column_name;
@@ -32,10 +38,10 @@ class Db_Form_Widget_Base
 		$this->view_data['widget'] = $this;
 
 		$ref_object = new ReflectionObject($this);
-		$widget_root_dir = dirname($ref_object->getFileName()).DS.strtolower($this->widget_class);
+		$widget_root_dir = dirname($ref_object->getFileName()).DS.strtolower(get_real_class($this));
 		$this->view_path = $widget_root_dir.DS.'partials';
 
-		$this->resources_path = File_Path::get_public_path($widget_root_dir.DS.'assets');
+		$this->resources_path = Path::get_public_path($widget_root_dir.DS.'assets');
 
 		foreach ($configuration as $name => $value) {
 			$this->{$name} = $value;
@@ -54,10 +60,10 @@ class Db_Form_Widget_Base
 	public function handle_event($event, $model, $field)
 	{
 		if (substr($event, 0, 2) != 'on')
-			throw new Phpr_SystemException('Invalid widget event name: '.$event);
+			throw new SystemException('Invalid widget event name: '.$event);
 			
 		if (!method_exists($this, $event))
-			throw new Phpr_SystemException(sprintf('Event handler %s not found in widget %s.', $event, $this->widget_class));
+			throw new SystemException(sprintf('Event handler %s not found in widget %s.', $event, $this->widget_class));
 			
 		$this->$event($field, $model);
 	}
@@ -113,10 +119,9 @@ class Db_Form_Widget_Base
 		if (!$override_controller && file_exists($controller_view_path)) {
 			$this->controller->display_partial($controller_view_path, $params, true, true);
 		} else {
-
 			//
 			// Absolute reference
-			//   NB: In Phpr_Controller_Base this expression is determined by the presence of a forwardslash (/).
+			//   NB: In Phpr\Controller_Base this expression is determined by the presence of a forwardslash (/).
 			//   
 			if (strpos($view_name, PATH_APP) !== false)
 				$view_path = $view_name;

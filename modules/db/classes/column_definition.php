@@ -1,4 +1,11 @@
-<?php
+<?php namespace Db;
+
+use Phpr;
+use Phpr\Inflector;
+use Phpr\DateTime;
+use Phpr\Date;
+use Phpr\Html;
+use Phpr\SystemException;
 
 /**
  * Column definition class. 
@@ -13,7 +20,7 @@
  * Datetime fields are CONVERTED to GMT during saving and display_value returns value converted
  * back to a time zone specified in the configuration file.
  */
-class Db_Column_Definition
+class Column_Definition
 {
 	public $db_name;
 	public $display_name;
@@ -120,7 +127,7 @@ class Db_Column_Definition
 	{
 		$valid_types = array(db_varchar, db_number, db_float, db_bool, db_datetime, db_date, db_time, db_text);
 		if (!in_array($type_name, $valid_types))
-			throw new Phpr_SystemException('Invalid database type: '.$type_name);
+			throw new SystemException('Invalid database type: '.$type_name);
 			
 		$this->type = $type_name;
 		$this->_column_info = null;
@@ -133,7 +140,7 @@ class Db_Column_Definition
 		if ($this->type == db_datetime || $this->type == db_date || $this->type == db_time)
 			$this->_date_format = $display_format;
 		else 
-			throw new Phpr_SystemException('Error in column definition for: '.$this->db_name.' column. Method "date_format" is applicable only for date or time fields.');
+			throw new SystemException('Error in column definition for: '.$this->db_name.' column. Method "date_format" is applicable only for date or time fields.');
 		$this->validation(null, true);
 			
 		return $this;
@@ -144,7 +151,7 @@ class Db_Column_Definition
 		if ($this->type == db_datetime || $this->type == db_time)
 			$this->_time_format = $display_format;
 		else
-			throw new Phpr_SystemException('Error in column definition for: '.$this->db_name.' column. Method "time_format" is applicable only for datetime or time fields.');
+			throw new SystemException('Error in column definition for: '.$this->db_name.' column. Method "time_format" is applicable only for datetime or time fields.');
 		$this->validation(null, true);
 		
 		return $this;
@@ -155,7 +162,7 @@ class Db_Column_Definition
 		if ($this->type == db_datetime)
 			$this->_datetime_format = $display_format;
 		else
-			throw new Phpr_SystemException('Error in column definition for: '.$this->db_name.' column. Method "datetime_format" is applicable only for datetime fields.');
+			throw new SystemException('Error in column definition for: '.$this->db_name.' column. Method "datetime_format" is applicable only for datetime fields.');
 		
 		return $this;
 	}
@@ -172,7 +179,7 @@ class Db_Column_Definition
 		if ($this->type == db_float)
 			$this->_precision = $precision;
 		else 
-			throw new Phpr_SystemException('Error in column definition for: '.$this->db_name.' column. Method "precision" is applicable only for floating point number fields.');
+			throw new SystemException('Error in column definition for: '.$this->db_name.' column. Method "precision" is applicable only for floating point number fields.');
 			
 		return $this;
 	}
@@ -182,7 +189,7 @@ class Db_Column_Definition
 		if ($this->type == db_varchar || $this->type == db_text)
 			$this->length = $length;
 		else 
-			throw new Phpr_SystemException('Error in column definition for: '.$this->db_name.' column. Method "length" is applicable only for varchar or text fields.');
+			throw new SystemException('Error in column definition for: '.$this->db_name.' column. Method "length" is applicable only for varchar or text fields.');
 
 		return $this;
 	}
@@ -277,7 +284,7 @@ class Db_Column_Definition
 	public function validation($custom_format_message = null, $readd = false)
 	{
 		if (!strlen($this->type))
-			throw new Phpr_SystemException('Error applying validation to '.$this->db_name.' column. Column type is unknown. Probably this is a calculated column. Please call the "type" method to set the column type.');
+			throw new SystemException('Error applying validation to '.$this->db_name.' column. Column type is unknown. Probably this is a calculated column. Please call the "type" method to set the column type.');
 			
 		if ($this->_validation_obj && !$readd)
 			return $this->_validation_obj;
@@ -335,7 +342,7 @@ class Db_Column_Definition
 				if ($media == 'form' || $this->_length === null)
 					return $value;
 				
-				return Phpr_Html::str_trim($value, $this->_length);
+				return Html::str_trim($value, $this->_length);
 			case db_number:
 			case db_bool:
 				return $value;
@@ -352,7 +359,7 @@ class Db_Column_Definition
 			case db_date:
 				if (gettype($value) == 'string' && strlen($value))
 				{
-					$value = new Phpr_Datetime($value.' 00:00:00');
+					$value = new DateTime($value.' 00:00:00');
 				}
 				return $value ? $value->format($this->_date_format) : null;
 			case db_datetime:
@@ -361,16 +368,16 @@ class Db_Column_Definition
 					if (strlen($value) == 10) 
 						$value.=' 00:00:00';
 					
-					$value = new Phpr_Datetime($value);
+					$value = new DateTime($value);
 				}
 				if (!$this->date_as_is)
 				{
 					if ($media == 'time')
-						return $value ? Phpr_Date::display($value, $this->_time_format) : null;
+						return $value ? Date::display($value, $this->_time_format) : null;
 					elseif ($media == 'date')
-						return $value ? Phpr_Date::display($value, $this->_date_format) : null;
+						return $value ? Date::display($value, $this->_date_format) : null;
 					else
-						return $value ? Phpr_Date::display($value, $this->_datetime_format) : null;
+						return $value ? Date::display($value, $this->_datetime_format) : null;
 				}
 				else
 				{
@@ -382,7 +389,7 @@ class Db_Column_Definition
 						return $value ? $value->format($this->_datetime_format) : null;
 				}
 			case db_time:
-				return Phpr_Date::display($value, $this->_time_format);
+				return Date::display($value, $this->_time_format);
 			default:
 				return $value;
 		}
@@ -399,7 +406,7 @@ class Db_Column_Definition
 	protected function define_reference_column()
 	{
 		if (!array_key_exists($this->relation_name, $this->_model->has_models))
-			throw new Phpr_SystemException('Error defining reference "'.$this->relation_name.'". Relation '.$this->relation_name.' is not found in model '.get_class($this->_model));
+			throw new SystemException('Error defining reference "'.$this->relation_name.'". Relation '.$this->relation_name.' is not found in model '.get_class($this->_model));
 
 		$relation_type = $this->_model->has_models[$this->relation_name];
 
@@ -407,7 +414,7 @@ class Db_Column_Definition
 		$options = $this->_model->get_relation_options($relation_type, $this->relation_name, $has_primary_key, $has_foreign_key);
 
 		if (!is_null($options['finder_sql'])) 
-			throw new Phpr_SystemException('Error defining reference "'.$this->relation_name.'". Relation finder_sql option is not supported.');
+			throw new SystemException('Error defining reference "'.$this->relation_name.'". Relation finder_sql option is not supported.');
 
 		$this->reference_type = $relation_type;
 		
@@ -439,7 +446,7 @@ class Db_Column_Definition
 				{
 					case 'has_one' : 
 						if (!$has_foreign_key)
-							$options['foreign_key'] = Phpr_Inflector::foreign_key($this->_model->table_name, $object->primary_key);
+							$options['foreign_key'] = Inflector::foreign_key($this->_model->table_name, $object->primary_key);
 
 						$this->reference_foreign_key = $options['foreign_key'];
 						$condition = "{$objectTableName}.{$options['foreign_key']} = {$this->_model->table_name}.{$options['primary_key']}";
@@ -479,10 +486,10 @@ class Db_Column_Definition
 						$options['join_table'] = $this->_model->get_join_table_name($this->_model->table_name, $object->table_name);
 
 					if (!$has_primary_key)
-						$options['primary_key'] = Phpr_Inflector::foreign_key($this->_model->table_name, $this->_model->primary_key);
+						$options['primary_key'] = Inflector::foreign_key($this->_model->table_name, $this->_model->primary_key);
 
 					if (!$has_foreign_key)
-						$options['foreign_key'] = Phpr_Inflector::foreign_key($object->table_name, $object->primary_key);
+						$options['foreign_key'] = Inflector::foreign_key($object->table_name, $object->primary_key);
 
 					$col_definition['sql'] = "select group_concat($valueExpr ORDER BY 1 SEPARATOR ', ') from {$object->table_name} as {$join_table_alias}, {$options['join_table']} where
 						{$join_table_alias}.{$object->primary_key}={$options['join_table']}.{$options['foreign_key']} and

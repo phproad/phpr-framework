@@ -1,10 +1,13 @@
-<?php
+<?php namespace Db;
+
+use Phpr\Extension;
+use File\Upload;
 
 /**
  * Adds file attachment functionality to models. 
  */
 
-class Db_Model_Attachments extends Phpr_Extension
+class Model_Attachments extends Extension
 {
 	protected $_model;
 	
@@ -20,16 +23,17 @@ class Db_Model_Attachments extends Phpr_Extension
 	 * @param string $column_name Specify the column name
 	 * @param string $display_name Specify the column display name
 	 * @param bool $show_in_lists Determines if the field should be hidden from lists
-	 * @return Db_Form_Field_Definition
+	 * @return Form_Field_Definition
 	 */
 	public function add_attachments_field($column_name, $display_name, $show_in_lists = false)
 	{
 		$this->_model->add_relation('has_many', $column_name, array(
-			'class_name'=>'Db_File',
-			'foreign_key'=>'master_object_id', 
-			'conditions'=>"master_object_class='".get_class($this->_model)."' and field='".$column_name."'",
-			'order'=>'sort_order, id',
-			'delete'=>true));
+			'class_name'  => 'Db_File',
+			'foreign_key' => 'master_object_id', 
+			'conditions'  => "master_object_class='".get_class($this->_model)."' and field='".$column_name."'",
+			'order'       => 'sort_order, id',
+			'delete'      => true
+		));
 
 		$column = $this->_model->define_multi_relation_column($column_name, $column_name, $display_name, '@name');
 		
@@ -47,7 +51,7 @@ class Db_Model_Attachments extends Phpr_Extension
 	 * @param array $file_info The file postback array. Eg: $_FILE[$field]
 	 * @param bool $delete Determines whether any exisiting attachments should be deleted first
 	 * @param string $session_key Defined session key for deferred bindings
-	 * @return Db_File
+	 * @return Db\File
 	 */
 	public function save_attachment_from_post($field='files', $file_info, $delete = false, $session_key = null)
 	{
@@ -57,7 +61,7 @@ class Db_Model_Attachments extends Phpr_Extension
 		if (!array_key_exists('error', $file_info) || $file_info['error'] == UPLOAD_ERR_NO_FILE)
 			return;
 
-		File_Upload::validate_uploaded_file($file_info);
+		Upload::validate_uploaded_file($file_info);
 
 		$this->_model->init_columns();
 
@@ -70,7 +74,7 @@ class Db_Model_Attachments extends Phpr_Extension
 			}
 		}
 
-		$file = Db_File::create();
+		$file = File::create();
 		$file->is_public = true;
 
 		$file->from_post($file_info);

@@ -1,6 +1,6 @@
-<?php
+<?php namespace Db;
 
-class Db_Html_Widget extends Db_Form_Widget_Base
+class Html_Widget extends Form_Widget_Base
 {
 
 	public $field_name = null;

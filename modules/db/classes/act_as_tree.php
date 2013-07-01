@@ -1,4 +1,8 @@
-<?php
+<?php namespace Db;
+
+use Phpr;
+use Phpr\Extension;
+use Db\Helper as Db_Helper;
 
 /*
  * Act_as_tree extension
@@ -6,12 +10,12 @@
 
 /*
  * Usage in model:
- * In the model class definition: public $implement = 'Db_Act_As_Tree';
+ * In the model class definition: public $implement = 'Db\Act_As_Tree';
  * To extract parent children $Obj->list_children();
  * To extract root elements $Obj->list_root_children()
  */
 
-class Db_Act_As_Tree extends Phpr_Extension
+class Act_As_Tree extends Extension
 {
 	private $_model_class;
 	private $_model;
@@ -47,9 +51,9 @@ class Db_Act_As_Tree extends Phpr_Extension
 		$cache_key = $this->get_cache_key($order_by);
 
 		if (isset(self::$_object_cache[$this->_model_class][$cache_key][$this->_model->id]))
-			return new Db_Data_Collection(self::$_object_cache[$this->_model_class][$cache_key][$this->_model->id]);
+			return new Data_Collection(self::$_object_cache[$this->_model_class][$cache_key][$this->_model->id]);
 
-		return new Db_Data_Collection();
+		return new Data_Collection();
 	}
 	
 
@@ -61,9 +65,9 @@ class Db_Act_As_Tree extends Phpr_Extension
 		$cache_key = $this->get_cache_key($order_by);
 
 		if (isset(self::$_object_cache[$this->_model_class][$cache_key][-1]))
-			return new Db_Data_Collection(self::$_object_cache[$this->_model_class][$cache_key][-1]);
+			return new Data_Collection(self::$_object_cache[$this->_model_class][$cache_key][-1]);
 
-		return new Db_Data_Collection();
+		return new Data_Collection();
 	}
 	
 	public function list_all_children($order_by = 'name')
@@ -162,8 +166,8 @@ class Db_Act_As_Tree extends Phpr_Extension
 				$record_data['act_as_tree_parent_key'] = $parent_key;
 				$record_data['act_as_tree_sql_filter'] = $model->act_as_tree_sql_filter;
 
-				$record = new Db_ActiveRecord_Proxy($record_data['id'], $this->_model_class, $record_data);
-				$record->extend_with('Db_Act_As_Tree', false, $this->_model_class);
+				$record = new ActiveRecord_Proxy($record_data['id'], $this->_model_class, $record_data);
+				$record->extend_with('Db\Act_As_Tree', false, $this->_model_class);
 
 				$parent_id = $record->$parent_key != null ? $record->$parent_key : -1;
 

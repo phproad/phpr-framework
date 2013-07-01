@@ -1,0 +1,535 @@
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
+.hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+.input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.ui-grid {
+  border-bottom: 1px solid #CCC;
+  border-left: 1px solid #CCC;
+  border-right: 1px solid #CCC;
+  border-top: 2px solid #666666;
+  position: relative;
+}
+.ui-grid .backend_scroller {
+  padding: 0 !important;
+}
+.ui-grid .backend_scroller.height-400 {
+  height: 400px !important;
+}
+.ui-grid .backend_scroller.height-300 {
+  height: 300px !important;
+}
+.ui-grid .backend_scroller_container {
+  padding: 0;
+  background: transparent;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  border: none;
+}
+.ui-grid .backend_scroller_container .v_slider {
+  right: -8px;
+  width: 3px;
+  top: 0;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+.ui-grid .backend_scroller_container .v_slider .knob {
+  width: inherit;
+}
+.ui-grid .backend_scroller_container .v_slider:hover,
+.ui-grid .backend_scroller_container .v_slider.active {
+  right: -9px;
+  opacity: 1;
+  filter: alpha(opacity=100);
+  width: 5px;
+  -moz-transform: scale(1.3, 1);
+  -webkit-transform: scale(1.3, 1);
+}
+.ui-grid.mouse-move .v_slider {
+  opacity: 0.5;
+}
+.ui-grid.no-scroll {
+  border-right: none;
+  border-left: none;
+  border-bottom: none;
+}
+.ui-grid.no-scroll div.ui-grid-table-container {
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  height: 310px;
+}
+.ui-grid.no-scroll div.ui-grid-table-container p.ui-no-records {
+  position: absolute;
+  padding: 10px 0;
+  width: 200px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+.ui-grid .ui-grid-h-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+}
+.ui-grid .ui-grid-h-scroll div.ui-grid-table-container {
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+}
+.ui-grid .ui-grid-h-scroll.no-scroll {
+  overflow-x: hidden;
+}
+.ui-grid table.ui-grid-head,
+.ui-grid table.ui-grid-body {
+  margin: 0;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 0;
+  table-layout: fixed;
+}
+.ui-grid table.ui-grid-head.no-fixed-layout,
+.ui-grid table.ui-grid-body.no-fixed-layout {
+  table-layout: auto;
+}
+.ui-grid table.ui-grid-head tr th,
+.ui-grid table.ui-grid-body tr th,
+.ui-grid table.ui-grid-head tr td,
+.ui-grid table.ui-grid-body tr td {
+  font-size: 11px;
+  text-align: left;
+  border-left: 1px solid rgba(0, 0, 0, 0.2);
+}
+.ui-grid table.ui-grid-head tr th:first-child,
+.ui-grid table.ui-grid-body tr th:first-child,
+.ui-grid table.ui-grid-head tr td:first-child,
+.ui-grid table.ui-grid-body tr td:first-child {
+  border-left: none;
+}
+.ui-grid table.ui-grid-head tr th:last-child,
+.ui-grid table.ui-grid-body tr th:last-child,
+.ui-grid table.ui-grid-head tr td:last-child,
+.ui-grid table.ui-grid-body tr td:last-child {
+  border-right: none;
+}
+.ui-grid table.ui-grid-head tr th,
+.ui-grid table.ui-grid-body thead tr th {
+  background: #e5e5e5;
+  color: #000000;
+  font-weight: normal;
+  border-bottom: 1px solid #888;
+  text-shadow: 1px 1px 0 #ffffff;
+  vertical-align: top;
+  line-height: 130%;
+}
+.ui-grid table.ui-grid-head tr th.right,
+.ui-grid table.ui-grid-body thead tr th.right {
+  text-align: right;
+}
+.ui-grid table.ui-grid-head tr th .ui-grid-head-content,
+.ui-grid table.ui-grid-body thead tr th .ui-grid-head-content {
+  padding: 8px;
+}
+.ui-grid table.ui-grid-head tr th.checkbox-cell .ui-grid-head-content,
+.ui-grid table.ui-grid-body thead tr th.checkbox-cell .ui-grid-head-content {
+  position: relative;
+  padding-left: 28px;
+}
+.ui-grid table.ui-grid-head tr th.checkbox-cell .ui-grid-head-content .checkbox,
+.ui-grid table.ui-grid-body thead tr th.checkbox-cell .ui-grid-head-content .checkbox {
+  position: absolute;
+  left: 8px;
+  top: 7px;
+}
+.ui-grid table.ui-grid-head tr th.key,
+.ui-grid table.ui-grid-body thead tr th.key {
+  background-color: #DFF0D8 !important;
+  border-bottom-color: #468847;
+}
+.ui-grid table.ui-grid-head tr th.ui-column-group,
+.ui-grid table.ui-grid-body thead tr th.ui-column-group {
+  border-left-color: #888;
+  text-align: center;
+  background-color: #eee;
+}
+.ui-grid table.ui-grid-head tr:last-child th,
+.ui-grid table.ui-grid-body thead tr:last-child th {
+  border-bottom: 1px solid #333;
+}
+.ui-grid table.ui-grid-head.ui-no-word-wrap,
+.ui-grid table.ui-grid-body thead.ui-no-word-wrap {
+  white-space: nowrap;
+}
+.ui-grid table.ui-grid-head td.grid-left-separator,
+.ui-grid table.ui-grid-body thead td.grid-left-separator,
+.ui-grid table.ui-grid-body td.grid-left-separator,
+.ui-grid table.ui-grid-head th.grid-left-separator,
+.ui-grid table.ui-grid-body thead th.grid-left-separator,
+.ui-grid table.ui-grid-body th.grid-left-separator {
+  border-left-color: #888;
+}
+.ui-grid table.ui-grid-body.ui-grid-draggable.drag td {
+  cursor: move;
+}
+.ui-grid table.ui-grid-body tr td {
+  background-color: white;
+  border-bottom: 1px solid #ccc;
+  vertical-align: top;
+  color: #333;
+}
+.ui-grid table.ui-grid-body tr td span.cell-content {
+  padding: 8px;
+  min-height: 11px;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.ui-grid table.ui-grid-body tr td div.cell-editor-container {
+  position: relative;
+}
+.ui-grid table.ui-grid-body tr td.ui-grid-cell-editable {
+  cursor: text;
+}
+.ui-grid table.ui-grid-body tr td.ui-grid-cell-clickable {
+  cursor: pointer;
+}
+.ui-grid table.ui-grid-body tr td.right {
+  text-align: right;
+}
+.ui-grid table.ui-grid-body tr td.right input.cell-editor {
+  text-align: right;
+}
+.ui-grid table.ui-grid-body tr td.popup-focused {
+  background-color: #6699cc !important;
+  color: white;
+}
+.ui-grid table.ui-grid-body tr td .cell-content-container {
+  position: relative;
+}
+.ui-grid table.ui-grid-body tr td.ui-grid-cell-focusable .cell-content-container:focus {
+  outline: 2px solid #0099ce;
+}
+.ui-grid table.ui-grid-body tr td input.cell-editor {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: none !important;
+  outline: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  font-size: 11px;
+  padding: 0 8px 0 7px !important;
+  line-height: 100%;
+  background: transparent;
+  color: #333;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.ui-grid table.ui-grid-body tr td input.cell-editor:focus {
+  background-color: white;
+}
+.ui-grid table.ui-grid-body tr td.popup-button-container input.cell-editor {
+  padding-right: 23px !important;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-active .chzn-single {
+  box-shadow: none;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-single {
+  font-size: inherit;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop {
+  border: none;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop .chzn-results li {
+  color: #333;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop .chzn-results li:hover,
+.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop .chzn-results li.highlighted {
+  color: #fff;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop .chzn-search input {
+  padding: 5px !important;
+  border: 1px solid #333 !important;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-single {
+  border: none;
+  background: white;
+  font-size: inherit;
+  height: 100%;
+  line-height: 100%;
+  color: #333;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-single span {
+  padding: 8px 0 0 4px;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-single div {
+  background: transparent;
+  border-left: none;
+}
+.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-single div b:hover {
+  background-position: 0 1px;
+}
+.ui-grid table.ui-grid-body tr td.cell-checkbox .checkbox {
+  margin: 0 ;
+}
+.ui-grid table.ui-grid-body tr.current-row td {
+  background-color: #FDFCE1;
+}
+.ui-grid table.ui-grid-body tr:hover td,
+.ui-grid table.ui-grid-body tr.ui-current td,
+.ui-grid table.ui-grid-body tr.ui-selected td,
+.ui-grid table.ui-grid-body tr.grid-error:hover td,
+.ui-grid table.ui-grid-body tr:hover td.grid-error,
+.ui-grid table.ui-grid-body tr.ui-current td.grid-error,
+.ui-grid table.ui-grid-body tr.ui-selected td.grid-error,
+.ui-grid table.ui-grid-body tr.grid-error:hover td.grid-error {
+  background-color: #3a74af !important;
+  color: white !important;
+}
+.ui-grid table.ui-grid-body tr.grid-error td {
+  background-color: #ff9999 !important;
+}
+.ui-grid table.ui-grid-body tr.grid-error td.grid-error {
+  background-color: #990000 !important;
+  color: white !important;
+}
+.ui-grid table.ui-grid-body tr:last-child td {
+  border-bottom: 1px solid #ccc;
+}
+.ui-grid table.ui-grid-body tr .ui-grid-menu {
+  display: none;
+  background-color: #3a74af;
+  position: absolute;
+  width: 21px;
+  top: 0;
+  right: 0;
+  z-index: 150000;
+}
+.ui-grid table.ui-grid-body tr .ui-grid-menu .menu-delete {
+  background: transparent url('../../images/icons.png') no-repeat 0 0;
+  text-indent: -1000000em;
+  position: absolute;
+  display: block;
+  width: 15px;
+  height: 15px;
+  left: 0;
+  top: 6px;
+  text-align: left;
+  cursor: pointer;
+}
+.ui-grid table.ui-grid-body tr:hover .ui-grid-menu.menu-visible {
+  display: block;
+}
+.ui-grid table.ui-grid-body tr.status-disabled td {
+  color: #999;
+}
+.ui-grid table.ui-grid-body.no-bottom-border tr:last-child td {
+  border-bottom: none;
+}
+.ui-grid .ui-grid-cell-button {
+  display: block;
+  text-indent: -10000000em;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 18px;
+  background-color: #eee;
+  border-left: 1px solid #CCCCCC;
+}
+@include vertical-gradient(#eeeeee, #cccccc);
+.ui-grid .ui-grid-cell-button span {
+  display: block;
+  margin-top: 10px;
+  height: 10px;
+  background: url('../../images/input-tool-icons.png') no-repeat -33px -2px;
+}
+@include vertical-gradient(#5791e0, #2865c1);
+.ui-grid .ui-grid-cell-button:hover span {
+  background-position: -1px -2px;
+}
+.ui-grid .ui-grid-select-container {
+  position: absolute;
+}
+.ui-grid .ui-grid-select-container .chzn-container {
+  font-size: 11px !important;
+  line-height: 28px !important;
+}
+.ui-grid .ui-grid-select-container .chzn-container .chzn-single {
+  height: 27px !important;
+  line-height: 27px  !important;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.ui-grid .ui-grid-select-container .chzn-container .chzn-single div {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+.ui-grid .ui-autocomplete {
+  max-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.ui-grid .ui-menu {
+  font-size: 11px !important;
+  line-height: 28px !important;
+  color: #333;
+  border-right: 1px solid #CCC;
+  border-left: 1px solid #CCC;
+  border-bottom: 1px solid #CCC;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.15), 0, 4px, 5px;
+  -moz-box-shadow: rgba(0, 0, 0, 0.15), 0, 4px, 5px;
+  box-shadow: rgba(0, 0, 0, 0.15), 0, 4px, 5px;
+  -webkit-border-bottom-right-radius: 5px;
+  -moz-border-radius-bottomright: 5px;
+  border-bottom-right-radius: 5px;
+  -webkit-border-bottom-left-radius: 5px;
+  -moz-border-radius-bottomleft: 5px;
+  border-bottom-left-radius: 5px;
+  margin-right: -1px !important;
+}
+.ui-grid .ui-menu .ui-menu-item a {
+  padding: 3px 5px;
+  color: #333;
+}
+.ui-grid .ui-menu .ui-menu-item a.ui-state-hover,
+.ui-grid .ui-menu .ui-menu-item a.ui-state-active {
+  background-color: #3a74af;
+  color: white;
+}
+.ui-grid .ui-menu .ui-menu-item:last-child a {
+  -webkit-border-bottom-right-radius: 3px;
+  -moz-border-radius-bottomright: 3px;
+  border-bottom-right-radius: 3px;
+  -webkit-border-bottom-left-radius: 3px;
+  -moz-border-radius-bottomleft: 3px;
+  border-bottom-left-radius: 3px;
+}
+.ui-grid .grid-no-data {
+  padding: 10px;
+}
+.ui-grid .pagination .interval {
+  display: none;
+}
+.ui-grid-overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background: black;
+  opacity: 0.2;
+  filter: alpha(opacity=20);
+}
+.grid-popup-images .link-add-file {
+  background-image: none;
+  padding: 0 !important;
+}
+.grid-popup-images .link-add-file img.progress {
+  top: 5px;
+  left: 6px;
+}
+.grid-popup-images .scrollable-image-list {
+  height: 200px !important;
+  margin-bottom: 0;
+  border: none;
+}
+.grid-popup-images .scrollable-image-list p.no-data {
+  margin: 70px auto 0 auto;
+  width: 200px;
+  -webkit-border-radius: 5;
+  -moz-border-radius: 5;
+  border-radius: 5;
+}
+.grid-popup-images .scrollable-image-list ul.imagelist-sortable li {
+  padding-left: 0;
+}
+.grid-popup-images .scrollable-image-list ul.imagelist-sortable li p {
+  line-height: 150%;
+}
+.grid-popup-images .scrollable-image-list ul.imagelist-sortable li .image_link {
+  width: 50px;
+}
+.grid-popup-images .scrollable-image-list ul.imagelist-sortable li .image_info {
+  margin-left: 75px !important;
+}
+.grid-popup-images .scrollable-image-list ul.imagelist-sortable li .image_info p {
+  padding-bottom: 0 !important;
+}
+.grid-popup-images .scrollable-image-list ul.imagelist-sortable li:nth-child(2n) {
+  background-color: transparent;
+}
+.grid-popup-images .ui-upload-overlay .progress-bar {
+  margin: 90px;
+}
+.grid-datepicker-form {
+  width: 200px;
+}
+.grid-datepicker-form .datepicker .datepickerBorderT,
+.grid-datepicker-form .datepicker .datepickerBorderB,
+.grid-datepicker-form .datepicker .datepickerBorderL,
+.grid-datepicker-form .datepicker .datepickerBorderR,
+.grid-datepicker-form .datepicker .datepickerBorderTL,
+.grid-datepicker-form .datepicker .datepickerBorderTR,
+.grid-datepicker-form .datepicker .datepickerBorderBL,
+.grid-datepicker-form .datepicker .datepickerBorderBR {
+  width: 0;
+  height: 0;
+}
+.grid-datepicker-form .datepicker .datepickerContainer {
+  left: 0;
+  top: 0;
+}
+.ui-popup-container .ui-image-list {
+  padding: 0;
+}
+.ui-popup-container .ui-image-list li {
+  border: 1px solid #ccc;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  display: inline-block;
+  margin: 5px;
+  padding: 1px;
+}
+.ui-popup-container .ui-image-list li img {
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  display: block;
+}
+.webkit .ui-grid table.ui-grid-body span.cell-content {
+  line-height: 90%;
+}

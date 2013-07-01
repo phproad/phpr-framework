@@ -1,6 +1,9 @@
-<?php
+<?php namespace Db;
 
-class Db_Base extends Phpr_Validate_Extension
+use Phpr\Validate_Extension;
+use Phpr\DateTime;
+
+class Base extends Validate_Extension
 {
 	/**
 	 * Wraps supplied value(s) with quotes.
@@ -19,7 +22,7 @@ class Db_Base extends Phpr_Validate_Extension
 			return implode(', ', $value);
 		}
 		
-		if ($value instanceof Phpr_DateTime)
+		if ($value instanceof DateTime)
 			$value = $value->to_sql_datetime();
 			
 		if (!strlen($value))

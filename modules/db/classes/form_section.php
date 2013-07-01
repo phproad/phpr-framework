@@ -1,6 +1,6 @@
-<?php
+<?php namespace Db;
 
-class Db_Form_Section extends Db_Form_Element
+class Form_Section extends Form_Element
 {
 	public $title;
 	public $description;

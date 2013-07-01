@@ -1,6 +1,8 @@
-<?php
+<?php namespace Db;
 
-class Db_ActiveRecord_Proxy extends Phpr_Extension
+use Phpr\Extension;
+
+class ActiveRecord_Proxy extends Extension
 {
 	private $model_class;
 	private $fields = array();

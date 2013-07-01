@@ -1,4 +1,9 @@
-<?php
+<?php namespace Db;
+
+use SimpleXMLElement;
+
+use Phpr\Extension;
+use Phpr\Xml;
 
 /**
  * Dynamic Column Extension
@@ -7,11 +12,11 @@
  *
  * Usage:
  *
- * public $implement = 'Db_Model_Dynamic';
+ * public $implement = 'Db\Model_Dynamic';
  *
  */
 
-class Db_Model_Dynamic extends Phpr_Extension
+class Model_Dynamic extends Extension
 {
 
 	protected $_model;
@@ -64,8 +69,8 @@ class Db_Model_Dynamic extends Phpr_Extension
 		{
 			$value = serialize($this->_model->{$field_id});
 			$field_element = $document->addChild('field');
-			Phpr_Xml::create_node($document, $field_element, 'id', $field_id);
-			Phpr_Xml::create_node($document, $field_element, 'value', $value, true);
+			Xml::create_node($document, $field_element, 'id', $field_id);
+			Xml::create_node($document, $field_element, 'value', $value, true);
 		}
 
 		$dynamic_field = $this->_field_name;
@@ -95,7 +100,7 @@ class Db_Model_Dynamic extends Phpr_Extension
 			{
 				$this->_model->$field_id = "NaN";
 				$this->_model->fetched[$field_id] = "NaN";
-				trace_log(sprintf('Db_Model_Dynamic was unable to parse %s in %s', $field_id, get_class($this->_model)));
+				trace_log(sprintf('Db\Model_Dynamic was unable to parse %s in %s', $field_id, get_class($this->_model)));
 			}
 		}
 	}

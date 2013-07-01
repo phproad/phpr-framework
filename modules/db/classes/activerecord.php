@@ -1,4 +1,17 @@
-<?php
+<?php namespace Db;
+
+use IteratorAggregate;
+use ReflectionObject;
+
+use Phpr;
+use Phpr\DateTime;
+use Phpr\Util;
+use Phpr\Validation;
+use Phpr\Inflector;
+use Phpr\Pagination;
+use Phpr\SecurityFramework;
+use Phpr\SystemException;
+use Db\Helper as Db_Helper;
 
 define('db_varchar', 'varchar');
 define('db_number', 'number');
@@ -11,7 +24,7 @@ define('db_text', 'text');
 
 $activerecord_no_columns_info = false;
 
-class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
+class ActiveRecord extends Sql implements IteratorAggregate
 {
 	const state_creating = 'creating';
 	const state_created = 'created';
@@ -240,7 +253,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 
 		if (!$this->get_model_option('no_validation'))
 		{
-			$this->validation = new Phpr_Validation($this);
+			$this->validation = new Validation($this);
 			$this->validation->focus_prefix = get_class($this)."_";
 		}
 
@@ -277,7 +290,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 		);
 
 		if (!isset($this->table_name))
-			$this->table_name = Phpr_Inflector::tableize(get_class($this));
+			$this->table_name = Inflector::tableize(get_class($this));
 	
 		$fields = array_keys($this->fields());
 		if ($this->auto_timestamps && !$this->get_model_option('no_timestamps'))
@@ -285,7 +298,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			foreach ($this->auto_create_timestamps as $field)
 			{
 				if (in_array($field, $fields))
-					$this->{$field} = Phpr_DateTime::now();
+					$this->{$field} = DateTime::now();
 			}
 		}
 
@@ -307,7 +320,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			$this->found_rows = Db::sql()->fetch_one('SELECT FOUND_ROWS()');
 
 		$class_name = get_class($this);
-		$result = new Db_Data_Collection();
+		$result = new Data_Collection();
 		$result->parent = $this;
 		foreach ($data as $row) 
 		{
@@ -392,10 +405,10 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	{
 		$result = $this->find_all_internal($id, $include, $form_context);
 
-		if ($result instanceof Db_ActiveRecord)
-		 	$result = new Db_Data_Collection(array($result));
+		if ($result instanceof ActiveRecord)
+		 	$result = new Data_Collection(array($result));
 		else if (!$result)
-			$result = new Db_Data_Collection();
+			$result = new Data_Collection();
 
 		return $result;
 	}
@@ -411,7 +424,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 				elseif (is_array($definition))
 				{
 					if (!isset($definition['sql']))
-						throw new Phpr_SystemException('Invalid calculated column definition - no SQL clause for '.$name.' column in class '.$this->_class_name);
+						throw new SystemException('Invalid calculated column definition - no SQL clause for '.$name.' column in class '.$this->_class_name);
 
 					if (isset($definition['join']))
 					{
@@ -427,7 +440,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 
 	public function find_by_sql($sql, $include = array()) 
 	{
-		if ($sql instanceof Db_Sql)
+		if ($sql instanceof Sql)
 			$sql = $sql->build_sql();
 	
 		// @TODO: handle $include (eager associations)
@@ -471,11 +484,11 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	public function get_deferred($name, $deferred_session_key)
 	{
 		if (!isset($this->has_models[$name])) 
-			throw new Phpr_SystemException("Relation ".$name." is not found in the model ".$this->_class_name);
+			throw new SystemException("Relation ".$name." is not found in the model ".$this->_class_name);
 
 		$type = $this->has_models[$name];
 		if ($type != 'has_many' && $type != 'has_and_belongs_to_many')
-			throw new Phpr_SystemException('get_all_deferred supports only has_many and has_and_belongs_to_many relations');
+			throw new SystemException('get_all_deferred supports only has_many and has_and_belongs_to_many relations');
 
 		$has_primary_key = false;
 		$has_foreign_key = false;
@@ -489,10 +502,10 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			$options['join_table'] = $this->get_join_table_name($this->table_name, $object->table_name);
 
 		//if (!$has_primary_key)
-		//	$options['primary_key'] = Phpr_Inflector::foreign_key($this->table_name, $this->primary_key);
+		//	$options['primary_key'] = Inflector::foreign_key($this->table_name, $this->primary_key);
 
 		if (!$has_foreign_key)
-			$options['foreign_key'] = Phpr_Inflector::foreign_key($this->table_name, $object->primary_key);
+			$options['foreign_key'] = Inflector::foreign_key($this->table_name, $object->primary_key);
 
 		$foreign_key = $options['foreign_key'];
 
@@ -584,7 +597,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * if you are going to save the model, because save() method
 	 * performs validation before saving data.
 	 * @param mixed[] $values
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function validate_data($values, $deferred_session_key = null)
 	{
@@ -599,7 +612,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * if you are going to save the model, because save() method
 	 * performs validation before saving data.
 	 * @param mixed[] $values
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function set_data($values)
 	{
@@ -614,7 +627,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 *
 	 * @param mixed[] $values
 	 * @param string $deferred_session_key An edit session key for deferred bindings
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function save($values = null, $deferred_session_key = null) 
 	{
@@ -663,7 +676,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 				
 			// Encrypt
 			if (in_array($property->name, $this->encrypted_columns))
-				$val = base64_encode(Phpr_SecurityFramework::create()->encrypt($val));
+				$val = base64_encode(SecurityFramework::create()->encrypt($val));
 
 			// Set value
 			$record[$property->name] = $val;
@@ -684,7 +697,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 		} 
 		else {
 			if (!isset($record[$this->primary_key]))
-				throw new Phpr_SystemException('Primary key can not be null: '.$this->table_name);
+				throw new SystemException('Primary key can not be null: '.$this->table_name);
 
 			$key = $this->primary_key;
 			if (isset($record[$this->primary_key]) && ($record[$this->primary_key] === 0))
@@ -754,7 +767,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			$id = $this->{$this->primary_key};
 
 		$this->before_delete($id);
-		$this->delete_all(Db::where($this->primary_key . ' IN (?)', Phpr_Util::splat($id)));
+		$this->delete_all(Db::where($this->primary_key . ' IN (?)', Util::splat($id)));
 		$this->after_delete();
 		
 		$this->after_modify(self::operation_deleted, null);
@@ -796,22 +809,22 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 					if (!is_array($relation_info)) 
 					{
 						$relation_info = array(
-						'class_name' => Phpr_Inflector::classify($relation_info)
+						'class_name' => Inflector::classify($relation_info)
 						);
 					} 
 					elseif (!isset($relation_info['class_name']))
-						$relation_info['class_name'] = Phpr_Inflector::classify($name);
+						$relation_info['class_name'] = Inflector::classify($name);
 
 					// Create model
 					$object = new $relation_info['class_name']();
 					if (is_null($object))
-						throw new Phpr_SystemException('Class not found: '.$relation_info['class_name']);
+						throw new SystemException('Class not found: '.$relation_info['class_name']);
 
 					$options = array_merge(array(
 						'join_table' => $this->get_join_table_name($this->table_name, $object->table_name),
-						'primary_key' => Phpr_Inflector::foreign_key($this->table_name, $this->primary_key),
-						'foreign_key' => Phpr_Inflector::foreign_key($object->table_name, $object->primary_key)
-						), Phpr_Util::splat($relation_info));
+						'primary_key' => Inflector::foreign_key($this->table_name, $this->primary_key),
+						'foreign_key' => Inflector::foreign_key($object->table_name, $object->primary_key)
+						), Util::splat($relation_info));
 
 					DB::select()->sql_delete($options['join_table'], DB::where($options['join_table'] . '.' . $options['primary_key'] . ' = ?', $this->{$this->primary_key}));
 				break;
@@ -850,7 +863,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 				{
 					try
 					{
-						$val = Phpr_SecurityFramework::create()->decrypt(base64_decode($val));
+						$val = SecurityFramework::create()->decrypt(base64_decode($val));
 					} 
 					catch (Exception $ex)
 					{
@@ -964,9 +977,9 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			if ($this->model_state == self::state_saving && $this->validation->has_rule_for($field))
 				return $value;
 
-			return new Phpr_Datetime($value);
+			return new DateTime($value);
 		}
-		elseif ($value instanceof Phpr_DateTime) 
+		elseif ($value instanceof DateTime) 
 			return $value->to_sql_datetime();
 			
 		return null;
@@ -1046,7 +1059,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	
 	/**
 	 * Is called on any record update: crate, update, delete
-	 * The first parameter is the operation flag - one of the Db_ActiveRecord:op.. constants
+	 * The first parameter is the operation flag - one of the Db\ActiveRecord:op.. constants
 	 */
 	public function after_modify($operation, $deferred_session_key)
 	{
@@ -1149,7 +1162,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			foreach ($this->auto_update_timestamps as $field) 
 			{
 				if (in_array($field, $fields))
-					$new_values[$field] = $this->{$field} = Phpr_DateTime::now();
+					$new_values[$field] = $this->{$field} = DateTime::now();
 			}
 		}
 
@@ -1176,12 +1189,12 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 				
 				$new_value = $new_values[$key];
 				
-				if (is_object($value) && $value instanceof Phpr_DateTime && !is_object($new_value))
+				if (is_object($value) && $value instanceof DateTime && !is_object($new_value))
 					$new_value = $this->type_cast_date($new_value, $key);
 
 				if (is_object($value) && is_object($new_value))
 				{
-					if ($value instanceof Phpr_DateTime && $new_value instanceof Phpr_DateTime)
+					if ($value instanceof DateTime && $new_value instanceof DateTime)
 						$equal = $value->equals($new_value);
 				}
 				else
@@ -1220,23 +1233,23 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 		$fields = $this->fields();
 
 		foreach ($fields as $info) 
-			$columns[] = new Db_ActiveRecord_Column($info);
+			$columns[] = new ActiveRecord_Column($info);
 			
 		foreach ($this->calculated_columns as $name => $data)
 		{
 			$type = (is_array($data) && isset($data['type'])) ? $data['type'] : db_text;
 			$info = array('calculated'=>true, 'name'=>$name, 'type'=> $type);
 
-			$columns[] = new Db_ActiveRecord_Column($info);
+			$columns[] = new ActiveRecord_Column($info);
 		}
 
 		foreach ($this->custom_columns as $name=>$type)
 		{
 			$info = array('custom'=>true, 'name'=>$name, 'type'=> $type);
-			$columns[] = new Db_ActiveRecord_Column($info);
+			$columns[] = new ActiveRecord_Column($info);
 		}
 
-		return $this->_columns_def = new Db_Data_Collection($columns);
+		return $this->_columns_def = new Data_Collection($columns);
 	}
 	
 	public function get_primary_key_value()
@@ -1296,7 +1309,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			$obj->parts['fields'] = array('count(*)');
 			$sql = $obj->build_sql();
 
-			return Db_Sql::create()->fetch_one($sql); 
+			return Sql::create()->fetch_one($sql); 
 		} 
 		else
 		{
@@ -1312,12 +1325,12 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	/**
 	 * Return iterator object for ActiveRecord
 	 *
-	 * @return Db_ActiveRecord_Iterator
+	 * @return Db\ActiveRecord_Iterator
 	 * @internal For internal use only
 	 */
 	function getIterator() 
 	{
-		return new Db_ActiveRecord_Iterator($this);
+		return new ActiveRecord_Iterator($this);
 	}
 
 	/* Magic */
@@ -1424,7 +1437,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			// 
 			$is_object = is_object($value);
 
-			if ($is_object && ($value instanceof Db_ActiveRecord)) 
+			if ($is_object && ($value instanceof ActiveRecord)) 
 			{
 				if (!is_null($this->has_one) && array_key_exists($name, $this->has_one)) 
 				{
@@ -1432,7 +1445,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 					if (isset($this->has_one[$name]['foreign_key']))
 						$foreign_key = $this->has_one[$name]['foreign_key'];
 					else
-						$foreign_key = Phpr_Inflector::singularize($value->table_name) . "_" . $primary_key;
+						$foreign_key = Inflector::singularize($value->table_name) . "_" . $primary_key;
 
 					$this->$foreign_key = $value->$primary_key;
 				}
@@ -1443,12 +1456,12 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 					if (isset($this->belongs_to[$name]['foreign_key']))
 						$foreign_key = $this->belongs_to[$name]['foreign_key'];
 					else
-						$foreign_key = Phpr_Inflector::singularize($this->table_name) . "_" . $primary_key;
+						$foreign_key = Inflector::singularize($this->table_name) . "_" . $primary_key;
 					
 					$has_primary_key = $has_foreign_key = false;
 					$options = $this->get_relation_options('belongs_to', $name, $has_primary_key, $has_foreign_key);
 					if (!$has_foreign_key)
-						$options['foreign_key'] = Phpr_Inflector::foreign_key($value->table_name, $this->primary_key);
+						$options['foreign_key'] = Inflector::foreign_key($value->table_name, $this->primary_key);
 
 					$this->{$options['foreign_key']} = $value->{$options['primary_key']};
 				}
@@ -1456,7 +1469,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			} 
 			// Check if its an array of objects and if its parent is ActiveRecord
 			// 
-			elseif (is_array($value) || ($is_object && ($value instanceof Db_Data_Collection))) 
+			elseif (is_array($value) || ($is_object && ($value instanceof Data_Collection))) 
 			{
 				// Update (replace) related records
 				// 
@@ -1470,7 +1483,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 					if ($value instanceof ActiveRecord) {
 						$this->bind($name, $value);
 					} 
-					elseif (($value instanceof Db_Data_Collection) || is_array($value)) {
+					elseif (($value instanceof Data_Collection) || is_array($value)) {
 						foreach ($value as $record) {
 							$this->bind($name, $record);
 						}
@@ -1495,10 +1508,10 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 */
 	protected function load_relations() 
 	{
-		$this->has_one = Phpr_Util::splat_keys($this->has_one);
-		$this->has_many = Phpr_Util::splat_keys($this->has_many);
-		$this->has_and_belongs_to_many = Phpr_Util::splat_keys($this->has_and_belongs_to_many);
-		$this->belongs_to = Phpr_Util::splat_keys($this->belongs_to);
+		$this->has_one = Util::splat_keys($this->has_one);
+		$this->has_many = Util::splat_keys($this->has_many);
+		$this->has_and_belongs_to_many = Util::splat_keys($this->has_and_belongs_to_many);
+		$this->belongs_to = Util::splat_keys($this->belongs_to);
 		
 		if (array_key_exists($this->_class_name, self::$relations_cache))
 		{
@@ -1509,10 +1522,10 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 		// Merge models and add itself to the list of models
 		// 
 		$this->has_models = array_merge(
-			Phpr_Util::indexing(Phpr_Util::splat($this->has_one), 'has_one'),
-			Phpr_Util::indexing(Phpr_Util::splat($this->has_many), 'has_many'),
-			Phpr_Util::indexing(Phpr_Util::splat($this->has_and_belongs_to_many), 'has_and_belongs_to_many'),
-			Phpr_Util::indexing(Phpr_Util::splat($this->belongs_to), 'belongs_to')
+			Util::indexing(Util::splat($this->has_one), 'has_one'),
+			Util::indexing(Util::splat($this->has_many), 'has_many'),
+			Util::indexing(Util::splat($this->has_and_belongs_to_many), 'has_and_belongs_to_many'),
+			Util::indexing(Util::splat($this->belongs_to), 'belongs_to')
 		);
 		
   		self::$relations_cache[$this->_class_name] = $this->has_models;
@@ -1544,14 +1557,14 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 		$relation_type = $this->has_models[$relation];
 		$relation = $this->{$relation_type}[$relation];
 	
-		$class_name = (is_array($relation) && isset($relation['class_name'])) ? $relation['class_name'] : Phpr_Inflector::classify($relation);
+		$class_name = (is_array($relation) && isset($relation['class_name'])) ? $relation['class_name'] : Inflector::classify($relation);
 		return $class_name;
 	}
 	
 	/**
 	 * Create related class instance
 	 * @param string $relation
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function related($relation) 
 	{
@@ -1578,7 +1591,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 		// 
 		$object = new $options['class_name']();
 		if (is_null($object))
-			throw new Phpr_SystemException('Class not found: '.$options['class_name']);
+			throw new SystemException('Class not found: '.$options['class_name']);
 			
 		if (is_null($options['order']) && ($object->default_sort != ''))
 			$options['order'] = $object->default_sort;
@@ -1611,16 +1624,16 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			{
 				case 'has_one':
 					if (!$has_foreign_key)
-						$options['foreign_key'] = Phpr_Inflector::foreign_key($this->table_name, $object->primary_key);
+						$options['foreign_key'] = Inflector::foreign_key($this->table_name, $object->primary_key);
 					
 					$object->where($options['foreign_key'] . ' = ?', $this->{$options['primary_key']});
 					break;
 				case 'has_many':
 					if (!$has_foreign_key)
-						$options['foreign_key'] = Phpr_Inflector::foreign_key($this->table_name, $object->primary_key);
+						$options['foreign_key'] = Inflector::foreign_key($this->table_name, $object->primary_key);
 
 					if (!$has_primary_key)
-						$options['primary_key'] = Phpr_Inflector::foreign_key($this->table_name, $this->primary_key);
+						$options['primary_key'] = Inflector::foreign_key($this->table_name, $this->primary_key);
 
 					$object->where($options['foreign_key'] . ' = ?', $this->get_primary_key_value());
 					break;
@@ -1629,19 +1642,19 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 						$options['join_table'] = $this->get_join_table_name($this->table_name, $object->table_name);
 
 					if (!$has_primary_key)
-						$options['primary_key'] = Phpr_Inflector::foreign_key($this->table_name, $this->primary_key);
+						$options['primary_key'] = Inflector::foreign_key($this->table_name, $this->primary_key);
 						
 					if (isset($options['join_primary_key']))
 						$options['primary_key'] = $options['join_primary_key'];
 
 					if (!$has_foreign_key)
-						$options['foreign_key'] = Phpr_Inflector::foreign_key($object->table_name, $object->primary_key);
+						$options['foreign_key'] = Inflector::foreign_key($object->table_name, $object->primary_key);
 
 					$object->join($options['join_table'], $object->table_name . '.' . $object->primary_key . ' = ' . $options['join_table'] . '.' . $options['foreign_key'])->where($options['join_table'] . '.' . $options['primary_key'] . ' = ?', $this->{$this->primary_key});
 					break;
 				case 'belongs_to':
 					if (!$has_foreign_key)
-						$options['foreign_key'] = Phpr_Inflector::foreign_key($object->table_name, $this->primary_key);
+						$options['foreign_key'] = Inflector::foreign_key($object->table_name, $this->primary_key);
 
 					$object->where($options['primary_key'] . ' = ?', $this->{$options['foreign_key']});
 					break;
@@ -1699,9 +1712,9 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	public function get_relation_options($type, $name, &$has_primary_key, &$has_foreign_key)
 	{
 		$default_options = array(
-			'class_name' => Phpr_Inflector::classify($name),
+			'class_name' => Inflector::classify($name),
 			'primary_key' => $this->primary_key,
-			'foreign_key' => Phpr_Inflector::foreign_key($name, $this->primary_key),
+			'foreign_key' => Inflector::foreign_key($name, $this->primary_key),
 			'conditions' => null,
 			'order' => null,
 			'limit' => null,
@@ -1714,7 +1727,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 		$relation = $this->$type;
 		if (isset($relation) && isset($relation[$name])) {
 			if (is_string($relation[$name]))
-				$relation[$name] = array('class_name' => Phpr_Inflector::classify($relation[$name]));
+				$relation[$name] = array('class_name' => Inflector::classify($relation[$name]));
 
 			$has_primary_key = isset($relation[$name]['primary_key']);
 			$has_foreign_key = isset($relation[$name]['foreign_key']);
@@ -1739,7 +1752,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 		$relations = $this->$type;
 		$relation = $relations[$name];
 	
-		if ($record instanceof Db_ActiveRecord)
+		if ($record instanceof ActiveRecord)
 			$record = $record->{$record->primary_key};
 	
 		if (!isset($this->changed_relations[$action]))
@@ -1762,7 +1775,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	{
 		if ($deferred_session_key)
 		{
-			$bindings = Db_Deferred_Binding::create();
+			$bindings = Deferred_Binding::create();
 			$bindings->where('master_class_name=?', $this->_class_name);
 			$bindings->where('session_key=?', $deferred_session_key);
 		
@@ -1812,20 +1825,20 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 				{
 					case 'has_many':
 						$defaults = array(
-							'class_name' => Phpr_Inflector::classify($name),
-							'foreign_key' => Phpr_Inflector::foreign_key($this->table_name, $this->primary_key)
+							'class_name' => Inflector::classify($name),
+							'foreign_key' => Inflector::foreign_key($this->table_name, $this->primary_key)
 						);
 
 						if (is_array($info['relation']))
 							$options = array_merge($defaults, $info['relation']);
 						else
-							$options = array_merge($defaults, array('class_name' => Phpr_Inflector::classify($info['relation'])));
+							$options = array_merge($defaults, array('class_name' => Inflector::classify($info['relation'])));
 
 						// Create model
 						// 
 						$object = new $options['class_name']();
 						if (is_null($object))
-							throw new Phpr_SystemException('Class not found: '.$options['class_name']);
+							throw new SystemException('Class not found: '.$options['class_name']);
 
 						foreach ($info['values'] as $record)
 						{
@@ -1857,31 +1870,31 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 						break;
 					case 'has_and_belongs_to_many':
 						$defaults = array(
-							'class_name' => Phpr_Inflector::classify($name)
+							'class_name' => Inflector::classify($name)
 						);
 						if (is_array($info['relation']))
 							$options = array_merge($defaults, $info['relation']);
 						else
-							$options = array_merge($defaults, array('class_name' => Phpr_Inflector::classify($info['relation'])));
+							$options = array_merge($defaults, array('class_name' => Inflector::classify($info['relation'])));
 
 						// Create model
 						// 
 						$object = new $options['class_name']();
 						if (is_null($object))
-							throw new Phpr_SystemException('Class not found: '.$options['class_name']);
+							throw new SystemException('Class not found: '.$options['class_name']);
 
 						if (!isset($options['primary_key']))
-							$options['primary_key'] = Phpr_Inflector::foreign_key($this->table_name, $this->primary_key);
+							$options['primary_key'] = Inflector::foreign_key($this->table_name, $this->primary_key);
 
 						if (!isset($options['foreign_key']))
-							$options['foreign_key'] = Phpr_Inflector::foreign_key($object->table_name, $object->primary_key);
+							$options['foreign_key'] = Inflector::foreign_key($object->table_name, $object->primary_key);
 
 						if (!isset($options['join_table']))
 							$options['join_table'] = $this->get_join_table_name($this->table_name, $object->table_name);
 
 						if ($action == 'bind')
 						{
-							$this->sql_insert($options['join_table'], array($options['primary_key'], $options['foreign_key']), Phpr_Util::pairs($this->{$this->primary_key}, $info['values']));
+							$this->sql_insert($options['join_table'], array($options['primary_key'], $options['foreign_key']), Util::pairs($this->{$this->primary_key}, $info['values']));
 							$result = true;
 						}
 						elseif ($action == 'unbind')
@@ -1940,18 +1953,18 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * @param string $relation
 	 * @param mixed|ActiveRecord $record
 	 * @param string $deferred_session_key An edit session key for deferred bindings
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function bind($relation, $record, $deferred_session_key = null) 
 	{
 		if (!$record)
-			throw new Phpr_SystemException('Binding failed: the record passed to the bind method is NULL.');
+			throw new SystemException('Binding failed: the record passed to the bind method is NULL.');
 		
 		if ($deferred_session_key === null)
 			return $this->change_relation($relation, $record, 'bind');
 		else
 		{
-			$binding = Db_Deferred_Binding::create();
+			$binding = Deferred_Binding::create();
 			$binding->master_class_name = $this->_class_name;
 			$binding->detail_class_name = get_class($record);
 			$binding->master_relation_name = $relation;
@@ -1978,7 +1991,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * @param string $relation
 	 * @param mixed|ActiveRecord $record
 	 * @param string $deferred_session_key An edit session key for deferred bindings
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function unbind($relation, $record, $deferred_session_key = null) 
 	{
@@ -1986,7 +1999,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 			return $this->change_relation($relation, $record, 'unbind');
 		else
 		{
-			$binding = Db_Deferred_Binding::create();
+			$binding = Deferred_Binding::create();
 			$binding->master_class_name = $this->_class_name;
 			$binding->detail_class_name = get_class($record);
 			$binding->master_relation_name = $relation;
@@ -2002,11 +2015,11 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	/**
 	 * Cancels all deferred bindings added during an edit session
 	 * @param string $deferred_session_key An edit session key
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function cancel_deferred_bindings($deferred_session_key)
 	{
-		Db_Deferred_Binding::cancel_deferred_actions($this->_class_name, $deferred_session_key);
+		Deferred_Binding::cancel_deferred_actions($this->_class_name, $deferred_session_key);
 		return $this;
 	}
 
@@ -2015,7 +2028,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 *
 	 * @param string $relation
 	 * @param string $deferred_session_key An edit session key for deferred bindings
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function unbind_all($relation, $deferred_session_key = null) 
 	{
@@ -2168,7 +2181,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 				if (isset($this->has_models[$key]['class_name']))
 					$classname = $this->has_models[$key]['class_name'];
 				else
-					$classname = Phpr_Inflector::classify($key);
+					$classname = Inflector::classify($key);
 
 				$childs = array();
 				foreach ($value['records'] as $record) 
@@ -2176,7 +2189,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 					$childs[] = $child = unserialize($record);
 					$child->after_fetch(true);
 				}
-				$this->$key = new Db_Data_Collection($childs);
+				$this->$key = new Data_Collection($childs);
 			}
 		}
 
@@ -2256,7 +2269,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	
 	public function paginate($page_index, $records_per_page)
 	{
-		$pagination = new Phpr_Pagination($records_per_page);
+		$pagination = new Pagination($records_per_page);
 		$pagination->set_row_count($this->get_row_count());
 		$pagination->set_current_page_index($page_index);
 		$pagination->limit_active_record($this);
@@ -2407,7 +2420,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * Adds a column definition for real, custom and calculated fields
 	 * @param string $db_name Specifies a column database name or a calculated column name
 	 * @param string $display_name Specifies a name to display in lists and forms
-	 * @return Db_Column_Definition
+	 * @return Column_Definition
 	 */
 	public function define_column($db_name, $display_name)
 	{
@@ -2419,12 +2432,12 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 				self::$cached_column_definitions[$this->_class_name] = array();
 
 			if (!array_key_exists($db_name, self::$cached_column_definitions[$this->_class_name]))
-				return self::$cached_column_definitions[$this->_class_name][$db_name] = new Db_Column_Definition($this, $db_name, $display_name);
+				return self::$cached_column_definitions[$this->_class_name][$db_name] = new Column_Definition($this, $db_name, $display_name);
 
 			return self::$cached_column_definitions[$this->_class_name][$db_name]->set_context($this);
 		} 
 		else
-			return $this->column_definitions[$db_name] = new Db_Column_Definition($this, $db_name, $display_name);
+			return $this->column_definitions[$db_name] = new Column_Definition($this, $db_name, $display_name);
 	}
 	
 	/**
@@ -2434,7 +2447,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * @param string $display_name Specifies a name to display in lists and forms
 	 * @param string $type Specifies a display value type
 	 * @param string $valueExpression Specifies an SQL expression for evaluating the reference value. Use '@' symbol to indicate a joined table: concat(@first_name, ' ', @last_name)
-	 * @return Db_Column_Definition
+	 * @return Column_Definition
 	 */
 	public function define_relation_column($column_name, $relation_name, $display_name, $type, $valueExpression)
 	{
@@ -2446,12 +2459,12 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 				self::$cached_column_definitions[$this->_class_name] = array();
 
 			if (!array_key_exists($column_name, self::$cached_column_definitions[$this->_class_name]))
-				return self::$cached_column_definitions[$this->_class_name][$column_name] = new Db_Column_Definition($this, $column_name, $display_name, $type, $relation_name, $valueExpression);
+				return self::$cached_column_definitions[$this->_class_name][$column_name] = new Column_Definition($this, $column_name, $display_name, $type, $relation_name, $valueExpression);
 
 			return self::$cached_column_definitions[$this->_class_name][$column_name]->extend_model($this);
 		} 
 		else
-			return $this->column_definitions[$column_name] = new Db_Column_Definition($this, $column_name, $display_name, $type, $relation_name, $valueExpression);
+			return $this->column_definitions[$column_name] = new Column_Definition($this, $column_name, $display_name, $type, $relation_name, $valueExpression);
 	}
 	
 	/**
@@ -2460,7 +2473,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * @param string $relation_name Specifies a relation name (should be declared as has_one or belongs_to)
 	 * @param string $display_name Specifies a name to display in lists and forms
 	 * @param string $valueExpression Specifies an SQL expression for evaluating the reference value. Use '@' symbol to indicate a joined table: concat(@first_name, ' ', @last_name)
-	 * @return Db_Column_Definition
+	 * @return Column_Definition
 	 */
 	public function define_multi_relation_column($column_name, $relation_name, $display_name, $valueExpression)
 	{
@@ -2472,12 +2485,12 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 				self::$cached_column_definitions[$this->_class_name] = array();
 
 			if (!array_key_exists($column_name, self::$cached_column_definitions[$this->_class_name]))
-				return self::$cached_column_definitions[$this->_class_name][$column_name] = new Db_Column_Definition($this, $column_name, $display_name, db_varchar, $relation_name, $valueExpression);
+				return self::$cached_column_definitions[$this->_class_name][$column_name] = new Column_Definition($this, $column_name, $display_name, db_varchar, $relation_name, $valueExpression);
 
 			return self::$cached_column_definitions[$this->_class_name][$column_name]->extend_model($this);
 		} 
 		else
-			return $this->column_definitions[$column_name] = new Db_Column_Definition($this, $column_name, $display_name, db_varchar, $relation_name, $valueExpression);
+			return $this->column_definitions[$column_name] = new Column_Definition($this, $column_name, $display_name, db_varchar, $relation_name, $valueExpression);
 	}
 	
 	/**
@@ -2485,7 +2498,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * @param string $column_name Specifies a column name. You may use any unique sql-compatible name here.
 	 * @param string $display_name Specifies a name to display in lists and forms
 	 * @param string $type Specifies a display value type
-	 * @return Db_Column_Definition
+	 * @return Db\Column_Definition
 	 */
 	public function define_custom_column($column_name, $display_name, $type = db_varchar)
 	{
@@ -2496,7 +2509,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 
 	/**
 	 * Reset form field elements to default
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function reset_form_fields()
 	{
@@ -2509,14 +2522,14 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * Marks a column, previously added with define_column, as visible on forms.
 	 * @param string $db_name Specifies a column database name or a calculated column name
 	 * @param $side Specifies a side of a form the column should appear. Possible values: left, right, full
-	 * return Db_Form_Field_Definition
+	 * return Db\Form_Field_Definition
 	 */
 	public function add_form_field($db_name, $side = 'full')
 	{
 		if (!$this->form_field_columns_initialized)
 			$this->disable_column_cache();
 
-		return $this->form_elements[] = new Db_Form_Field_Definition($this, $db_name, $side);
+		return $this->form_elements[] = new Form_Field_Definition($this, $db_name, $side);
 	}
 	
 	/**
@@ -2524,14 +2537,14 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * @param string $description Specifies a section description
 	 * @param string $title Specifies a section title
 	 * @param string $html_id Specifies an id for the html element the form section will be rendered in on the form, optional*
-	 * @return Db_Form_Section
+	 * @return Db\Form_Section
 	 */
 	public function add_form_section($description, $title = null, $html_id = null)
 	{
 		if (!$this->form_field_columns_initialized)
 			$this->disable_column_cache();
 
-		return $this->form_elements[] = new Db_Form_Section($title, $description, $html_id);
+		return $this->form_elements[] = new Form_Section($title, $description, $html_id);
 	}
 
 	/**
@@ -2539,38 +2552,38 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * create a partial with name _form_section_ID.htm,
 	 * where ID is an area identifier specified with the method parameter.
 	 * @param string $id Specifies an area identifier
-	 * @return Db_Form_Custom_Area
+	 * @return Db\Form_Custom_Area
 	 */
 	public function add_form_custom_area($id)
 	{
 		if (!$this->form_field_columns_initialized)
 			$this->disable_column_cache();
 
-		return $this->form_elements[] = new Db_Form_Custom_Area($id);
+		return $this->form_elements[] = new Form_Custom_Area($id);
 	}
 	
 	/**
 	 * Adds a custom form partial
 	 * @param string $path Specifies an absolute (full) path to the partial
-	 * @return Db_Form_Partial
+	 * @return Db\Form_Partial
 	 */
 	public function add_form_partial($path)
 	{
 		if (!$this->form_field_columns_initialized)
 			self::disable_column_cache($this->_class_name);
 		
-		return $this->form_elements[] = new Db_Form_Partial($path);
+		return $this->form_elements[] = new Form_Partial($path);
 	}
 
 	/**
 	 * Sets a specific HTML ID value to a form tab element
 	 * @param string $tab_name Specifies a tab name
-	 * @param string $tabId Specifies a tab identifier
-	 * @return Db_ActiveRecord
+	 * @param string $tab_id Specifies a tab identifier
+	 * @return Db\ActiveRecord
 	 */
-	public function form_tab_id($tab_name, $tabId)
+	public function form_tab_id($tab_name, $tab_id)
 	{
-		$this->form_tab_ids[$tab_name] = $tabId;
+		$this->form_tab_ids[$tab_name] = $tab_id;
 		return $this;
 	}
 	
@@ -2578,7 +2591,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * Sets initial tab visibility value
 	 * @param string $tab_name Specifies a tab name
 	 * @param bool $value Determines whether the tab is visible
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function form_tab_visibility($tab_name, $value)
 	{
@@ -2590,7 +2603,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	 * Sets a CSS class value for a specific form tab
 	 * @param string $tab_name Specifies a tab name
 	 * @param string $value Specifies the CSS class name
-	 * @return Db_ActiveRecord
+	 * @return Db\ActiveRecord
 	 */
 	public function form_tab_css_class($tab_name, $value)
 	{
@@ -2601,13 +2614,13 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	/**
 	 * Finds a form field definition by the field database name.
 	 * @param string $db_name Specifies the column name.
-	 * @return Db_Form_Field_Definition
+	 * @return Form_Field_Definition
 	 */
 	public function find_form_field($db_name)
 	{
 		foreach ($this->form_elements as $element)
 		{
-			if ($element instanceof Db_Form_Field_Definition && $element->db_name == $db_name)
+			if ($element instanceof Form_Field_Definition && $element->db_name == $db_name)
 				return $element;
 		}
 		
@@ -2623,7 +2636,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 	{
 		foreach ($this->form_elements as $index=>$element)
 		{
-			if ($element instanceof Db_Form_Field_Definition && $element->db_name == $db_name)
+			if ($element instanceof Form_Field_Definition && $element->db_name == $db_name)
 			{
 				unset($this->form_elements[$index]);
 				return true;
@@ -2688,7 +2701,7 @@ class Db_ActiveRecord extends Db_Sql implements IteratorAggregate
 		$column_definitions = $this->get_column_definitions();
 
 		if (!array_key_exists($db_name, $column_definitions))
-			throw new Phpr_SystemException('Cannot execute method "display_field" for field '.$db_name.' - the field is not defined in column definition list.');
+			throw new SystemException('Cannot execute method "display_field" for field '.$db_name.' - the field is not defined in column definition list.');
 
 		return $column_definitions[$db_name]->display_value($media);
 	}

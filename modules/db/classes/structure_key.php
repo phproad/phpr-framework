@@ -1,6 +1,6 @@
-<?php
+<?php namespace Db;
 
-class Db_Structure_Key 
+class Structure_Key 
 {		
 	public $is_primary = false;
 	public $is_unique = false;

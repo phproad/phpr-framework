@@ -1,6 +1,12 @@
-<?php
+<?php namespace Db;
 
-class Db_MySQL_Driver extends Db_Driver_Base 
+use Db;
+use Phpr;
+use Phpr\Error_Log;
+use Phpr\SystemException;
+use Phpr\DatabaseException;
+
+class MySQL_Driver extends Driver_Base 
 {
 	private static $locale_set = false;
 
@@ -16,7 +22,7 @@ class Db_MySQL_Driver extends Db_Driver_Base
 
 		try
 		{
-			Phpr_Error_Log::$disable_db_logging = true;
+			Error_Log::$disable_db_logging = true;
 
 			// Load the configuration
 			parent::connect();
@@ -60,19 +66,19 @@ class Db_MySQL_Driver extends Db_Driver_Base
 				} 
 				catch (Exception $ex)
 				{
-					throw new Phpr_DatabaseException('Error connecting to the database.');
+					throw new DatabaseException('Error connecting to the database.');
 				}
 			}
 		
 			$err = 0;
 
 			if ((Db::$connection == null) || (Db::$connection === false) || ($err = @mysql_errno(Db::$connection) != 0))
-				throw new Phpr_DatabaseException('MySQL connection error: '.@mysql_error());
+				throw new DatabaseException('MySQL connection error: '.@mysql_error());
 
 			if (!$external_connection_found)
 			{
 				if ((@mysql_select_db($this->config['database'], Db::$connection) === false) || ($err = @mysql_errno(Db::$connection) != 0))
-					throw new Phpr_DatabaseException('MySQL error selecting database '.$this->config['database'].': '.@mysql_error());
+					throw new DatabaseException('MySQL error selecting database '.$this->config['database'].': '.@mysql_error());
 			}
 
 			// Set charset
@@ -81,18 +87,18 @@ class Db_MySQL_Driver extends Db_Driver_Base
 			{
 				@mysql_query("SET NAMES '" . $this->config['locale'] . "'", Db::$connection);
 				if ($err = @mysql_errno(Db::$connection) != 0)
-					throw new Phpr_DatabaseException('MySQL error setting character set: '.@mysql_error(Db::$connection));
+					throw new DatabaseException('MySQL error setting character set: '.@mysql_error(Db::$connection));
 			}
 	
 			// Set SQL Mode
 			// 
 			@mysql_query('SET sql_mode=""');
 			
-			Phpr_Error_Log::$disable_db_logging = false;
+			Error_Log::$disable_db_logging = false;
 		} 
 		catch (Exception $ex)
 		{
-			$exception = new Phpr_DatabaseException($ex->getMessage());
+			$exception = new DatabaseException($ex->getMessage());
 			$exception->hint_message = 'This problem could be caused by MySQL connection configuration errors. Please check the database connection parameters. Also please make sure that MySQL server is running.';
 			throw $exception;
 		}
@@ -122,7 +128,7 @@ class Db_MySQL_Driver extends Db_Driver_Base
 		// 
 		if ($err = @mysql_errno(Db::$connection) != 0) 
 		{
-			$exception = new Phpr_DatabaseException('MySQL error: "'.@mysql_error(Db::$connection).'"  executing query: '.$sql);
+			$exception = new DatabaseException('MySQL error: "'.@mysql_error(Db::$connection).'"  executing query: '.$sql);
 			$exception->hint_message = 'This problem could be caused by MySQL connection configuration errors. Please check the database connection parameters. Also please make sure that MySQL server is running.';
 			throw $exception;
 		}
@@ -139,7 +145,7 @@ class Db_MySQL_Driver extends Db_Driver_Base
 		if ($row = @mysql_fetch_assoc($result)) 
 		{
 			if ($err = @mysql_errno(Db::$connection) != 0)
-				throw new Phpr_DatabaseException('MySQL error fetching data: '.@mysql_error(Db::$connection));
+				throw new DatabaseException('MySQL error fetching data: '.@mysql_error(Db::$connection));
 
 			if ($col !== null) 
 			{
@@ -169,7 +175,7 @@ class Db_MySQL_Driver extends Db_Driver_Base
 	public function row_count() 
 	{
 		if (!Db::$connection)
-			throw new Phpr_DatabaseException('MySQL count error - no connection');
+			throw new DatabaseException('MySQL count error - no connection');
 
 		return @mysql_affected_rows(Db::$connection);
 	}
@@ -177,7 +183,7 @@ class Db_MySQL_Driver extends Db_Driver_Base
 	public function last_insert_id($table_name = null, $primary_key = null) 
 	{
 		if (!Db::$connection)
-			throw new Phpr_DatabaseException('MySQL error last_insert_id - no connection');
+			throw new DatabaseException('MySQL error last_insert_id - no connection');
 
 		return @mysql_insert_id(Db::$connection);
 	}
@@ -280,7 +286,7 @@ class Db_MySQL_Driver extends Db_Driver_Base
 			$name = substr($name, 0, -1);
 			
 		if (strpos($name, '`') !== false)
-			throw new Phpr_SystemException('Invalid database object name: '.$name);
+			throw new SystemException('Invalid database object name: '.$name);
 			
 		return '`'.$name.'`';
 	}

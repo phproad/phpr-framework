@@ -1,0 +1,104 @@
+<?php
+
+$columns = $grid_widget->get_plain_column_list();
+
+$row_indexes = array_keys($grid_data); 
+$class_name = get_class($form_model);
+
+$process_checked_classes = false;
+foreach ($columns as $field_name=>$column)
+{
+	if ($column['type'] == 'checkbox' && isset($column['checked_class']) && $column['checked_class'])
+	{
+		$process_checked_classes = true;
+		break;
+	}
+}
+
+$index = 0;
+
+foreach ($grid_data as $row_data): 
+	$row_index = !$maintain_data_indexes ? $index+1 : $row_indexes[$index];
+	$index++;
+	
+	$row_classes = array();
+	
+	if ($process_checked_classes) 
+	{
+		foreach ($columns as $field_name=>$column) {
+			if ($column['type'] == 'checkbox' && isset($column['checked_class']) && $column['checked_class'])
+			{
+				$data = array_key_exists($field_name, $row_data) ? $row_data[$field_name] : null;
+				if ($data !== null && is_array($data))
+					$data = $data[0];
+
+				if ($data == 'y' || $data == 'yes' || $data == 1)
+					$row_classes[] = $column['checked_class'];
+			}
+		}
+	}
+	
+	$first_column = true;
+?>
+<tr class="<?=implode(' ', $row_classes) ?>">
+	<? foreach ($columns as $field_name=>$column): 
+		$data = array_key_exists($field_name, $row_data) ? $row_data[$field_name] : null;
+
+		$internal_value = null;
+		if ($data !== null && is_array($data))
+		{
+			$internal_value = $data[1]; 
+			$data = $data[0];
+		}
+
+		$align = isset($column['align']) ? $column['align'] : null;
+		$cell_css_class = isset($column['cell_css_class']) ? $column['cell_css_class'] : null;
+		
+		if (isset($column['validation_type']) && $column['validation_type'] == 'date' && strlen($data))
+		{
+			try
+			{
+				$date = new Phpr_DateTime($data.' 00:00:00');
+				$data = $date->format('%x');
+			} catch (exception $ex) {}
+		}
+	?>
+		<td class="<?=$cell_css_class ?> <? if ($column['type'] == 'checkbox'): ?>cell-checkbox<? endif ?> <?=$align ?>">
+			<div class="cell-content-container" tabindex="0">
+				<? if ($column['type'] != 'checkbox'): ?>
+					<span class="cell-content">
+						<? if ($column['type'] == 'dropdown'): ?>
+							<?
+								$key_index = array_search($data, $column['option_keys']);
+								if ($key_index === false)
+									echo h($data);
+								else
+									echo h($column['option_values'][$key_index]);
+							?>
+							<input type="hidden" class="cell-value" value="<?=h($data) ?>"/>
+						<? else: ?>
+							<?=h($data) ?>
+						<? endif ?>
+					</span>
+				<? else: 
+					$checked = $data == 'y' || $data == 'yes' || $data == 1;
+				?>
+					<div class="checkbox <?=$checked ? 'checked' : null ?>" tabindex="0"></div>
+				<? endif ?>
+		
+				<input class="cell-value" type="hidden" name="<?=$class_name.'['.$grid_widget->column_name.']['.$row_index.']['.$field_name.']' ?>" value="<?=h($data) ?>"/>
+				<input class="internal-value" type="hidden" name="<?=$class_name.'['.$grid_widget->column_name.']['.$row_index.']['.$field_name.'_internal]' ?>" value="<?=h($internal_value) ?>"/>
+				<input type="hidden" class="row-index" value="<?=$row_index ?>"/>
+				
+				<? if ($first_column): ?>
+					<? $first_column = false; ?>
+
+					<? if (isset($row_data['grid_block_delete_message'])): ?>
+						<input type="hidden" class="block_delete_message" value="<?=h($row_data['grid_block_delete_message']) ?>"/>
+					<? endif ?>
+				<? endif ?>
+			</div>
+		</td>
+	<? endforeach ?>
+</tr>
+<? endforeach ?>

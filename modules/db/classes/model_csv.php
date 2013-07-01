@@ -1,11 +1,16 @@
-<?php
+<?php namespace Db;
+
+use Phpr\Extension;
+use Phpr\ApplicationException;
+use File\Csv;
+use Db\Helper as Db_Helper;
 
 /*
- * Db_Model_Csv extension
+ * Db\Model_Csv extension
  * - Import / Export functions
  */
 
-class Db_Model_Csv extends Phpr_Extension
+class Model_Csv extends Extension
 {
 	private $_model_class;
 	private $_model;
@@ -65,7 +70,7 @@ class Db_Model_Csv extends Phpr_Extension
 			foreach ($columns_override as $column_name)
 			{
 				if (!array_key_exists($column_name, $columns))
-					throw new Phpr_ApplicationException(sprintf('Column %s not found in the column set', $column_name));
+					throw new ApplicationException(sprintf('Column %s not found in the column set', $column_name));
 					
 				$columns_updated[$column_name] = $columns[$column_name];
 			}
@@ -85,7 +90,7 @@ class Db_Model_Csv extends Phpr_Extension
 
 		$separator = $iwork ? ',' : ';';
 
-		File_Csv::output_csv_row($header, $separator, false);
+		Csv::output_csv_row($header, $separator, false);
 
 		$strings = new $model_class(null, array('no_column_init'=>true, 'no_validation'=>true));
 		$query = $strings->build_sql();
@@ -95,7 +100,7 @@ class Db_Model_Csv extends Phpr_Extension
 		foreach ($list_data as $row_data)
 		{
 			$row = $this->csv_format_row($strings, $row_data, $columns);
-			File_Csv::output_csv_row($row, $separator, false);
+			Csv::output_csv_row($row, $separator, false);
 		}
 	}
 

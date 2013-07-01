@@ -1,6 +1,6 @@
-<?php
+<?php namespace Db;
 
-class Db_ActiveRecord_Column 
+class ActiveRecord_Column 
 {
 	public $name = '';
 	public $type = 'text';

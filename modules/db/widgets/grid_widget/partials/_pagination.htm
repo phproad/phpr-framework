@@ -1,0 +1,10 @@
+<? if ($grid_widget->use_data_source): ?>
+	<?
+		$page_handler = "jQuery(this).closest('.ui-grid').data('ui.grid')._gotoPage(%s)";
+		echo Phpr_Html::ajax_pagination($pagination, $page_handler, $page_handler, $page_handler);
+	?>
+	<input type="hidden" class="grid-current-page" value="<?=$pagination->get_current_page_index() ?>"/>
+	<input type="hidden" class="grid-is-first-page" value="<?=$pagination->isFirstPage() ?>"/>
+	<input type="hidden" class="grid-is-last-page" value="<?=$pagination->isLastPage() ?>"/>
+	<input type="hidden" class="grid-total-record-count" value="<?=$pagination->get_row_count() ?>"/>
+<? endif ?>

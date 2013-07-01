@@ -1,6 +1,6 @@
-<?php
+<?php namespace Db;
 
-class Db_Form_Partial extends Db_Form_Element
+class Form_Partial extends Form_Element
 {
 	public $path;
 	

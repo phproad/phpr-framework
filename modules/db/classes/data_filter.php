@@ -1,4 +1,4 @@
-<?php
+<?php namespace Db;
 
 /**
  * PHPR Data Filter
@@ -6,7 +6,7 @@
  * Currently used as a base class for List Filters 
  */
 
-class Db_Data_Filter
+class Data_Filter
 {
 	public $model_class_name = null;
 	public $model_filters = null;

@@ -1,0 +1,110 @@
+<? 
+	$row_indexes = array_keys($grid_data); 
+	$class_name = get_class($form_model);
+	$scrollable = $grid_widget->scrollable && !$grid_widget->use_data_source;
+	
+	$has_column_groups = $grid_widget->has_column_groups();
+	$columns = $grid_widget->get_plain_column_list();
+?>
+<? if (count($grid_data) <= $grid_widget->max_row_number || $grid_widget->use_data_source): ?>
+	<? if ($scrollable): ?>
+		<div class="grid-scroll-area <?=$grid_widget->scrollable_viewport_class ?>" style="height:300px">
+	<? endif ?>
+	
+	<? if ($grid_widget->horizontal_scroll): ?><div class="ui-grid-h-scroll"><? endif ?>
+	<? if ($grid_widget->use_data_source): ?><div class="ui-grid-table-container"><? endif ?>
+
+	<table class="ui-grid-body <? if ($has_column_groups): ?>no-fixed-layout<? endif ?>" <? if ($grid_widget->table_width): ?>style="<?='width: '.$grid_widget->table_width.'px' ?>"<? endif ?>>
+		<thead class="<?=$grid_widget->title_word_wrap ? null : 'ui-no-word-wrap' ?>">
+			<? if ($has_column_groups): 
+				$column_groups = $grid_widget->split_columns_by_groups();
+			?>
+				<tr class="ui-column-group-row">
+					<? foreach ($column_groups as $group_title=>$group_columns):
+						$title_width = 0;
+						$group_config = isset($grid_widget->column_group_configuration[$group_title]) ? $grid_widget->column_group_configuration[$group_title] : array();
+						$group_class = isset($group_config['class']) ? $group_config['class'] : null;
+						foreach ($group_columns as $group_column)
+							$title_width += isset($group_column['width']) ? $group_column['width'] : 0;
+					?>
+						<th style="width: <?=$title_width.'px' ?>" class="ui-column-group <?=$group_class ?>" colspan="<?=count($group_columns) ?>">
+							<div class="ui-grid-head-content"><?=h($group_title) ?></div>
+						</th>
+					<? endforeach ?> 
+				</tr>
+			<? endif ?>
+			
+			<tr>
+				<? foreach ($columns as $column): 
+					$align = isset($column['align']) ? $column['align'] : null;
+					$cell_css_class = isset($column['cell_css_class']) ? $column['cell_css_class'] : null;
+					$width = isset($column['width']) ? 'style="width: '.$column['width'].'px"' : null;
+					$checkbox_cell = $column['type'] == 'checkbox' && isset($column['header_control']) && $column['header_control'];
+				?>
+					<th class="<?=$align ?> <?=$cell_css_class ?> <?=$checkbox_cell ? 'checkbox-cell' : null ?>" <?=$width ?>>
+						<div class="ui-grid-head-content">
+							<? if ($checkbox_cell): ?>
+								<input type="checkbox"/>
+							<? endif ?>
+							
+							<?=h($column['title']) ?>
+						</div>
+					</th>
+				<? endforeach ?>
+			</tr>
+		</thead>
+		<tbody id="<?=$tbody_id ?>">
+			<? $grid_widget->display_partial('data_table_body', array('grid_data'=>$grid_data, 'form_model'=>$form_model)) ?>
+		</tbody>
+	</table>
+	
+	<? if ($grid_widget->horizontal_scroll): ?></div><? endif ?>
+	
+	<? if ($grid_widget->use_data_source): ?></div><? endif ?>
+
+	<? if ($scrollable): ?>
+		</div>
+	<? endif ?>
+<? else: ?>
+	<p class="grid-no-data">We're sorry, but the table contains too many rows to be displayed. The maximum displayed rows is <?=$grid_widget->max_row_number ?>. Manually editing this table has been disabled due to performance considerations. Please continue editing and uploading the CSV file to manage the content. You can save this table at any time below.</p>
+	
+	<?
+		$disabled_field_name = $class_name.'['.$grid_widget->column_name.'][disabled]';
+		$serialized_field_name = $class_name.'['.$grid_widget->column_name.'][serialized]';
+	?>
+
+	<input type="hidden" value="1" class="grid-table-disabled" name="<?=$disabled_field_name ?>"/>
+
+	<? 
+		$values = array();
+		for ($i = 1; $i <= count($grid_data); $i++)
+		{
+			foreach ($grid_widget->columns as $column=>$info)
+			{
+				$row = $grid_data[$row_indexes[$i-1]];
+				$row_index = !$maintain_data_indexes ? $i : $row_indexes[$i-1];
+
+				$value = array_key_exists($column, $row) ? $row[$column] : null;
+
+				$read_only = array_key_exists('read_only', $info) ? $info['read_only'] : false;
+				if ( !$read_only )
+				{
+					if (!array_key_exists($row_index, $values))
+						$values[$row_index] = array();
+
+					$values[$row_index][$column] = $value;
+				}
+			}
+		}
+	?>
+	<input type="hidden" name="<?=$serialized_field_name ?>" value="<?=h(serialize($values)) ?>"/>
+<? endif ?>
+<input type="hidden" class="grid-event-handler-name" value="<?=$this->get_event_handler('') ?>"/>
+
+<div id="<?=$pagination_container_id ?>">
+	<? $grid_widget->display_partial('pagination', array('grid_widget'=>$grid_widget)) ?>
+</div>
+
+<div id="<?=$message_container_id ?>">
+	<? $grid_widget->display_partial('message', array('grid_widget'=>$grid_widget)) ?>
+</div>

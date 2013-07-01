@@ -1,6 +1,11 @@
-<?php
+<?php namespace Db;
 
-class Db_Data_Collection implements ArrayAccess, IteratorAggregate, Countable 
+use ArrayAccess;
+use ArrayIterator;
+use IteratorAggregate;
+use Countable;
+
+class Data_Collection implements ArrayAccess, IteratorAggregate, Countable 
 {
 
 	public $object_array = array();
@@ -40,7 +45,7 @@ class Db_Data_Collection implements ArrayAccess, IteratorAggregate, Countable
  
 	function offsetSet($offset, $value) 
 	{
-		if (!is_null($this->parent) && ($this->parent instanceof Db_ActiveRecord))
+		if (!is_null($this->parent) && ($this->parent instanceof ActiveRecord))
 			$this->parent->bind($this->relation, $value);
 		
 		if ($offset)
@@ -99,7 +104,7 @@ class Db_Data_Collection implements ArrayAccess, IteratorAggregate, Countable
 			if ($limit++ >= $count) break;
 			$limited[] = $item;
 		}
-		return new Db_Data_Collection($limited);
+		return new Data_Collection($limited);
 	}
 
 	function skip($count)
@@ -113,7 +118,7 @@ class Db_Data_Collection implements ArrayAccess, IteratorAggregate, Countable
 			$skipped[] = $item;
 		}
 		
-		return new Db_Data_Collection($skipped);
+		return new Data_Collection($skipped);
 	}
 
 	function except($value, $key = 'id') 
@@ -279,7 +284,7 @@ class Db_Data_Collection implements ArrayAccess, IteratorAggregate, Countable
 	 */
 	public function add($record, $deferred_session_key=null)
 	{
-		if (is_null($this->parent) || !($this->parent instanceof Db_ActiveRecord)) return;
+		if (is_null($this->parent) || !($this->parent instanceof ActiveRecord)) return;
 		$this->parent->bind($this->relation, $record, $deferred_session_key);
 	}
 
@@ -290,7 +295,7 @@ class Db_Data_Collection implements ArrayAccess, IteratorAggregate, Countable
 	 */
 	public function delete($record, $deferred_session_key=null)
 	{
-		if (is_null($this->parent) || !($this->parent instanceof Db_ActiveRecord)) 
+		if (is_null($this->parent) || !($this->parent instanceof ActiveRecord)) 
 			return;
 			
 		$this->parent->unbind($this->relation, $record, $deferred_session_key);
@@ -302,7 +307,7 @@ class Db_Data_Collection implements ArrayAccess, IteratorAggregate, Countable
 	 */
 	public function clear($deferred_session_key=null)
 	{
-		if (is_null($this->parent) || !($this->parent instanceof Db_ActiveRecord)) 
+		if (is_null($this->parent) || !($this->parent instanceof ActiveRecord)) 
 			return;
 			
 		$this->parent->unbind_all($this->relation, $deferred_session_key);

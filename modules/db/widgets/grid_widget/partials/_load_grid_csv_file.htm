@@ -1,0 +1,50 @@
+<div id="load_csv_form">
+	<h2>Import CSV File</h2>
+	<div class="form-400">
+		<div class="content">
+			<?=Phpr_Form::open_tag() ?>
+
+				<!-- Passable fields -->
+				<input name="edit_session_key" id="<?=$this->form_get_element_id('form_session_key', get_class($form_model)) ?>" type="hidden" value="<?=$form_session_key ?>"/>
+				<input type="hidden" name="form_unique_prefix" class="form_unique_prefix" value="<?=$this->form_get_unique_prefix() ?>"/>
+				<input type="hidden" name="phpr_uploader_model_class" value="<?=$this->form_model_class ?>"/>
+				<input type="hidden" id="phpr_grid_import_field" name="grid_field" value="<?=post('db_name') ?>"/>
+				
+				<? if (strlen(post('phpr_grid_model_class'))): ?>
+					<input type="hidden" name="phpr_grid_model_class" value="<?=h(post('phpr_grid_model_class')) ?>"/>
+				<? endif ?>
+			
+				<p>Please upload a valid CSV file.</p>
+				
+				<div class="form">
+					<? $this->form_render_field_container($form_model, 'csv_file'); ?>
+				</div>
+
+				<script type="text/javascript">
+					jQuery(window).on('phpr_file_upload_complete', function(event, file_column_name) { var $ = jQuery;
+						if (file_column_name == 'csv_file') {
+							$('#phpr_grid_import_field').phpr().post('<?=$this->get_event_handler('on_form_widget_event') ?>', {
+								update: 'multi',
+								customIndicator: LightLoadingIndicator,
+								data: {
+									column_name: '<?=$grid_widget->column_name ?>',
+									phpr_custom_event_name: 'on_csv_file_uploaded',
+									phpr_event_field: '<?=$grid_widget->column_name ?>'
+								},
+								afterUpdate: function(){
+									jQuery('<?='#'.$container_id ?>').data('ui.grid').rebuild();
+									cancelPopup();
+								},
+								error: popupAjaxError
+							}).send();
+						}
+					});
+				</script>
+
+			</form>
+		</div>
+		<div class="footer">
+			<?=admin_button('Cancel', array('onclick'=>'return cancelPopup()')) ?>
+		</div>
+	</div>
+</div>

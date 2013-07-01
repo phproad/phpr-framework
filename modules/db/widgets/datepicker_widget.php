@@ -1,6 +1,6 @@
-<?php
+<?php namespace Db;
 
-class Db_DatePicker_Widget extends Db_Form_Widget_Base
+class DatePicker_Widget extends Form_Widget_Base
 {
 
 	public $field_name = null;

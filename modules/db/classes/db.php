@@ -11,20 +11,20 @@ class Db
 
 	public static function sql() 
 	{
-		return new Db_Sql();
+		return new Sql();
 	}
 
 	public static function select() 
 	{
 		$args = func_get_args();
-		$sql = new Db_Sql();
+		$sql = new Sql();
 		return call_user_func_array(array(&$sql, 'select'), $args);
 	}
 
 	public static function where()
 	{
 		$args = func_get_args();
-		$where = new Db_Where();
+		$where = new Where();
 		return call_user_func_array(array(&$where, 'where'), $args);
 	}
 }

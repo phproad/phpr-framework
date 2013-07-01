@@ -1,6 +1,6 @@
-<?php
+<?php namespace Db;
 
-class Db_Structure_Column
+class Structure_Column
 {
 	public static $default_length = array(
 		'int' => 11,
@@ -14,7 +14,7 @@ class Db_Structure_Column
 		'float' => 6
 	);
 
-	private $_host; // Host Db_Structure object
+	private $_host; // Host Db\Structure object
 
 	public $name;
 	public $type;

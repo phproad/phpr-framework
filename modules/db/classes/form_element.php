@@ -1,9 +1,9 @@
-<?php
+<?php namespace Db;
 
 /**
  * Base class for all form elements
  */
-class Db_Form_Element
+class Form_Element
 {
 	public $tab;
 	public $no_preview = false;

@@ -1,6 +1,8 @@
-<?php
+<?php namespace Db;
 
-class Db_ActiveRecord_Iterator implements Iterator
+use Iterator;
+
+class ActiveRecord_Iterator implements Iterator
 {
 	private $members = array();
 

@@ -1,0 +1,75 @@
+<? if (!$grid_widget->disable_toolbar): ?>
+<div class="navbar scroll-toolbar">
+	<div class="navbar-inner">
+		<ul class="nav">
+			<? if ($grid_widget->toolbar_add_button || $grid_widget->toolbar_delete_button): ?>
+				<? if ($grid_widget->toolbar_add_button): ?>
+					<li><?=cp_button('Insert row', 'plus', array('href'=>'javascript:;', 'onclick'=>"jQuery('#".$container_id."').grid('addRow', false, 'below'); return false;")) ?></li>
+				<? endif ?>
+				
+				<? if ($grid_widget->toolbar_delete_button): ?>
+					<li><?=cp_button('Delete row', 'minus', array('href'=>'javascript:;', 'onclick'=>"jQuery('#".$container_id."').grid('deleteRow'); return false;")) ?></li>
+				<? endif ?>
+			<? endif ?>
+					
+			<? if ($grid_widget->toolbar_partial_path): ?>
+				<? $this->display_partial($grid_widget->toolbar_partial_path) ?>
+			<? endif ?>
+			
+			<? if ($grid_widget->enable_csv_operations): ?>
+				<li>
+					<?=cp_button('Export CSV', 'upload-alt', array(
+						'class' => 'has-tooltip',
+						'href' => 'javascript:;', 
+						'title' => 'Hold down the <strong>ALT</strong> key to export a semicolon separated file',
+						'onclick' => "return $(this).phpr().post('".$this->get_event_handler('on_form_widget_event')."', {
+							customIndicator: LightLoadingIndicator,
+							error: popupAjaxError,
+							data: {
+								column_name: '".$grid_widget->column_name."', 'iwork': (new Event(event).alt ? 0 : 1),
+								phpr_custom_event_name: 'on_export_csv',
+								phpr_event_field: '".$grid_widget->column_name."'
+							}
+						}).send();")) ?>
+				</li>
+				<li><?=cp_button('Import CSV', 'download-alt', array('href'=>'javascript:;', 'onclick'=>"new PopupForm('".$this->get_event_handler('on_form_widget_event')."', {ajaxFields: \$.extend(true, $('".$container_id."').getForm().serializeElement(), {'phpr_custom_event_name': 'on_display_csv_import_popup', 'phpr_event_field': '".$grid_widget->column_name."'})}); return false;")) ?></li>
+			<? endif ?>
+			
+			<li class="divider-vertical"></li>
+			<li><?=cp_button('Help', 'info-sign', array('href'=>'javascript:;', 'onclick'=>"new PopupForm('".$this->get_event_handler('on_form_widget_event')."', {ajaxFields: \$.extend(true, $('".$container_id."').getForm().serializeElement(), {'phpr_custom_event_name': 'on_display_grid_help', 'phpr_event_field': '".$grid_widget->column_name."'})}); return false;")) ?></li>
+		</ul>
+		
+		<? if ($grid_widget->enable_search && $grid_widget->use_data_source): ?>
+			<div class="navbar-form pull-right">
+				<input type="text" class="search" id="<?=$container_id.'_search_field' ?>"/>
+			</div>
+		<? endif ?>
+	</div>
+</div>
+<? endif ?>
+
+<div id="<?=$container_id ?>" class="ui-grid <?=$grid_widget->use_data_source ? 'no-scroll' : null ?>">
+	<? $grid_widget->display_partial('data_table') ?>
+</div>
+
+<script type="text/javascript">
+	jQuery(document).ready(function($) { 
+
+		var init_grid = function() { $('#<?=$container_id ?>').grid(<?=$client_script_options ?>); },
+			this_tab = $('#<?=$container_id ?>').getTab(),
+			popup = $('#<?=$container_id ?>').closest('.popupForm');
+
+		if (this_tab.length > 0) {
+			this_tab.on('onTabClick', function() {
+				init_grid();
+			});
+		} else {
+			if (popup.length > 0)
+				popup.find('> div:first').on('popupLoaded', init_grid);
+			else
+				init_grid();
+		}
+		
+	});
+	
+</script>

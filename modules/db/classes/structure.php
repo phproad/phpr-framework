@@ -1,4 +1,10 @@
-<?php
+<?php namespace Db;
+
+use Phpr;
+use Phpr\SystemException;
+use Db\ActiveRecord;
+use Db\Helper as Db_Helper;
+
 /**
  * PHPR Database Structure Class
  * 
@@ -62,12 +68,12 @@
  * 
  * Manually update a module:
  * 
- * Db_Update_Manager::apply_db_structure(PATH_APP, 'user');
- * Db_Structure::save_all();
+ * Db\Update_Manager::apply_db_structure(PATH_APP, 'user');
+ * Db\Structure::save_all();
  * 
  */
 
-class Db_Structure 
+class Structure 
 {
 	// Use for debugging
 	const debug_mode = false;
@@ -91,9 +97,8 @@ class Db_Structure
 
 	public function __construct() 
 	{
-		// This must be included to obtain the global constants
-		// it's class file declares 
-		Db_ActiveRecord::$object_counter;
+		if (!class_exists('ActiveRecord'))
+			Phpr::$class_loader->load('\Db\ActiveRecord');
 		
 		$this->reset();
 	}
@@ -202,7 +207,7 @@ class Db_Structure
 			$existing_key->add_columns($columns);
 			return $existing_key;
 		} else {
-			$obj = new Db_Structure_Key($this);
+			$obj = new Structure_Key($this);
 			$obj->name = $name;
 			$obj->add_columns($columns);
 			return $this->_keys[$name] = $obj;
@@ -220,7 +225,7 @@ class Db_Structure
 
 	public function column($name, $type, $size = null) 
 	{
-		$obj = new Db_Structure_Column($this);
+		$obj = new Structure_Column($this);
 		$obj->name = $name;
 		$obj->type = $type = $this->get_db_type($type);
 		
@@ -281,10 +286,10 @@ class Db_Structure
 	public function save() 
 	{
 		if (!strlen($this->_table_name))
-			throw new Phpr_SystemException('You must specify a table name before calling commit()');
+			throw new SystemException('You must specify a table name before calling commit()');
 
 		if (!count($this->_columns))
-			throw new Phpr_SystemException('You must provide at least one column before calling commit()');
+			throw new SystemException('You must provide at least one column before calling commit()');
 
 		$module_id = (self::$module_id) ? self::$module_id : 'db';
 		$event_name = $module_id.':on_extend_' . $this->_table_name . '_table';
@@ -477,10 +482,10 @@ class Db_Structure
 	private function get_existing_keys() 
 	{
 		$existing_keys = array();
-		$key_arr = Db_Sql::create()->describe_index($this->_table_name);
+		$key_arr = Sql::create()->describe_index($this->_table_name);
 		foreach ($key_arr as $key) 
 		{
-			$obj = new Db_Structure_Key();
+			$obj = new Structure_Key();
 			$obj->name = $name = $key['name'];
 			$obj->key_columns = $key['columns'];
 
@@ -499,11 +504,11 @@ class Db_Structure
 	private function get_exisiting_columns() 
 	{
 		$existing_columns = array();
-		$table_arr = Db_Sql::create()->describe_table($this->_table_name);
+		$table_arr = Sql::create()->describe_table($this->_table_name);
 		$primary_arr = array();
 
 		foreach ($table_arr as $col)  {
-			$obj = new Db_Structure_Column();
+			$obj = new Structure_Column();
 			$sql_type = $col['sql_type'];
 			$obj->name = $name = $col['name'];
 			$obj->type = $type = $col['type'];

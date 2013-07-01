@@ -221,10 +221,10 @@
 			if (context.data instanceof jQuery)
 				context.data = o.serializeElement(context.data);
 
-			context.data = $.extend(true, context.data, _data);
+			context.data = $.extend(true, {}, context.data, _data);
 
 			if (_form)
-				context.data = $.extend(true, context.data, o.serializeElement(_form));
+				context.data = $.extend(true, {}, o.serializeElement(_form), context.data);
 
 			return _context = context;
 		}

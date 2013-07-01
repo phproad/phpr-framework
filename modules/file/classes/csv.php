@@ -1,6 +1,6 @@
-<?php
+<?php namespace File;
 
-class File_Csv
+class Csv
 {
 	public static function determine_csv_delimeter($path)
 	{

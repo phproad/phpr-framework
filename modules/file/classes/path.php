@@ -1,6 +1,8 @@
-<?php
+<?php namespace File;
 
-class File_Path
+use ReflectionClass;
+
+class Path
 {
 	// Returns a public path from an absolute one
 	// eg: /home/mysite/public_html/welcome -> /welcome

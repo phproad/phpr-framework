@@ -1,6 +1,8 @@
-<?php
+<?php namespace File;
 
-class File_Csv_Import extends Db_ActiveRecord
+use Db\ActiveRecord;
+
+class Csv_Import extends ActiveRecord
 {
 	public $table_name = 'db_files';
 

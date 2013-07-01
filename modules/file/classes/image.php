@@ -1,6 +1,11 @@
-<?php
+<?php namespace File;
 
-class File_Image
+use Phpr;
+use Phpr\SystemException;
+use Phpr\ApplicationException;
+use File\Directory;
+
+class Image
 {
 	/**
 	 * Creates a thumbnail from a source image
@@ -22,13 +27,13 @@ class File_Image
 		$allowed_extensions = array('gif', 'jpeg', 'jpg','png');
 
 		if (!in_array($extension, $allowed_extensions))
-			throw new Phpr_ApplicationException('Unknown image thumb format');
+			throw new ApplicationException('Unknown image thumb format');
 			
 		if (!preg_match('/^[0-9]*!?$/', $width) && $width != 'auto')
-			throw new Phpr_ApplicationException("Invalid thumb width: Please use integer or 'auto' value");
+			throw new ApplicationException("Invalid thumb width: Please use integer or 'auto' value");
 
 		if (!preg_match('/^[0-9]*!?$/', $height) && $height != 'auto')
-			throw new Phpr_ApplicationException("Invalid thumb height: Please use integer or 'auto' value");
+			throw new ApplicationException("Invalid thumb height: Please use integer or 'auto' value");
 
 		list($src_width, $src_height) = getimagesize($source_path);
 	
@@ -102,7 +107,7 @@ class File_Image
 
 			$image = self::create_image($extension, $source_path);
 			if ($image == null)
-				throw new Phpr_ApplicationException('Error loading the source image');
+				throw new ApplicationException('Error loading the source image');
 
 			if (!$return_jpeg)
 			{
@@ -147,12 +152,12 @@ class File_Image
 			$tmp_dir = PATH_APP.'/temp/';
 
 			if (!file_exists($tmp_dir) || !is_writable($tmp_dir))
-				throw new Phpr_SystemException('Directory '.$tmp_dir.' is not writable for PHP.');
+				throw new SystemException('Directory '.$tmp_dir.' is not writable for PHP.');
 
 			if (!@mkdir($tmp_dir.$current_dir))
-				throw new Phpr_SystemException('Error creating temp directory in '.$tmp_dir.$current_dir);
+				throw new SystemException('Error creating temp directory in '.$tmp_dir.$current_dir);
 
-			@chmod($tmp_dir.$current_dir, File_Directory::get_permissions());
+			@chmod($tmp_dir.$current_dir, Directory::get_permissions());
 			
 			$im_path = Phpr::$config->get('IMAGEMAGICK_PATH');
 			$sys_paths = getenv('PATH');
@@ -204,7 +209,7 @@ class File_Image
 			}
 			
 			if (!$file1_exists && !$file2_exists)
-				throw new Phpr_ApplicationException("Error converting image with ImageMagick. IM commands: \n\n" . implode($convert_strings, "\n\n") . "\n\n");
+				throw new ApplicationException("Error converting image with ImageMagick. IM commands: \n\n" . implode($convert_strings, "\n\n") . "\n\n");
 			
 			if ($file1_exists)
 				copy($result_file_dir.'/output', $destination_path);
@@ -215,12 +220,12 @@ class File_Image
 				@chmod($destination_path, File::get_permissions());
 			
 			if (file_exists($tmp_dir.$current_dir))
-				File_Directory::delete($tmp_dir.$current_dir);
+				Directory::delete($tmp_dir.$current_dir);
 		}
 		catch (Exception $ex)
 		{
 			if (file_exists($tmp_dir.$current_dir))
-				File_Directory::delete($tmp_dir.$current_dir);
+				Directory::delete($tmp_dir.$current_dir);
 
 			throw $ex;
 		}

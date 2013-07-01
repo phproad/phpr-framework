@@ -1,6 +1,6 @@
-<?php
+<?php namespace File;
 
-class File_Directory
+class Directory
 {
 
 	public static function get_permissions()
@@ -111,7 +111,7 @@ class File_Directory
 		if (!is_dir($path)) 
 			return $result;
 
-		$iterator = new DirectoryIterator($path);
+		$iterator = new \DirectoryIterator($path);
 		foreach ($iterator as $file) 
 		{
 			if ($file->isDir())

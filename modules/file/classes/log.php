@@ -1,9 +1,9 @@
-<?php
+<?php namespace File;
 
 /**
  * Logging helper class
  */
-class File_Log
+class Log
 {
 	// Writes a logged line to defined text file
 	public static function write_line($file_path, $message)

@@ -1,6 +1,8 @@
-<?php
+<?php namespace File;
 
-class File_Upload
+use Phpr\ApplicationException;
+
+class Upload
 {
 	/**
 	 * Returns a number of bytes allowed for uploading through POST requests
@@ -18,24 +20,24 @@ class File_Upload
 		switch ($file_info['error'])
 		{
 			case UPLOAD_ERR_INI_SIZE :
-				$max_size_allowed = File::size_from_bytes(File_Upload::max_upload_size());
-				throw new Phpr_ApplicationException('File size exceeds maximum allowed size ('.$max_size_allowed.').');
+				$max_size_allowed = File::size_from_bytes(Upload::max_upload_size());
+				throw new ApplicationException('File size exceeds maximum allowed size ('.$max_size_allowed.').');
 				break;
 
 			case UPLOAD_ERR_PARTIAL : 
-				throw new Phpr_ApplicationException('Error uploading file. Only a part of the file was uploaded.');
+				throw new ApplicationException('Error uploading file. Only a part of the file was uploaded.');
 				break;
 
 			case UPLOAD_ERR_NO_FILE :
-				throw new Phpr_ApplicationException('Error uploading file.');
+				throw new ApplicationException('Error uploading file.');
 				break;
 
 			case UPLOAD_ERR_NO_TMP_DIR : 
-				throw new Phpr_ApplicationException('PHP temporary file directory does not exist.');
+				throw new ApplicationException('PHP temporary file directory does not exist.');
 				break;
 
 			case UPLOAD_ERR_CANT_WRITE : 
-				throw new Phpr_ApplicationException('Error writing file to disk.');
+				throw new ApplicationException('Error writing file to disk.');
 				break;
 		}
 	}
@@ -69,7 +71,7 @@ class File_Upload
 	
 	public static function validate_xhr_info($file_info)
 	{
-		$max_size = File_Upload::max_upload_size();
+		$max_size = Upload::max_upload_size();
 		$max_size_text = File::size_from_bytes($max_size);
 
 		$file_info = array();
@@ -80,10 +82,10 @@ class File_Upload
 		if (isset($_SERVER['CONTENT_LENGTH']))
 			$file_info['size'] = (int)$_SERVER['CONTENT_LENGTH'];
 		else 
-			throw new Phpr_ApplicationException('Unable to get content length from XHR upload.');
+			throw new ApplicationException('Unable to get content length from XHR upload.');
 		
 		if ($file_info['size'] > $max_size)
-			throw new Phpr_ApplicationException('File size exceeds maximum allowed size ('.$max_size_text.').');
+			throw new ApplicationException('File size exceeds maximum allowed size ('.$max_size_text.').');
 
 		return $file_info;
 	}
@@ -97,7 +99,7 @@ class File_Upload
 		fclose($input);
 
 		if ($actual_size != $file_info['size'])
-			throw new Phpr_ApplicationException('The XHR file uploaded is corrupt. Please try again.');
+			throw new ApplicationException('The XHR file uploaded is corrupt. Please try again.');
 
 		$target = fopen($dest_path, "w");
 		fseek($tmp_file, 0, SEEK_SET);

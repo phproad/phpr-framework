@@ -1,8 +1,11 @@
-<?php
+<?php namespace File;
+
+use Phpr\SystemException;
+use File\Directory;
 
 $zip_helper_exceptions = array();
 
-class File_Zip
+class Zip
 {
 	public static $chmod_error = false;
 	
@@ -58,10 +61,10 @@ class File_Zip
 	public static function unzip($archive_path, $destination_path, $replace_files = true, $set_permissions = true)
 	{
 		if (!file_exists($archive_path))
-			throw new Phpr_SystemException('Archive file is not found');
+			throw new SystemException('Archive file is not found');
 
 		if (!is_writable($destination_path))
-			throw new Phpr_SystemException('No writing permissions for directory '.$destination_path);
+			throw new SystemException('No writing permissions for directory '.$destination_path);
 
 		self::init_zip();
 		$archive = new PclZip($archive_path);
@@ -69,22 +72,22 @@ class File_Zip
 		if ($set_permissions && $replace_files)
 		{
 			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_OPT_REPLACE_NEWER, PCLZIP_CB_POST_EXTRACT, 'zip_helper_post_extract'))
-				throw new Phpr_SystemException('Error extracting data from archive');
+				throw new SystemException('Error extracting data from archive');
 		} 
 		else if ($set_permissions && !$replace_files)
 		{
 			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_CB_POST_EXTRACT, 'zip_helper_post_extract'))
-				throw new Phpr_SystemException('Error extracting data from archive');
+				throw new SystemException('Error extracting data from archive');
 		}
 		else if (!$set_permissions && $replace_files)
 		{
 			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_OPT_REPLACE_NEWER))
-				throw new Phpr_SystemException('Error extracting data from archive');
+				throw new SystemException('Error extracting data from archive');
 		}
 		else if (!$set_permissions && !$replace_files)
 		{
 			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path))
-				throw new Phpr_SystemException('Error extracting data from archive');
+				throw new SystemException('Error extracting data from archive');
 		}
 	}
 	
@@ -102,7 +105,7 @@ class File_Zip
 		if (!defined('PCLZIP_TEMPORARY_DIR'))
 		{
 			if (!is_writable(PATH_APP.'/temp/'))
-				throw new Phpr_SystemException('No writing permissions for directory '.PATH_APP.'/temp');
+				throw new SystemException('No writing permissions for directory '.PATH_APP.'/temp');
 			
 			define('PCLZIP_TEMPORARY_DIR', PATH_APP.'/temp/');
 		}
@@ -169,16 +172,16 @@ function zip_helper_post_extract($p_event, &$p_header)
 	{
 		$is_folder = array_key_exists('folder', $p_header) ? $p_header['folder'] : false;
 
-		if (!File_Zip::$chmod_error)
+		if (!Zip::$chmod_error)
 		{
-			$mode = $is_folder ? File_Directory::get_permissions() : File::get_permissions();
+			$mode = $is_folder ? Directory::get_permissions() : File::get_permissions();
 			try
 			{
 				@chmod($p_header['filename'], $mode);
 			} 
 			catch (Exception $ex)
 			{
-				File_Zip::$chmod_error = true;
+				Zip::$chmod_error = true;
 			}
 		}
 	}

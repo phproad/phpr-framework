@@ -1,10 +1,15 @@
-<?php
+<?php namespace Db;
+
+use Phpr\Inflector;
+use Phpr\String;
+use Phpr\SystemException;
+use Db\Helper as Db_Helper;
 
 /**
  * Database helper class
  */
 
-class Db_Helper
+class Helper
 {
 	protected static $driver = false;
 	
@@ -13,7 +18,7 @@ class Db_Helper
 
 	public static function scalar($sql, $bind = array())
 	{
-		return Db_Sql::create()->fetch_one($sql, $bind); 
+		return Sql::create()->fetch_one($sql, $bind); 
 	}
 	
 	public static function scalar_array($sql, $bind = array())
@@ -36,13 +41,13 @@ class Db_Helper
 
 	public static function query($sql, $bind = array())
 	{
-		$obj = Db_Sql::create();
+		$obj = Sql::create();
 		return $obj->query($obj->prepare($sql, $bind));
 	}
 	
 	public static function query_array($sql, $bind = array())
 	{
-		return Db_Sql::create()->fetch_all($sql, $bind);
+		return Sql::create()->fetch_all($sql, $bind);
 	}
 	
 	// Objects
@@ -73,7 +78,7 @@ class Db_Helper
 	
 	public static function list_tables()
 	{
-		return Db_Sql::create()->fetch_col('SHOW TABLES');
+		return Sql::create()->fetch_col('SHOW TABLES');
 	}
 	
 	public static function table_exists($table_name)
@@ -84,14 +89,14 @@ class Db_Helper
 	
 	public static function get_table_struct($table_name)
 	{
-		$sql = Db_Sql::create();
+		$sql = Sql::create();
 		$result = $sql->query($sql->prepare("SHOW CREATE TABLE `".$table_name."`"));
 		return $sql->driver()->fetch($result, 1);
 	}
 
 	public static function get_table_dump($table_name, $file_handle = null, $separator = ';')
 	{
-		$sql = Db_Sql::create();
+		$sql = Sql::create();
 		$query = $sql->query("SELECT * FROM `".$table_name."`");
 		
 		$result = null;
@@ -121,7 +126,7 @@ class Db_Helper
 	// 
 
 	public static function drop_column($table_name, $column_name) {
-		$sql = Db_Sql::create();
+		$sql = Sql::create();
 		return $obj->query($obj->prepare('ALTER TABLE `'.$table_name.'` DROP `'.$column_name.'`'));
 	}
 
@@ -134,7 +139,7 @@ class Db_Helper
 		$file_contents = str_replace("\r\n", "\n", $file_contents);
 		$statements = explode($separator."\n", $file_contents);
 
-		$sql = Db_Sql::create();
+		$sql = Sql::create();
 
 		foreach ($statements as $statement)
 		{
@@ -152,9 +157,9 @@ class Db_Helper
 		
 		$file_handle = @fopen($path, "w");
 		if (!$file_handle)
-			throw new Phpr_SystemException('Error opening file for writing: '.$path);
+			throw new SystemException('Error opening file for writing: '.$path);
 		
-		$sql = Db_Sql::create();
+		$sql = Sql::create();
 
 		try
 		{
@@ -194,7 +199,7 @@ class Db_Helper
 		if (!is_array($fields))
 			$fields = array($fields);
 		
-		$words = Phpr_String::split_to_words($query);
+		$words = String::split_to_words($query);
 
 		$word_queries = array();
 		foreach ($words as $word)
@@ -234,7 +239,7 @@ class Db_Helper
 	public static function get_unique_slugify_value($model, $column_name, $string, $max_length = null)
 	{
 		$table_name = $model->table_name;
-		$slug = Phpr_Inflector::slugify($string);
+		$slug = Inflector::slugify($string);
 		if ($max_length)
 			$slug = substr($slug, 0, $max_length);
 
@@ -288,7 +293,7 @@ class Db_Helper
 	{
 		if (!self::$driver)
 		{
-			$sql = Db_Sql::create();
+			$sql = Sql::create();
 			return self::$driver = $sql->driver();
 		}
 		

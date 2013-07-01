@@ -1,10 +1,12 @@
-<?php
+<?php namespace Phpr;
+
+use Db\Helper as Db_Helper;
 
 /**
  * Data object for Module parameters
  */
 
-class Phpr_Module_Parameters
+class Module_Parameters
 {
 	protected static $cache = null;
 

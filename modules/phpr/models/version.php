@@ -1,10 +1,13 @@
-<?php
+<?php namespace Phpr;
+
+use Db\ActiveRecord;
+use Db\Helper as Db_Helper;
 
 /**
  * Data object for Module versions
  */
 
-class Phpr_Version extends Db_ActiveRecord
+class Version extends ActiveRecord
 {
 	public $table_name = 'phpr_module_versions';
 
@@ -54,7 +57,4 @@ class Phpr_Version extends Db_ActiveRecord
 
 		return array_key_exists($module_id, self::$build_cache) ? self::$build_cache[$module_id] : 0;
 	}
-
-
 }
-

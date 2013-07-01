@@ -1,9 +1,12 @@
-<?php
+<?php namespace Phpr;
+
+use Db\ActiveRecord;
+use Phpr\DateTime;
 
 /**
  * PHPR trace log record model class.
  */
-class Phpr_Trace_Log_Record extends Db_ActiveRecord
+class Trace_Log_Record extends ActiveRecord
 {
 	public $table_name = "phpr_trace_log";
 
@@ -15,7 +18,7 @@ class Phpr_Trace_Log_Record extends Db_ActiveRecord
 	 */
 	public static function add($log, $message, $details = null)
 	{
-		$record = new Phpr_Trace_Log_Record();
+		$record = new Trace_Log_Record();
 		
 		$record->save(array(
 			'log' => $log, 
@@ -28,7 +31,7 @@ class Phpr_Trace_Log_Record extends Db_ActiveRecord
 
 	public function before_validation_on_create($deferred_session_key = null)
 	{
-		$this->record_datetime = Phpr_DateTime::now();
+		$this->record_datetime = DateTime::now();
 	}
 	
 	public function define_columns($context = null)

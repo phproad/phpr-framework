@@ -1,6 +1,9 @@
-<?php
+<?php namespace Phpr;
 
-class Phpr_User_Parameters
+use Phpr;
+use Db\Helper as Db_Helper;
+
+class User_Parameters
 {
 	protected static $cache = null;
 

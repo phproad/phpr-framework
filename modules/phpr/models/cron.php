@@ -1,4 +1,7 @@
-<?php
+<?php namespace Phpr;
+
+use Phpr\DateTime;
+use Db\Helper as Db_Helper;
 
 /**
  * PHPR Cron class
@@ -7,14 +10,14 @@
  * via a regular table and worker jobs
  */
 
-class Phpr_Cron
+class Cron
 {
 
 	public static function update_interval($code)
 	{
 		$bind = array(
 			'record_code' => $code, 
-			'now' => Phpr_DateTime::now()->to_sql_datetime()
+			'now' => DateTime::now()->to_sql_datetime()
 		);
 		Db_Helper::query('insert into phpr_cron_table (record_code, updated_at) values (:record_code, now()) on duplicate key update updated_at =:now', $bind);
 	}
@@ -25,7 +28,7 @@ class Phpr_Cron
 		if (!$interval)
 		{
 			self::update_interval($code);
-			$interval = Phpr_DateTime::now()->to_sql_datetime();
+			$interval = DateTime::now()->to_sql_datetime();
 		}
 
 		return $interval;
@@ -56,7 +59,7 @@ class Phpr_Cron
 		$bind = array(
 			'handler_name' => $handler_name, 
 			'param_data' => serialize($param_data),
-			'now' => Phpr_DateTime::now()->to_sql_datetime()
+			'now' => DateTime::now()->to_sql_datetime()
 		);
 		Db_Helper::query('insert into phpr_cron_jobs (handler_name, param_data, created_at) values (:handler_name, :param_data, now())', $bind);
 	}
@@ -104,9 +107,9 @@ class Phpr_Cron
 				if (!isset($options['interval']) || !isset($options['method']))
 					continue;
 
-				$last_exec = Phpr_DateTime::parse(Phpr_Cron::get_interval($code), Phpr_DateTime::universal_datetime_format);
+				$last_exec = DateTime::parse(Phpr_Cron::get_interval($code), DateTime::universal_datetime_format);
 				$next_exec = $last_exec->add_minutes($options['interval']);
-				$can_execute = Phpr_DateTime::now()->compare($next_exec);
+				$can_execute = DateTime::now()->compare($next_exec);
 
 				if ($can_execute == -1)
 					continue;

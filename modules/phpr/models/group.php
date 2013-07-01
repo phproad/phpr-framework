@@ -1,11 +1,13 @@
-<?php
+<?php namespace Phpr;
+
+use Db\ActiveRecord;
 
 /**
  * PHPR group base class.
  *
  * Use this class to manage the application user groups.
  */
-class Phpr_Group extends Db_ActiveRecord
+class Group extends ActiveRecord
 {
 	public $table_name = 'groups';
 	public $primary_key = 'id';

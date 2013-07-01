@@ -1,11 +1,13 @@
-<?php
+<?php namespace Phpr;
+
+use Db\ActiveRecord;
 
 /**
  * PHPR user base class.
  *
  * Use this class to manage the application user list.
  */
-class Phpr_User extends Db_ActiveRecord
+class User extends ActiveRecord
 {
 	public $table_name = "users";
 	public $primary_key = 'id';

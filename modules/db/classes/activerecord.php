@@ -363,7 +363,7 @@ class ActiveRecord extends Sql implements IteratorAggregate
 
 		$caching_case = false;
 
-		if ($id instanceof WhereBase) {
+		if ($id instanceof Sql_Where) {
 			$this->where($id);
 		}
 		elseif (is_array($id)) {
@@ -778,7 +778,7 @@ class ActiveRecord extends Sql implements IteratorAggregate
 	/**
 	 * Deletes all the records that match the condition.
 	 *
-	 * @param string|WhereBase $conditions
+	 * @param string|Sql_Where $conditions
 	 */
 	public function delete_all($conditions = null) 
 	{
@@ -1600,7 +1600,7 @@ class ActiveRecord extends Sql implements IteratorAggregate
 		// 
 		if (!is_null($params)) 
 		{
-			if ($params instanceof WhereBase)
+			if ($params instanceof Sql_Where)
 				$object->where($params);
 			elseif (is_array($params))
 				$object->where($object->primary_key . ' IN (?)', $params);

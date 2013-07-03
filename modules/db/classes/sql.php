@@ -386,15 +386,15 @@ class Sql extends Sql_Where
 	 *
 	 * @param string $table The table to udpate.
 	 * @param array $bind Column-value pairs.
-	 * @param WhereBase|string $where UPDATE WHERE clause.
+	 * @param Sql_Where|string $where UPDATE WHERE clause.
 	 * @param string $order UPDATE ORDER BY clause.
 	 * @return int The number of affected rows.
 	 */
 	public function sql_update($table, $bind, $where, $order = '') 
 	{
-		// Check if $where is a WhereBase object
+		// Check if $where is a Sql_Where object
 		// 
-		if ($where instanceof WhereBase)
+		if ($where instanceof Sql_Where)
 			$where = $where->build_where();
 
 		if (is_array($bind)) 
@@ -429,14 +429,14 @@ class Sql extends Sql_Where
 	 * Deletes table rows based on a WHERE clause.
 	 *
 	 * @param string $table The table to udpate.
-	 * @param WhereBase|string $where DELETE WHERE clause.
+	 * @param Sql_Where|string $where DELETE WHERE clause.
 	 * @return int The number of affected rows.
 	 */
 	public function sql_delete($table, $where) 
 	{
-		// Check if $where is a WhereBase object
+		// Check if $where is a Sql_Where object
 		// 
-		if ($where instanceof WhereBase)
+		if ($where instanceof Sql_Where)
 			$where = $where->build_where();
 
 		// Build statement

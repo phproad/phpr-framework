@@ -2713,4 +2713,45 @@ class ActiveRecord extends Sql implements IteratorAggregate
 	{
 		return $this->display_field($db_name);
 	}
+
+	/**
+	 * Copy columns from another object 
+	 */
+	public function copy_column_definitions(ActiveRecord $destination, $context=null)
+	{
+		$columns = $this->get_column_definitions($context);
+		foreach ($columns as $column) {
+
+			$tmp_column = $destination->define_column($column->db_name, $column->display_name);
+			$column_properties = get_object_vars($column);
+
+			foreach ($column_properties as $key => $value){
+				$tmp_column->$key = $value;
+			}
+		}
+	}
+
+	/**
+	 * Copy form fields from another object 
+	 */
+	public function copy_form_field_definitions(ActiveRecord $destination, $context=null, $force_tab=null)
+	{
+		$this->init_columns_info($context)->define_form_fields($context);
+		$form_elements = $this->form_elements;
+
+		foreach ($form_elements as $form_element) {
+			$tmp_field = $destination->add_form_field($form_element->db_name);
+			$form_properties = get_object_vars($form_element);
+			
+			foreach ($form_properties as $key => $value) {
+				$tmp_field->$key = $value;
+			}
+
+			if (strlen($force_tab) != 0) {
+				$tmp_field->tab($force_tab);
+			}
+		
+			$destination->{$form_element->db_name} = $this->{$form_element->db_name};
+		}
+	}
 }

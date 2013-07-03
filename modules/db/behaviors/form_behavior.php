@@ -932,7 +932,7 @@ class Form_Behavior extends Controller_Behavior
 
 			// Only support one file at a time
 			if ($_FILES['phpr_file']) {
-				$first_first = Upload::extract_mutli_file_info($_FILES['phpr_file']);
+				$first_first = Upload::extract_multi_file_info($_FILES['phpr_file']);
 				$_FILES['phpr_file'] = $first_first[0];
 			}
 

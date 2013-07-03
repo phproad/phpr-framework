@@ -42,7 +42,7 @@ class Upload
 		}
 	}
 	
-	public static function extract_mutli_file_info($multi_file_info)
+	public static function extract_multi_file_info($multi_file_info)
 	{
 		$result = array();
 		if (!array_key_exists('name', $multi_file_info))

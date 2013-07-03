@@ -1,6 +1,6 @@
 <?php namespace Db;
 
-class Where extends Base 
+class Where extends Sql_Base 
 {
 	public static function create()
 	{

@@ -3,7 +3,7 @@
 use Phpr\Validate_Extension;
 use Phpr\DateTime;
 
-class Base extends Validate_Extension
+class Sql_Base extends Validate_Extension
 {
 	/**
 	 * Wraps supplied value(s) with quotes.

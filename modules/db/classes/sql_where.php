@@ -36,7 +36,7 @@ class Sql_Where extends Sql_Base
 		// 
 		array_shift($args);
 
-		if ($cond instanceof Where)
+		if ($cond instanceof Sql_Where)
 			$cond = $cond->build_where();
 		else 
 		{
@@ -67,7 +67,7 @@ class Sql_Where extends Sql_Base
 	}
 
 	/**
-	 * @return Where
+	 * @return Sql_Where
 	 */
 	public function where() 
 	{
@@ -76,7 +76,7 @@ class Sql_Where extends Sql_Base
 	}
 
 	/**
-	 * @return Where
+	 * @return Sql_Where
 	 */
 	public function or_where() 
 	{

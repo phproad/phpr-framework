@@ -3,7 +3,7 @@
 use Phpr;
 use Phpr\Util;
 
-class Sql extends Where
+class Sql extends Sql_Where
 {
 	const default_driver = 'Db\MySQL_Driver';
 

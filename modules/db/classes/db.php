@@ -24,7 +24,7 @@ class Db
 	public static function where()
 	{
 		$args = func_get_args();
-		$where = new Where();
+		$where = new Sql_Where();
 		return call_user_func_array(array(&$where, 'where'), $args);
 	}
 }

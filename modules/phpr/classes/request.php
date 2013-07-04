@@ -195,6 +195,11 @@ class Request
 		return $uri;
 	}
 
+	public function get_hostname()
+	{
+		return isset($_SERVER["SERVER_NAME"]) ? $_SERVER["SERVER_NAME"] : null;
+	}
+
 	public function get_protocol()
 	{
 		if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) == 'https')

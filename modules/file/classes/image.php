@@ -37,7 +37,7 @@ class Image
 
 		list($src_width, $src_height) = getimagesize($source_path);
 	
-		$centerImage = false;
+		$center_image = false;
 
 		// Automatic (no change)
 		if ($width == 'auto' && $height == 'auto')
@@ -80,7 +80,7 @@ class Image
 					$option_array = self::get_optimal_ratio($src_width, $src_height, $width, $height);
 					$optimal_height = $option_array['optimal_height'];
 					$optimal_width = $option_array['optimal_width'];
-					$centerImage = true;
+					$center_image = true;
 					break;
 
 				case 'crop':
@@ -99,29 +99,33 @@ class Image
 
 		if (!Phpr::$config->get('IMAGEMAGICK_ENABLED') || $force_gd)
 		{
-			$canvas_width = ($mode=="crop") ? $optimal_width : $width;
-			$canvas_height = ($mode=="crop") ? $optimal_height : $height;
+			$canvas_width = ($mode == "crop") ? $optimal_width : $width;
+			$canvas_height = ($mode == "crop") ? $optimal_height : $height;
 
 			// Create image canvas
 			$image_p = imagecreatetruecolor($canvas_width, $canvas_height);
 
 			$image = self::create_image($extension, $source_path);
 			if ($image == null)
-				throw new ApplicationException('Error loading the source image');
+				throw new ApplicationException('Error loading the source image.');
 
-			if (!$return_jpeg)
-			{
+			if (!$return_jpeg) {
+				// Transparent background
 				imagealphablending($image_p, false);
 				imagesavealpha($image_p, true);
+				$transparent = imagecolorallocatealpha($image_p, 0, 0, 0, 127);
+				imagefill($image_p, 0, 0, $transparent);
 			}
-
-			$white = imagecolorallocate($image_p, 255, 255, 255);
-			imagefilledrectangle($image_p, 0, 0, $canvas_width, $canvas_height, $white);
+			else {
+				// White background
+				$white = imagecolorallocate($image_p, 255, 255, 255);
+				imagefilledrectangle($image_p, 0, 0, $canvas_width, $canvas_height, $white);				
+			}
 
 			$dest_x = 0;
 			$dest_y = 0;
 
-			if ($centerImage)
+			if ($center_image)
 			{
 				$dest_x = ceil(($width / 2) - ($optimal_width / 2));
 				$dest_y = ceil(($height / 2) - ($optimal_height / 2));
@@ -140,8 +144,9 @@ class Image
 			imagedestroy($image_p);
 			imagedestroy($image);
 		} 
-		else
+		else {
 			self::im_resample($source_path, $destination_path, $optimal_width, $optimal_height, $width, $height, $return_jpeg);
+		}
 	}
 
 	private static function im_resample($source_path, $destination_path, $width, $height, $canvas_width, $canvas_height, $return_jpeg = true)

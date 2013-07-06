@@ -11,6 +11,7 @@ use Phpr\Inflector;
 use Phpr\Pagination;
 use Phpr\SecurityFramework;
 use Phpr\SystemException;
+use Db;
 use Db\Helper as Db_Helper;
 
 define('db_varchar', 'varchar');

@@ -25,7 +25,14 @@ class Sql extends Sql_Where
 
 	public function __toString() 
 	{
-		return $this->build_sql();
+		try {
+			return $this->build_sql();
+		} 
+		catch (\Exception $ex) {
+			// __toString cannot throw an exception
+			Phpr::$trace_log->write('Exception thrown in Db\Sql::__toString: '. $ex->getMessage());
+			return '';
+		}
 	}
 		
 	public function reset() 

@@ -434,7 +434,8 @@ class Structure
 		return $db_type;
 	}
 
-	private function column_to_db_type($type) {
+	private function column_to_db_type($type) 
+	{
 		switch ($type) 
 		{
 			case db_number: return 'int';
@@ -450,32 +451,40 @@ class Structure
 	}
 
 	private function simplified_type($sql_type) 
-	
 	{
-		if (preg_match('/([\w]+)(\(\d\))*/i', $sql_type, $matches))
-			return strtolower($matches[1]);
+		$sql_type = strtolower($sql_type);
 
-		return strtolower($sql_type);
-	}    
+		preg_match_all('/(\w+)\((\d+)(?:,*)(\d*)\)/i', $sql_type, $matches);
+
+		if (!isset($matches[1][0]))
+			return $sql_type;
+
+		return $matches[1][0];
+	}
 
 	private function get_type_length($sql_type)
-	
 	{
-		$matches = $this->get_type_values($sql_type);
-		return (isset($matches[1])) ? $matches[1] : null;
+		preg_match_all('/(\w+)\((\d+)(?:,*)(\d*)\)/i', $sql_type, $matches);
+
+		if (!isset($matches[2][0]))
+			return null;
+
+		return $matches[2][0];
 	}
 
 	private function get_type_precision($sql_type)
-	
 	{
-		$matches = $this->get_type_values($sql_type);
-		return (isset($matches[2])) ? $matches[2] : null;
+		preg_match_all('/(\w+)\((\d+)(?:,*)(\d*)\)/i', $sql_type, $matches);
+
+		if (!isset($matches[3][0]))
+			return null;
+
+		return $matches[3][0];
 	}
 
 	private function get_type_values($sql_type)
-	
 	{
-		preg_match_all('/([\w]+)(\(\d\))*/i', $sql_type, $matches);
+		preg_match_all('/(\w+)(\(\d\))*/i', $sql_type, $matches);
 		return $matches[0];
 	}
 

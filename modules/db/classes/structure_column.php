@@ -3,15 +3,16 @@
 class Structure_Column
 {
 	public static $default_length = array(
-		'int' => 11,
+		'int'     => 11,
 		'varchar' => 255,
 		'decimal' => 15,
-		'float' => 10
+		'float'   => 10,
+		'tinyint' => 4
 	);
 
 	public static $default_precision = array(
 		'decimal' => 2,
-		'float' => 6
+		'float'   => 6
 	);
 
 	private $_host; // Host Db\Structure object

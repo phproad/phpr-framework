@@ -335,9 +335,16 @@ class Sql extends Sql_Where
 		return $this->prepare_tablename($sql);
 	}
 	
-	private function prepare_tablename($sql, $tablename = '') 
+	private function prepare_tablename($sql, $table_name = '') 
 	{
-		return str_replace(':__table_name__', ($tablename == '') ? $this->parts['from'][0] : $tablename, $sql);
+		if ($table_name == '' && isset($this->parts['from'][0]))
+			$table_name = $this->parts['from'][0];
+
+		// Critical problem
+		if ($table_name == '')
+			$table_name = '???';
+
+		return str_replace(':__table_name__', $table_name, $sql);
 	}
 
 	/* Insert/Update/Delete */

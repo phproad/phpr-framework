@@ -13,6 +13,7 @@ class Helper
 {
 	protected static $driver = false;
 	
+	//
 	// Scalar
 	// 
 
@@ -36,6 +37,7 @@ class Helper
 		return $result;
 	}
 	
+	//
 	// Queries
 	// 
 
@@ -50,6 +52,7 @@ class Helper
 		return Sql::create()->fetch_all($sql, $bind);
 	}
 	
+	//
 	// Objects
 	// 
 
@@ -73,6 +76,7 @@ class Helper
 		return $result;
 	}
 
+	//
 	// Tables
 	// 
 	
@@ -122,6 +126,7 @@ class Helper
 		return $result;
 	}
 
+	//
 	// Columns
 	// 
 
@@ -143,6 +148,7 @@ class Helper
 		return $sql->query($sql->prepare('ALTER TABLE `'.$table_name.'` CHANGE COLUMN `'.$column_name.'` `'.$new_column_name.'` '.$sql_type));
 	}
 
+	//
 	// Import / Export
 	// 
 	
@@ -201,6 +207,7 @@ class Helper
 		}
 	}
 	
+	//
 	// Helpers
 	// 
 
@@ -281,6 +288,7 @@ class Helper
 		return $column_value;
 	}
 
+	//
 	// Services
 	// 
 
@@ -299,6 +307,7 @@ class Helper
 		self::$driver = false;
 	}
 	
+	//
 	// Internals
 	// 
 

@@ -166,6 +166,7 @@ class Structure
 		$this->_built_sql = '';
 	}
 
+	//
 	// Primary Keys
 	// 
 
@@ -191,6 +192,7 @@ class Structure
 		return $this->column($column, $type, $size)->not_null();
 	}
 
+	//
 	// Regular keys
 	// 
 
@@ -220,6 +222,7 @@ class Structure
 		return (isset($this->_keys[$name])) ? $this->_keys[$name] : false;
 	}
 
+	//
 	// Columns
 	// 
 
@@ -251,6 +254,7 @@ class Structure
 		return (isset($this->_columns[$name])) ? $this->_columns[$name] : false;
 	}
 
+	//
 	// Automatic Footprints
 	// 
 
@@ -264,6 +268,7 @@ class Structure
 		$this->column('updated_at', db_datetime);
 	}
 
+	//
 	// Business Logic
 	// 
 
@@ -422,6 +427,7 @@ class Structure
 		$this->execute_sql($sql_string);
 	}
 
+	//
 	// Helpers
 	// 
 

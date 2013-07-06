@@ -43,6 +43,9 @@ class Sql_Base extends Validate_Extension
 	 */    
 	public function prepare($sql, $params = null) 
 	{
+		if (!is_string($sql))
+			throw new \Exception('First parameter of prepare() must be a string, ' . gettype($sql) . ' was passed instead.');
+
 		// Attempt to build parameters from method arguements
 		if (!isset($params) || !is_array($params)) 
 		{

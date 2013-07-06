@@ -468,6 +468,9 @@ class Sql extends Sql_Where
 
 	public function query($sql) 
 	{
+		if (!strlen($sql))
+			return false;
+
 		return $this->execute($sql);
 	}
 	

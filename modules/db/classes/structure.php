@@ -507,7 +507,7 @@ class Structure
 		$table_arr = Sql::create()->describe_table($this->_table_name);
 		$primary_arr = array();
 
-		foreach ($table_arr as $col)  {
+		foreach ($table_arr as $col) {
 			$obj = new Structure_Column();
 			$sql_type = $col['sql_type'];
 			$obj->name = $name = $col['name'];

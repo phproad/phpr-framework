@@ -41,8 +41,8 @@ class Helper
 
 	public static function query($sql, $bind = array())
 	{
-		$obj = Sql::create();
-		return $obj->query($obj->prepare($sql, $bind));
+		$sql_obj = Sql::create();
+		return $sql_obj->query($sql_obj->prepare($sql, $bind));
 	}
 	
 	public static function query_array($sql, $bind = array())
@@ -125,9 +125,22 @@ class Helper
 	// Columns
 	// 
 
-	public static function drop_column($table_name, $column_name) {
+	public static function drop_column($table_name, $column_name) 
+	{
 		$sql = Sql::create();
-		return $obj->query($obj->prepare('ALTER TABLE `'.$table_name.'` DROP `'.$column_name.'`'));
+		return $sql->query($sql->prepare('ALTER TABLE `'.$table_name.'` DROP `'.$column_name.'`'));
+	}
+
+	public static function rename_column($table_name, $column_name, $new_column_name) 
+	{
+		$sql = Sql::create();
+		$table_arr = $sql->describe_table($table_name);
+
+		if (!isset($table_arr[$column_name]))
+			return false;
+
+		$sql_type = $table_arr[$column_name]['sql_type'];
+		return $sql->query($sql->prepare('ALTER TABLE `'.$table_name.'` CHANGE COLUMN `'.$column_name.'` `'.$new_column_name.'` '.$sql_type));
 	}
 
 	// Import / Export

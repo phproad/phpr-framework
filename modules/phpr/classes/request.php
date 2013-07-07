@@ -272,16 +272,16 @@ class Request
 	}
 	
 	/**
-	 * Returns true if the user is in the backend admin panel.
+	 * Returns true if the request is from the admin area.
 	 * @return boolean
 	 */
-	public function is_backend() 
+	public function is_admin() 
 	{
 		$request_param_name = Phpr::$config->get('REQUEST_PARAM_NAME', 'q');
-		$backend_url = '/' . String::normalize_uri(Phpr::$config->get('ADMIN_URL', 'admin'));
+		$admin_url = '/' . String::normalize_uri(Phpr::$config->get('ADMIN_URL', 'admin'));
 		$current_url = '/' . String::normalize_uri(isset($_REQUEST[$request_param_name]) ? $_REQUEST[$request_param_name] : '');
 
-		return (stristr($current_url, $backend_url) !== false);
+		return (stristr($current_url, $admin_url) !== false);
 	}
 
 	/**

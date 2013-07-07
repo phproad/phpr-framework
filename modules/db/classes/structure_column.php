@@ -52,7 +52,7 @@ class Structure_Column
 		return $this->_host->add_key($name, $this->name);
 	}
 
-	public function set_default($value) 
+	public function defaults($value) 
 	{ 
 		$this->default_value = $value;
 		return $this;
@@ -123,4 +123,9 @@ class Structure_Column
 			return "'".str_replace("'", "''", $value)."'";
 	}
 
+	/**
+	 * @deprecated
+	 */ 
+
+	public function set_default($value) { Phpr::$deprecate->set_function('set_default', 'defaults'); return $this->defaults($value); }
 } 

@@ -12,7 +12,7 @@ use Db\Helper as Db_Helper;
  * 
  *   $users = Db_Structure::table('users_table');
  *   $users->primary_key('id');
- *   $users->column('username', db_varchar, 100)->set_default('funnyman');
+ *   $users->column('username', db_varchar, 100)->defaults('funnyman');
  *   $users->column('email', db_varchar, 100);
  *   $users->column('group_id', db_number)->index();
  *   $users->add_key('usermail', array('username', 'email'))->unique();
@@ -40,7 +40,7 @@ use Db\Helper as Db_Helper;
  * 
  *   $users = Db_Structure::table('users_table');
  *   $users->primary_key('id');
- *   $users->column('username', db_varchar, 125)->set_default('superman');
+ *   $users->column('username', db_varchar, 125)->defaults('superman');
  *   $users->column('email', db_varchar, 100);
  *   $users->column('password', db_varchar, 100);
  *   $users->column('group_id', db_number);
@@ -529,7 +529,7 @@ class Structure
 			$obj->type = $type = $col['type'];
 			
 			if (strlen($col['default']))
-				$obj->set_default($col['default']);
+				$obj->defaults($col['default']);
 
 			if ($col['notnull'] === true)
 				$obj->not_null();

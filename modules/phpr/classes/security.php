@@ -139,7 +139,7 @@ class Security
 	 *
 	 * @return boolean
 	 */
-	public function login(Validation $validation = null, $redirect = null, $login = null, $password = null)
+	public function login($validation = null, $redirect = null, $login = null, $password = null)
 	{
 		/*
 		 * Load the login form data

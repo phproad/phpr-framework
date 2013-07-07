@@ -1,5 +1,7 @@
 <?php namespace Db;
 
+use Phpr;
+
 class Structure_Column
 {
 	public static $default_length = array(

@@ -1,7 +1,9 @@
 <?php namespace Db;
 
+use Phpr;
 use Phpr\Module_Manager;
 use Phpr\ApplicationException;
+use Db;
 use Db\Helper as Db_Helper;
 
 /**

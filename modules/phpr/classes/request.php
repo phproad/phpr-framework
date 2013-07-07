@@ -398,56 +398,6 @@ class Request
 	}
 
 	/**
-	 * Cleans the unput array keys and values.
-	 * @param array &$array Specifies an array to clean.
-	 */
-	private function cleanup_array(&$array)
-	{
-		if (!is_array($array))
-			return;
-
-		foreach ($array as $var_name => &$var_value)
-		{
-			if (is_array($var_value))
-				$this->cleanup_array($var_value);
-			else
-				$array[$this->cleanup_array_key($var_name)] = $this->cleanup_array_value($var_value);
-		}
-	}
-
-	/**
-	 * Check the input array key for invalid characters and adds slashes.
-	 * @param string $key Specifies the key to process.
-	 * @return string
-	 */
-	private function cleanup_array_key($key)
-	{
-		if (!preg_match("/^[0-9a-z:_\/-\{\}|]+$/i", $key))
-			return null;
-
-		return get_magic_quotes_gpc() ? $key : addslashes($key);
-	}
-
-	/**
-	 * Fixes the new line characters in the specified value.
-	 * @param mixed $value Specifies a value to process.
-	 * return mixed
-	 */
-	private function cleanup_array_value($value)
-	{
-		if (!is_array($value))
-			return preg_replace("/\015\012|\015|\012/", "\n", $value);
-
-		$result = array();
-		foreach ($value as $var_name => $var_value)
-		{
-			$result[$var_name] = $this->cleanup_array_value($var_value);
-		}
-
-		return $result;
-	}
-
-	/**
 	 * @ignore
 	 * Returns a list of the event parameters, or a specified parameter value.
 	 * This method is used by the PHPR internally.
@@ -518,6 +468,60 @@ class Request
 	public function get_ssl_session_id()
 	{
 		return (isset($_SERVER["SSL_SESSION_ID"])) ? $_SERVER["SSL_SESSION_ID"] : null;
+	}
+
+	//
+	// Internals
+	// 
+
+	/**
+	 * Cleans the unput array keys and values.
+	 * @param array &$array Specifies an array to clean.
+	 */
+	private function cleanup_array(&$array)
+	{
+		if (!is_array($array))
+			return;
+
+		foreach ($array as $var_name => &$var_value)
+		{
+			if (is_array($var_value))
+				$this->cleanup_array($var_value);
+			else
+				$array[$this->cleanup_array_key($var_name)] = $this->cleanup_array_value($var_value);
+		}
+	}
+
+	/**
+	 * Check the input array key for invalid characters and adds slashes.
+	 * @param string $key Specifies the key to process.
+	 * @return string
+	 */
+	private function cleanup_array_key($key)
+	{
+		if (!preg_match("/^[0-9a-z:_\/-\{\}|]+$/i", $key))
+			return null;
+
+		return get_magic_quotes_gpc() ? $key : addslashes($key);
+	}
+
+	/**
+	 * Fixes the new line characters in the specified value.
+	 * @param mixed $value Specifies a value to process.
+	 * return mixed
+	 */
+	private function cleanup_array_value($value)
+	{
+		if (!is_array($value))
+			return preg_replace("/\015\012|\015|\012/", "\n", $value);
+
+		$result = array();
+		foreach ($value as $var_name => $var_value)
+		{
+			$result[$var_name] = $this->cleanup_array_value($var_value);
+		}
+
+		return $result;
 	}
 
 	/**

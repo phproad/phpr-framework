@@ -226,17 +226,31 @@ class Request
 	}
 	
 	/**
-	 * Returns a value of the COOKIE variable. 
-	 * If the variable with specified name does not exist, returns null;
+	 * Returns a value of the COOKIE variable. 	 
 	 * @param string $name Specifies a variable name.
+	 * @param string $default Default value if specified name does not exist.
 	 * @return mixed
 	 */
-	public function cookie($name)
+	public function cookie($name = null, $default = null)
 	{
-		if (!isset($_COOKIE[$name]))
-			return null;
+		if ($name === null)
+			return $_COOKIE;
 
-		return $_COOKIE[$name];
+		return (isset($_COOKIE[$name])) ? $_COOKIE[$name] : $default;
+	}
+
+	/**
+	 * Returns a value of the SERVER variable. 	 
+	 * @param string $name Specifies a variable name.
+	 * @param string $default Default value if specified name does not exist.
+	 * @return mixed
+	 */
+	public function server($name = null, $default = null)
+	{
+		if ($name === null)
+			return $_SERVER;
+
+		return (!isset($_SERVER[$name])) ? $_SERVER[$name] : $default;
 	}
 
 	/**

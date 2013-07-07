@@ -70,9 +70,9 @@ class Router
 
 				// Check whether the number of URI segments matches
 				//
-				$minSegmentNum = $rule_segment_count - count($rule->defaults);
+				$min_segment_num = $rule_segment_count - count($rule->defaults);
 
-				if (!($segment_count >= $minSegmentNum && $segment_count <= $rule_segment_count))
+				if (!($segment_count >= $min_segment_num && $segment_count <= $rule_segment_count))
 					continue;
 
 				// Check whether the static segments matches
@@ -137,8 +137,8 @@ class Router
 
 				if ($rule->folder !== null)
 				{
-					$folderParams = Router::get_uri_params(explode("/", $rule->folder));
-					foreach ($folderParams as $param_name => $param_index)
+					$folder_params = Router::get_uri_params(explode("/", $rule->folder));
+					foreach ($folder_params as $param_name => $param_index)
 					{
 						if ($param_name == self::_url_controller)
 							$param_value = $controller;

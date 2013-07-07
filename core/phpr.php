@@ -39,7 +39,6 @@ class Phpr
 	public static $frontend_security;
 
 	// Phpr_Session
-
 	public static $session;
 
 	// Phpr_Events

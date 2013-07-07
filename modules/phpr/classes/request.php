@@ -254,11 +254,25 @@ class Request
 	}
 
 	/**
+	 * Returns a value of the ENV variable. 	 
+	 * @param string $name Specifies a variable name.
+	 * @param string $default Default value if specified name does not exist.
+	 * @return mixed
+	 */
+	public function env($name = null, $default = null)
+	{
+		if ($name === null)
+			return $_ENV;
+
+		return (!isset($_ENV[$name])) ? $_ENV[$name] : $default;
+	}
+
+	/**
 	 * Determines whether the remote event handling requested.
 	 * @return boolean.
 	 */
 	public function is_remote_event()
-	{
+	{		
 		return isset($_SERVER[$this->_remote_event_indicator]);
 	}
 

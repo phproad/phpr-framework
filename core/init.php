@@ -57,7 +57,7 @@ require_once('phpr.php');
 
 require_once('classloader.php');
 
-Phpr::$class_loader = new \Phpr\ClassLoader();
+Phpr::$class_loader = new Phpr\ClassLoader();
 
 function phpr_autoload_internal($name) 
 {
@@ -173,9 +173,6 @@ init_phpr_modules();
 
 Phpr::$session->restore_db_data();
 
-/**
- * Execute requested action
- */ 
+// Execute requested action 
 if (empty($PHPR_INIT_ONLY))
 	Phpr::$response->open(Phpr::$request->get_current_uri(true));
-

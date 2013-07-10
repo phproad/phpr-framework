@@ -2629,6 +2629,21 @@ class ActiveRecord extends Sql implements IteratorAggregate
 	}
 	
 	/**
+	 * Returns all form fields currently defined.
+	 * @return Form_Field_Definition[]
+	 */
+	public function get_form_fields()
+	{
+		$fields = array();
+		foreach ($this->form_elements as $element)
+		{
+			if ($element instanceof Form_Field_Definition)
+				$fields[] = $element;
+		}
+		return $fields;
+	}
+	
+	/**
 	 * Deletes a field from form.
 	 * @param string $db_name Specifies the column name.
 	 * @return boolean Returns true if the field has been found and deleted. Returns false otherwise.

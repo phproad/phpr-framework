@@ -1,5 +1,6 @@
 <?php namespace File;
 
+use DirectoryIterator;
 use Phpr;
 
 class Directory
@@ -113,7 +114,7 @@ class Directory
 		if (!is_dir($path)) 
 			return $result;
 
-		$iterator = new \DirectoryIterator($path);
+		$iterator = new DirectoryIterator($path);
 		foreach ($iterator as $file) 
 		{
 			if ($file->isDir())

@@ -43,7 +43,7 @@ class Request
 	 */
 	public function send() 
 	{
-		return Net_Service::create()->run($this);
+		return Service::create()->run($this);
 	}
 
 	/**

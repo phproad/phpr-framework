@@ -166,7 +166,7 @@ class Form_Widget_Base
 		if ($identifier === null)
 			$identifier = $this->unique_id;
 
-		return $this->widget_class.$this->model_class."_".$identifier;
+		return get_class_id($this->widget_class).get_class_id($this->model_class)."_".$identifier;
 	}
 
 	public function get_element_id($element)

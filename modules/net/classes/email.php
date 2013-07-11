@@ -1,8 +1,9 @@
 <?php namespace Net;
 
-use Phpr\SystemException;
-
 require_once(PATH_SYSTEM."/modules/net/vendor/phpmailer/class.phpmailer.php");
+use PHPMailer;
+
+use Phpr\SystemException;
 
 /**
  * Class for handling creating outgoing socket requests

@@ -12,12 +12,12 @@ if ( ! function_exists('get_class_id'))
 {
 	function get_class_id($obj)
 	{
-		if (!is_string($obj))
-			$class_name = get_class($obj);
-		else
+		if (is_string($obj))
 			$class_name = $obj;
-					
-		$class_name = str_replace('\\', '_', get_class($obj));
+		else
+			$class_name = get_class($obj);
+
+		$class_name = str_replace('\\', '_', $class_name);
 		return $class_name;
 	}
 }

@@ -30,7 +30,7 @@ class Model_Attachments extends Extension
 		$this->_model->add_relation('has_many', $column_name, array(
 			'class_name'  => 'Db_File',
 			'foreign_key' => 'master_object_id', 
-			'conditions'  => "master_object_class='".get_class($this->_model)."' and field='".$column_name."'",
+			'conditions'  => "master_object_class='".get_class_id($this->_model)."' and field='".$column_name."'",
 			'order'       => 'sort_order, id',
 			'delete'      => true
 		));
@@ -78,7 +78,7 @@ class Model_Attachments extends Extension
 		$file->is_public = true;
 
 		$file->from_post($file_info);
-		$file->master_object_class = get_class($this->_model);
+		$file->master_object_class = get_class_id($this->_model);
 		$file->master_object_id = $this->_model->id;
 		$file->field = $field;
 		$file->save(null, $session_key);

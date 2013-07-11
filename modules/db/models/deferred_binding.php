@@ -137,8 +137,8 @@ class Deferred_Binding extends ActiveRecord
 	
 	public static function reset_object_field_bindings($master, $detail, $relation_name, $session_key)
 	{
-		$master_class_name = get_class($master);
-		$detail_class_name = get_class($detail);
+		$master_class_name = get_class_id($master);
+		$detail_class_name = get_class_id($detail);
 		$detail_key_value = $detail->get_primary_key_value();
 		
 		$bind = array(

@@ -70,13 +70,22 @@
 // 
 
 function root_url(url) {
-	if (typeof application_root_dir === 'undefined' || !application_root_dir)
+
+	var root_path = null;
+
+	if (typeof root_dir != 'undefined' && root_dir)
+		root_path = root_dir;
+
+	if (typeof application_root_dir != 'undefined' && application_root_dir)
+		root_path = application_root_dir;
+
+	if (root_path === null)
 		return url;
 		
 	if (url.substr(0,1) == '/')
 		url = url.substr(1);
 	
-	return application_root_dir + url;
+	return root_path + url;
 }
 
 function phpr_url(url) {
@@ -87,6 +96,16 @@ function phpr_url(url) {
 		url = url.substr(1);
 	
 	return phpr_root_dir + url;	
+}
+
+function asset_url(url) {
+	if (typeof asset_dir === 'undefined' || !asset_dir)
+		return url;
+		
+	if (url.substr(0,1) == '/')
+		url = url.substr(1);
+	
+	return root_url(asset_dir + url);
 }
 
 function var_dump(obj, use_alert) {

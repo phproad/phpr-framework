@@ -1966,8 +1966,8 @@ class ActiveRecord extends Sql implements IteratorAggregate
 		else
 		{
 			$binding = Deferred_Binding::create();
-			$binding->master_class_name = $this->_class_name;
-			$binding->detail_class_name = get_class($record);
+			$binding->master_class_name = get_class_id($this->_class_name);
+			$binding->detail_class_name = get_class_id($record);
 			$binding->master_relation_name = $relation;
 			$binding->is_bind = 1;
 			$binding->detail_key_value = $record->get_primary_key_value();
@@ -2001,8 +2001,8 @@ class ActiveRecord extends Sql implements IteratorAggregate
 		else
 		{
 			$binding = Deferred_Binding::create();
-			$binding->master_class_name = $this->_class_name;
-			$binding->detail_class_name = get_class($record);
+			$binding->master_class_name = get_class_id($this->_class_name);
+			$binding->detail_class_name = get_class_id($record);
 			$binding->master_relation_name = $relation;
 			$binding->is_bind = 0;
 			$binding->detail_key_value = $record->get_primary_key_value();

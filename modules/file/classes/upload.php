@@ -1,5 +1,6 @@
 <?php namespace File;
 
+use File;
 use Phpr\ApplicationException;
 
 class Upload

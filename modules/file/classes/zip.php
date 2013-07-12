@@ -1,6 +1,12 @@
 <?php namespace File;
 
+if (!defined('PATH_INSTALL'))
+	require_once(PATH_SYSTEM."/modules/file/vendor/pclzip/pclzip.lib.php");
+
+use PclZip;
+
 use Phpr\SystemException;
+use File;
 use File\Directory;
 
 $zip_helper_exceptions = array();
@@ -71,23 +77,23 @@ class Zip
 
 		if ($set_permissions && $replace_files)
 		{
-			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_OPT_REPLACE_NEWER, PCLZIP_CB_POST_EXTRACT, 'zip_helper_post_extract'))
-				throw new SystemException('Error extracting data from archive');
+			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_OPT_REPLACE_NEWER, PCLZIP_CB_POST_EXTRACT, 'File\zip_helper_post_extract'))
+				throw new SystemException('Error extracting data from archive (#1)');
 		} 
 		else if ($set_permissions && !$replace_files)
 		{
-			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_CB_POST_EXTRACT, 'zip_helper_post_extract'))
-				throw new SystemException('Error extracting data from archive');
+			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_CB_POST_EXTRACT, 'File\zip_helper_post_extract'))
+				throw new SystemException('Error extracting data from archive (#2)');
 		}
 		else if (!$set_permissions && $replace_files)
 		{
 			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path, PCLZIP_OPT_REPLACE_NEWER))
-				throw new SystemException('Error extracting data from archive');
+				throw new SystemException('Error extracting data from archive (#3)');
 		}
 		else if (!$set_permissions && !$replace_files)
 		{
 			if (!@$archive->extract(PCLZIP_OPT_PATH, $destination_path))
-				throw new SystemException('Error extracting data from archive');
+				throw new SystemException('Error extracting data from archive (#4)');
 		}
 	}
 	
@@ -98,9 +104,6 @@ class Zip
 			
 		global $zip_helper_exceptions;
 		$zip_helper_exceptions = array();
-		
-		if (!defined('PATH_INSTALL'))
-			require_once(PATH_SYSTEM."/modules/file/vendor/pclzip/pclzip.lib.php");
 
 		if (!defined('PCLZIP_TEMPORARY_DIR'))
 		{

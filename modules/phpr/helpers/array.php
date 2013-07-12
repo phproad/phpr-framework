@@ -3,9 +3,16 @@
 /**
  * Core array helpers
  */
-class Array
+class Arr
 {
-	
+	/**
+	 * Returns first item in an array
+	 */
+	public static function first($array)
+	{
+		return array_shift(array_values($array));
+	}
+
 	/**
 	 * Returns the value of a specified key in a specified list.
 	 * @param string $key The key to grab.

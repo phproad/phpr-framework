@@ -57,7 +57,7 @@ class Zip
 			if ($entry == '.' || $entry == '..')
 				continue;
 
-			$archive->add($entry, PCLZIP_CB_PRE_ADD, 'zip_helper_pre_add');
+			$archive->add($entry, PCLZIP_CB_PRE_ADD, 'File\zip_helper_pre_add');
 		}
 
 		$d->close();

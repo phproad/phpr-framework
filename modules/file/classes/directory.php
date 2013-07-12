@@ -62,7 +62,7 @@ class Directory
 
 	public static function exists($path)
 	{
-		return file_exists($path);
+		return file_exists($path) && is_dir($path);
 	}
 
 	public static function delete($path)

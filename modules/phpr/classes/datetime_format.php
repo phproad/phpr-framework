@@ -366,9 +366,9 @@ class DateTime_Format
 			self::sp_pr_mn_second => null
 		);
 
-		$Now = DateTime::now();
+		$now = DateTime::now();
 
-		$ampm = null;
+		$am_pm = null;
 
 		foreach ($format_specifiers as $index=>$specifier) 
 		{
@@ -403,17 +403,21 @@ class DateTime_Format
 
 			if ($type == self::sp_type_int) 
 			{
-				if (!preg_match("/^[0-9]+$/", $value))
+				if (!preg_match("/^[0-9]+$/", $value)) {
 					return false;
+				}
 
 				$value = (int)$value;
 
-				if (array_key_exists(self::sp_int_min, $specifier_desc))
-					if ($value < $specifier_desc[self::sp_int_min] || $value > $specifier_desc[self::sp_int_max])
+				if (array_key_exists(self::sp_int_min, $specifier_desc)) {
+					if ($value < $specifier_desc[self::sp_int_min] || $value > $specifier_desc[self::sp_int_max]) {
 						return false;
+					}
+				}
 			} 
 			else if ($type == self::sp_type_string) 
 			{
+
 				$domain = $specifier_desc[self::sp_domain];
 
 				if (!array_key_exists($domain, $domain_values_cache)) 
@@ -429,17 +433,18 @@ class DateTime_Format
 					$domain_values = $domain_values_cache[$domain];
 
 				$str_index = null;
-				foreach ($domain_values as $index=>$domainValue)
+				foreach ($domain_values as $index=>$domain_value)
 				{
-					if (strcasecmp($domainValue, $value) == 0) 
+					if (strcasecmp($domain_value, $value) == 0) 
 					{
 						$str_index = $index;
 						break;
 					}
 				}
 
-				if (is_null($str_index))
+				if (is_null($str_index)) {
 					return false;
+				}
 
 				$value = $index;
 			}
@@ -454,11 +459,11 @@ class DateTime_Format
 			{
 				switch ($specifier) 
 				{
-					case 'p' :
-						$ampm = $value;
+					case 'p':
+						$am_pm = $value;
 						break;
-					case 'y' :
-						$century = floor($Now->get_year()/100);
+					case 'y':
+						$century = floor($now->get_year()/100);
 						$date_elements[self::sp_pr_mn_year] = $century*100 + $value;
 						break;
 				}
@@ -467,21 +472,21 @@ class DateTime_Format
 
 		// Assemble result value
 		//
-		$year = is_null($date_elements[self::sp_pr_mn_year]) ? $Now->get_year() : $date_elements[self::sp_pr_mn_year];
-		$month = is_null($date_elements[self::sp_pr_mn_month]) ? $Now->get_month() : $date_elements[self::sp_pr_mn_month];
-		$day = is_null($date_elements[self::sp_pr_mn_day]) ? $Now->get_day() : $date_elements[self::sp_pr_mn_day];
-		$hour = is_null($date_elements[self::sp_pr_mn_hour]) ? 0 : $date_elements[self::sp_pr_mn_hour];
+		$year   = is_null($date_elements[self::sp_pr_mn_year]) ? $now->get_year() : $date_elements[self::sp_pr_mn_year];
+		$month  = is_null($date_elements[self::sp_pr_mn_month]) ? $now->get_month() : $date_elements[self::sp_pr_mn_month];
+		$day    = is_null($date_elements[self::sp_pr_mn_day]) ? $now->get_day() : $date_elements[self::sp_pr_mn_day];
+		$hour   = is_null($date_elements[self::sp_pr_mn_hour]) ? 0 : $date_elements[self::sp_pr_mn_hour];
 		$minute = is_null($date_elements[self::sp_pr_mn_minute]) ? 0 : $date_elements[self::sp_pr_mn_minute];
 		$second = is_null($date_elements[self::sp_pr_mn_second]) ? 0 : $date_elements[self::sp_pr_mn_second];
 
-		if (!is_null($ampm))
+		if (!is_null($am_pm))
 		{
-			if ($ampm == 1) 
+			if ($am_pm == 1) 
 			{
 				if ($hour < 12)
 					$hour += 12;
 			} 
-			elseif ($ampm == 0)
+			elseif ($am_pm == 0)
 			{
 				if ($hour >= 12)
 					$hour -= 12;

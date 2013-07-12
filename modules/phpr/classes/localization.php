@@ -219,10 +219,10 @@ class Localization
 			'variation' => $variation
 		), $options));
 		
-		// run placeholder replacement against the definition
+		// Run placeholder replacement against the definition
 		$definition = str_replace($replace_keys, $replace_values, $definition);
 
-		return $definition;
+		return trim($definition);
 	}
 
 	/**

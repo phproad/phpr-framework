@@ -1,5 +1,7 @@
 <?php namespace Db;
 
+use Db\Helper as Db_Helper;
+
 /**
  * @deprecated 
  * See Db_Helper

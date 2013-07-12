@@ -544,7 +544,7 @@ class Locale
 		
 		foreach ($paths as $path) 
 		{
-			if (!file_exists($directory_path = $path . '/localization'))
+			if (!file_exists($directory_path = $path . '/locale'))
 				continue;
 			
 			if (!is_readable($directory_path))

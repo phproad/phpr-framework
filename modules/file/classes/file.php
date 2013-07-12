@@ -2,7 +2,6 @@
 
 class File
 {
-
 	public static function get_permissions()
 	{
 		$permissions = Phpr::$config->get('FILE_PERMISSIONS');
@@ -35,4 +34,19 @@ class File
 		return round($size/1024000000, 1).' Gb';
 	}    
 
+	/**
+	 * Returns the file name without extension
+	 */
+	public static function get_name($file_path)
+	{
+		return pathinfo($file_path, PATHINFO_FILENAME);
+	}
+
+	/**
+	 * Returns the file extension component
+	 */
+	public static function get_extension($file_path)
+	{
+		return pathinfo($file_path, PATHINFO_EXTENSION);
+	}	
 }

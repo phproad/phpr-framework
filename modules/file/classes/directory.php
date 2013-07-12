@@ -19,6 +19,11 @@ class Directory
 		return 0777;
 	}
 
+	public static function exists($path)
+	{
+		return file_exists($path) && is_dir($path);
+	}
+
 	public static function copy($source, $destination, &$options = array())
 	{
 		$ignore_files = isset($options['ignore']) ? $options['ignore'] : array();
@@ -58,11 +63,6 @@ class Directory
 		{
 			copy($source, $destination);
 		}
-	}
-
-	public static function exists($path)
-	{
-		return file_exists($path) && is_dir($path);
 	}
 
 	public static function delete($path)

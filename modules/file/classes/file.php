@@ -32,7 +32,7 @@ class File
 			return round($size/1024000, 1).' Mb';
 
 		return round($size/1024000000, 1).' Gb';
-	}    
+	}
 
 	/**
 	 * Returns the file name without extension
@@ -48,5 +48,5 @@ class File
 	public static function get_extension($file_path)
 	{
 		return pathinfo($file_path, PATHINFO_EXTENSION);
-	}	
+	}
 }

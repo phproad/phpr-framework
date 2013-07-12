@@ -10,7 +10,8 @@ class Arr
 	 */
 	public static function first($array)
 	{
-		return array_shift(array_values($array));
+		$values = array_values($array);
+		return array_shift($values);
 	}
 
 	/**

@@ -92,7 +92,7 @@ class Cron
 
 	private static function execute_crontabs()
 	{
-		$modules = Phpr_Module_Manager::get_modules();
+		$modules = Module_Manager::get_modules();
 		foreach ($modules as $module)
 		{
 			$module_id = $module->get_id();

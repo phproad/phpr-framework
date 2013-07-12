@@ -107,7 +107,7 @@ class Cron
 				if (!isset($options['interval']) || !isset($options['method']))
 					continue;
 
-				$last_exec = DateTime::parse(Phpr_Cron::get_interval($code), DateTime::universal_datetime_format);
+				$last_exec = DateTime::parse(self::get_interval($code), DateTime::universal_datetime_format);
 				$next_exec = $last_exec->add_minutes($options['interval']);
 				$can_execute = DateTime::now()->compare($next_exec);
 
@@ -117,7 +117,7 @@ class Cron
 				{
 					$method = $options['method'];
 					if ($module->$method())
-						Phpr_Cron::update_interval($code);
+						self::update_interval($code);
 				}
 				catch (Exception $ex)
 				{            

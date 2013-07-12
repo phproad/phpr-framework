@@ -6,7 +6,7 @@ use Phpr\SystemException;
 use Phpr\ApplicationException;
 
 /**
- * Phpr_Localization class assists in application lozalization.
+ * Phpr_Locale class assists in application localization.
  *
  * The instance of this class is available in the Phpr global object: Phpr::$locale.
  * You may set user language programmatically: Phpr::$locale->set_locale("en_US"),
@@ -15,7 +15,7 @@ use Phpr\ApplicationException;
  * this case the language specified in the user browser configuration will be used.
  * If locale is not set the default value en_US will be used.
  */
-class Localization 
+class Locale 
 {
 	const default_locale_code = 'en_US';
 
@@ -548,7 +548,7 @@ class Localization
 				continue;
 			
 			if (!is_readable($directory_path))
-				throw new SystemException("Localization directory ".$directory_path." is not readable.");
+				throw new SystemException("Locale directory ".$directory_path." is not readable.");
 		
 			$this->directory_paths[] = $directory_path;
 		}
@@ -608,7 +608,7 @@ class Localization
 				$file_path = $path . '/' . $file->getFilename();
 				
 				if (!is_readable($file_path))
-					throw new SystemException("Localization file ".$file_path." is not readable.");
+					throw new SystemException("Locale file ".$file_path." is not readable.");
 			
 				$this->file_paths[$locale_code . $extension][] = $file_path;
 			}

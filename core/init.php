@@ -128,7 +128,7 @@ Phpr::$error_log = new Phpr_Error_Log();
 Phpr::$trace_log = new Phpr_Trace_Log();
 
 // Localization
-Phpr::$locale = new Phpr_Localization();
+Phpr::$locale = new Phpr_Locale();
 
 // Run modules initialization scripts
 //

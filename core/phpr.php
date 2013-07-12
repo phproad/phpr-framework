@@ -29,7 +29,7 @@ class Phpr
 	// Phpr_Request
 	public static $request;
 
-	// Phpr_Localization
+	// Phpr_Locale
 	public static $locale;
 
 	// Phpr_Security

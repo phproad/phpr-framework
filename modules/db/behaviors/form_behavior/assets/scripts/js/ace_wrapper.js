@@ -93,7 +93,7 @@ function find_code_editor(field_id) {
 			var textarea_id = this.textarea.attr('id');
 
 			this.editor.getSession().on('change', function(){
-				$(window).trigger('phpr_codeeditor_changed', textarea_id);
+				$(window).trigger('phprCodeeditorChanged', [textarea_id]);
 			});
 
 			this.editor.on('focus', function(){
@@ -105,7 +105,7 @@ function find_code_editor(field_id) {
 			
 			phpr_code_editors.push({'id': textarea_id, 'editor': this.editor});
 
-			$(window).trigger('phpr_codeeditor_initialized', [textarea_id, this.editor])
+			$(window).trigger('phprCodeeditorInitialized', [textarea_id, this.editor])
 			
 			/*
 			 * Configure

@@ -98,7 +98,7 @@ class Structure
 	public function __construct() 
 	{
 		if (!class_exists('ActiveRecord'))
-			Phpr::$class_loader->load('\Db\ActiveRecord');
+			Phpr::$class_loader->load('Db\ActiveRecord');
 		
 		$this->reset();
 	}

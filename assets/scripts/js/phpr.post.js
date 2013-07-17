@@ -217,16 +217,20 @@
 			return _context = context;
 		}
 
-		o.buildPostData = function(context) {
+		o.getRequestData = function(context) {
+			var postData;
+			
 			if (context.data instanceof jQuery)
-				context.data = o.serializeElement(context.data);
+				postData = o.serializeElement(context.data);
+			else
+				postData = context.data;
 
-			context.data = $.extend(true, {}, context.data, _data);
+			postData = $.extend(true, {}, postData, _data);
 
 			if (_form)
-				context.data = $.extend(true, {}, o.serializeElement(_form), context.data);
+				postData = $.extend(true, {}, o.serializeElement(_form), postData);
 
-			return _context = context;
+			return postData;
 		}
 
 		//
@@ -281,8 +285,6 @@
 			// On Before Send
 			_execute_event('beforeSend');
 
-			context = o.buildPostData(context);
-			
 			if (context.alert)
 				alert(context.alert);
 			
@@ -300,12 +302,14 @@
 
 				o.indicatorObj.show();
 			}
-			
-			// Execute javascript after partials have loaded
-			var tmpOptions = $.extend(true, {}, context, { evalScripts: false });
+
+			var requestOptions = $.extend(true, {}, context, { 
+				data: o.getRequestData(context),
+				evalScripts: false  // Execute javascript after partials have loaded
+			});
 
 			// Prepare the request
-			o.requestObj = new PHPR.request(o.getFormUrl(), context.action, tmpOptions);
+			o.requestObj = new PHPR.request(o.getFormUrl(), context.action, requestOptions);
 			o.requestObj.postObj = o;
 
 			// On Success

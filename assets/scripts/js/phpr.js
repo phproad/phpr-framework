@@ -127,17 +127,23 @@ function var_dump(obj, use_alert) {
 
 LockManager = function() {
 
-	this.locks = {};
-	this.set = function(name) {
-		this.locks[name] = true;
+	var o = {
+		locks: {},
+
+		set: function(name) {
+			o.locks[name] = true;
+		},
+		
+		get: function(name) {
+			return (o.locks[name]);
+		},
+
+		remove: function(name) {
+			o.locks[name] = null;
+		}
 	};
-	this.get = function(name) {
-		return (this.locks[name]);
-	};
-	this.remove = function(name) {
-		this.locks[name] = null;
-	}
-	
+
+	return o;
 };
 
 lockManager = new LockManager();

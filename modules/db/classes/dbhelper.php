@@ -1,5 +1,6 @@
 <?php namespace Db;
 
+use Phpr;
 use Db\Helper as Db_Helper;
 
 /**

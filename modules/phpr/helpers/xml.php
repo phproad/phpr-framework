@@ -110,7 +110,9 @@ class Xml
 				if (is_integer($key))
 					$key = db_number.$key;
 
-				$document->addChild($key, $value);
+				// Use direct property assignment in favour of addChild(key, value)
+				// to support characters: & < >
+				$document->{$key} = $value;
 			}
 		}
 

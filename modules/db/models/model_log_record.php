@@ -71,7 +71,7 @@ class Model_Log_Record extends ActiveRecord
 			{
 				$result = Xml::to_plain_array($this->param_data, true);
 			}
-			catch (Exception $ex) 
+			catch (\Exception $ex) 
 			{
 				// Do nothing
 			}
@@ -88,5 +88,5 @@ class Model_Log_Record extends ActiveRecord
 			return $default;
 
 		return $fields[$field];
-	}    
+	}
 }

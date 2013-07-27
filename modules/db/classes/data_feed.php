@@ -67,7 +67,7 @@ class Data_Feed
 		 
 			// Pass Class name
 			$record_obj = $record->from($record->table_name, 'id', true);
-			$record_obj->select("(SELECT '".get_class($record)."') as ".$this->classname_var);
+			$record_obj->select("(SELECT '".get_class_id($record)."') as ".$this->classname_var);
 
 			// Pass Context name
 			$context_name = $this->context_list[$key];
@@ -120,7 +120,7 @@ class Data_Feed
 		$sql[] = ") as records";
 		$sql = implode(' ', $sql);
 
-		return $sql;        
+		return $sql;
 	}
 
 	public function find_all()

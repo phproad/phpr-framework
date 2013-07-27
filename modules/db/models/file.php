@@ -260,7 +260,7 @@ class File extends ActiveRecord
 		try {
 			Image::make_thumb($this->get_file_save_path($this->disk_name), $thumb_file, $width, $height, false, $params['mode'], $return_jpeg);
 		}
-		catch (Exception $ex) {
+		catch (\Exception $ex) {
 			@copy(PATH_APP . $this->thumbnail_error, $thumb_file);
 		}
 

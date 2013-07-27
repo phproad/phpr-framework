@@ -125,6 +125,9 @@ class Record_Lock extends ActiveRecord
 				array('now'=>DateTime::now())
 			);
 		} 
-		catch (Exception $ex) {}
+		catch (\Exception $ex) 
+		{
+			// Do nothing
+		}
 	}
 }

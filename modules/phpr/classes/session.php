@@ -116,7 +116,7 @@ class Session implements ArrayAccess, IteratorAggregate, Countable
 						$this->set($key, $value);
 					}
 				}
-			} catch (Exception $ex) {}
+			} catch (\Exception $ex) {}
 		}
 	}
 

@@ -371,7 +371,10 @@ class Grid_Widget extends Form_Widget_Base
 			foreach ($files as $existing_file)
 				$model->csv_file->delete($existing_file, $session_key);
 		} 
-		catch (Exception $ex) {}
+		catch (\Exception $ex) 
+		{
+			// Do nothing
+		}
 
 		$this->view_data['grid_widget'] = $this;
 		$this->view_data['container_id'] = $container_id;

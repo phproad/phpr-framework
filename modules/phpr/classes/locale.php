@@ -403,7 +403,7 @@ class Locale
 		try {
 			$locale_code = \Core_Config::create()->locale_code;
 		} 
-		catch (Exception $ex) {
+		catch (\Exception $ex) {
 			$locale_code = self::default_locale_code;
 		}
 
@@ -660,7 +660,7 @@ class Locale
 				if (!$this->pluralization_exists($locale))
 					$this->set_pluralization($locale, $data);
 			}
-			catch (Exception $ex) 
+			catch (\Exception $ex) 
 			{
 				if ($handle)
 					@fclose($handle);
@@ -743,7 +743,7 @@ class Locale
 						$this->set_definition($locale, $container, $source, $destination, $variation);
 				}
 			}
-			catch (Exception $ex) 
+			catch (\Exception $ex) 
 			{
 				if ($handle)
 					@fclose($handle);

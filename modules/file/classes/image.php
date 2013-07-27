@@ -197,7 +197,7 @@ class Image
 				{
 					$res = shell_exec($convert_string);
 				}
-				catch (Exception $ex) 
+				catch (\Exception $ex) 
 				{
 					$res = exec($convert_string);
 				}

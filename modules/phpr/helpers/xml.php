@@ -2,6 +2,8 @@
 
 use SimpleXMLElement;
 use DOMDocument;
+use DOMText;
+use DOMCdataSection;
 
 /**
  * PHPR XML helper

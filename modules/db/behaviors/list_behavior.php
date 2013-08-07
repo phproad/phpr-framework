@@ -316,7 +316,7 @@ class List_Behavior extends Controller_Behavior
 					$model_object = new $model_class();
 
 					if (!$model_object->is_extended_with('Db\Model_Csv'))
-						throw new SystemException("The mode class ".$model_class." should be extended with the Db\Model_Csv extension.");
+						throw new SystemException("The model class ".$model_class." should be extended with the Db\Model_Csv extension.");
 
 					$delimeter = Csv::determine_csv_delimeter($file_path);
 					if (!$delimeter)

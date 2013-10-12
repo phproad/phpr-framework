@@ -61,21 +61,6 @@ class Deferred_Binding extends ActiveRecord
 		}
 	}
 	
-	public static function cancel_deferred_actions_sub($master_class_name, $session_key)
-	{
-		$len = strlen($session_key);
-		
-		$records = self::create()
-			->where('master_class_name=?', $master_class_name)
-			->where('substring(session_key, 1, '.$len.')=? ', $session_key)
-			->find_all();
-			
-		foreach ($records as $record)
-		{
-			$record->delete_cancel();
-		}
-	}
-	
 	public function delete_cancel()
 	{
 		$this->delete_detail_record();

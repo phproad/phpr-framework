@@ -80,7 +80,7 @@ class Deferred_Binding extends ActiveRecord
 	
 	protected function delete_detail_record()
 	{
-		// Try to delete unbound has_one records from the details table
+		// Try to delete unbound has_many/has_one records from the details table
 		try
 		{
 			if (!$this->is_bind)

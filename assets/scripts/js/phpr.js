@@ -203,7 +203,7 @@ jQuery.cookie = function(name, value, options) {
 	$.fn.bindkey = function(sBind, oFunction) {
 		if (this.length == 0)
 			return;
-		
+
 		if (typeof sBind != "string")
 			return;
 
@@ -219,6 +219,7 @@ jQuery.cookie = function(name, value, options) {
 			aKeys = _sBind.split ('+');
 			iKeysCount = aKeys.length;
 			for (i = 0; i < iKeysCount; i++) {
+        aKeys[i].trim();
 				switch (aKeys[i]) {
 					case 'shift':
 						_oWaited.shift = true;
@@ -234,7 +235,7 @@ jQuery.cookie = function(name, value, options) {
 			_oWaited.specific = _oKeys[aKeys[aKeys.length-1]];
 
 			if (typeof (_oWaited.specific) == 'undefined')
-				_oWaited.specific = String.charCodeAt (aKeys[aKeys.length-1]);
+				_oWaited.specific = aKeys[aKeys.length-1].toUpperCase().charCodeAt();
 		}
 
 		this.keydown (function (oEvent) {
@@ -247,7 +248,7 @@ jQuery.cookie = function(name, value, options) {
 					&& _oPressed.ctrl == _oWaited.ctrl
 					&& _oPressed.alt == _oWaited.alt) {
 
-				_oCallback (this);
+				return _oCallback(this);
 				_oPressed.shift = false;
 				_oPressed.ctrl = false;
 				_oPressed.alt = false;

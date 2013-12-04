@@ -97,7 +97,7 @@
 			<? foreach ($this->filter_switchers as $filter_id=>$filter_info): ?>
 				<li>
 					<input <?=Phpr_Form::checkbox_state(in_array($filter_id, $filter_checked_switchers)) ?> 
-						onclick="$(this).phpr().post('<?=$this->get_event_handler('on_filter_apply_switchers') ?>', {loadIndicator: {show: false}, success: function(){ cancelPopup(); <?=$this->filter_on_apply ?>}})" 
+						onclick="$(this).phpr().post('<?=$this->get_event_handler('on_filter_apply_switchers') ?>', {loadIndicator: {show: false}, success: function(){ cancelPopup(); <?=$this->filter_on_apply ?>}}).send();"
 						type="checkbox" 
 						value="1" 
 						name="filter_switchers[<?=$filter_id ?>]" 

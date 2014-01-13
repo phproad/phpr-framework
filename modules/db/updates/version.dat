@@ -17,3 +17,4 @@
 #17|1.0.17 Add the error details field to the trace log table
 #18|1.0.18 Add table for cron worker
 #19|1.0.19 Add table for model logging
+#20|1.0.20 Added (int) typecasting to decimal field in ActiveRecord::type_cast_field()

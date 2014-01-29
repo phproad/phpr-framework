@@ -88,7 +88,7 @@ class Flash implements ArrayAccess, IteratorAggregate, Countable
 		if ($offset)
 			$this->flash[$offset] = $value;
 		else
-			$this->glash[] = $value;
+			$this->flash[] = $value;
 		
 		$this->store();
 	}

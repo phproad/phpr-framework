@@ -935,7 +935,7 @@ class ActiveRecord extends Sql implements IteratorAggregate
 			switch ($field_info['type']) 
 			{
 				case 'decimal':
-				    $value = (int)$value;
+				    $value = (float)$value;
 				    break;
 				case 'int':
 				//case 'tinyint':

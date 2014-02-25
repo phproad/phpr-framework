@@ -23,8 +23,8 @@
 
 <div class="record-reference <?=$target_record ? null : 'empty' ?>">
 	<? if ($target_record): ?>
-        <i class="icon-remove recordfinder-cancel" style="cursor: pointer" onclick="$('#<?=$this->form_get_record_finder_container_id($form_model_class, $form_field->db_name) ?>').html('<?=h($prompt)?>');"></i>
-        <?=h($target_record->$display_name_field) ?>
+    <i class="icon-remove recordfinder-cancel" style="cursor: pointer" onclick="$('#<?=$id?>').removeAttr('value');$(this).parent().closest('div').html('<?=h($prompt)?>');"></i>
+    <?=h($target_record->$display_name_field) ?>
 		<? if ($display_description_field && strlen($target_record->$display_description_field)): ?>
 			<small><?=h($target_record->$display_description_field) ?></small>
 		<? endif ?>

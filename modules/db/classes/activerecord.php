@@ -938,7 +938,6 @@ class ActiveRecord extends Sql implements IteratorAggregate
 				    $value = (float)$value;
 				    break;
 				case 'int':
-				//case 'tinyint':
 				case 'smallint':
 				case 'mediumint':
 				case 'bigint':

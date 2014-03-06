@@ -12,7 +12,7 @@
 <? if ($form_file_list->count): 
 	$file = $form_file_list[0];
 ?>
-	<p>Uploaded file: <a href="<?=$base_url.$file->id.'/'.urlencode($file->name) ?>" target="_blank"><?=h($file->name) ?></a> (<?=File::size_from_bytes($file->size) ?>)  <span id="file_custom_message_<?=get_class($form_model) ?>_<?=$db_name ?>"></span>
+	<p>Uploaded file: <a href="<?=$base_url.$file->id.'/'.urlencode($file->name).'/' ?>" target="_blank"><?=h($file->name) ?></a> (<?=File::size_from_bytes($file->size) ?>)  <span id="file_custom_message_<?=get_class($form_model) ?>_<?=$db_name ?>"></span>
 	<? if ($allow_delete): ?>
 		| <a href="javascript:;" class="file-delete" onclick="return $(this).phpr().post('<?=$this->get_event_handler('on_delete_file') ?>', { 
 			data: { db_name: '<?=$db_name ?>', file_id: '<?=$file->id ?>'}, 

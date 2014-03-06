@@ -9,7 +9,7 @@
 		<ul>
 			<? foreach ($form_file_list as $file): ?>
 				<li>
-					<a href="<?=$base_url.$file->id.'/'.urlencode($file->name) ?>" target="_blank" class="file-link">
+					<a href="<?=$base_url.$file->id.'/'.urlencode($file->name).'/' ?>" target="_blank" class="file-link">
 						<i class="icon-save"></i> <?=h($file->name) ?>
 					</a> 
 					<span class="file-size">(<?=File::size_from_bytes($file->size) ?>)</span> | 

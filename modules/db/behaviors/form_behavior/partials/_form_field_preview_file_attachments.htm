@@ -7,7 +7,7 @@
 	<ul class="file-list">
 		<? foreach ($form_file_list as $file): ?>
 			<li>
-				<a href="<?=$base_url.$file->id.'/'.urlencode($file->name) ?>" target="_blank"><?=h($file->name) ?></a> 
+				<a href="<?=$base_url.$file->id.'/'.urlencode($file->name).'/' ?>" target="_blank"><?=h($file->name).'/' ?></a>
 				(<?=File::size_from_bytes($file->size) ?>)
 			</li>
 		<? endforeach ?>

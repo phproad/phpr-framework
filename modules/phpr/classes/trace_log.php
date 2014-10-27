@@ -111,7 +111,7 @@ class Trace_Log
 			return File_Log::write_line($this->listeners[$listener], $message);
 		else
 		{
-			if (!class_exists('Trace_Log_Record') && !Phpr::$class_loader->load('Trace_Log_Record'))
+			if (!class_exists('Phpr\\Trace_Log_Record') && !Phpr::$class_loader->load('Phpr\\Trace_Log_Record'))
 				return;
 
 			Trace_Log_Record::add($listener, $message);

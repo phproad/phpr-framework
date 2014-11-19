@@ -72,10 +72,19 @@ class Time
      * @return string
      */
     public function format_time($time, $format=self::universal_time_format){
+        //24 hour without seconds
+        $p1 = '/^(0?\d|1\d|2[0-3]):[0-5]\d$/';
 
-        $p1 = '/^(0?\d|1\d|2[0-3]):[0-5]\d:[0-5]\d$/';
-        $p2 = '/^(0?\d|1[0-2]):[0-5]\d\s(am|pm)$/i';
-        $valid_time = preg_match($p1, $time) || preg_match($p2, $time);
+        //24 hour with seconds
+        $p2 = '/^(0?\d|1\d|2[0-3]):[0-5]\d:[0-5]\d$/';
+
+        //12 hour without seconds, with AM|PM
+        $p3 = '/^(0?\d|1[0-2]):[0-5]\d\s(am|pm)$/i';
+
+        //12 hour with seconds, with AM|PM
+        $p4 = '/^(0?\d|1[0-2]):[0-5]\d:[0-5]\d\s(am|pm)$/i';
+
+        $valid_time = preg_match($p1, $time) || preg_match($p2, $time) || preg_match($p3, $time) || preg_match($p4, $time);
         if ($valid_time) {
             return date($format, strtotime($time));
         }
@@ -190,11 +199,11 @@ class Time
     /**
      * Get time difference between two times
      * @param Time $value to compare with
-     * @return string universal format time string
+     * @return string seconds
      */
     public function time_diff(Time $value){
         $diff = strtotime($this->__toString()) - strtotime($value->__toString());
-        return date(self::universal_time_format, $diff);
+        return $diff;
     }
 
 

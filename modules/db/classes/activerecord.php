@@ -5,6 +5,7 @@ use ReflectionObject;
 
 use Phpr;
 use Phpr\DateTime;
+use Phpr\Time;
 use Phpr\Util;
 use Phpr\Validation;
 use Phpr\Inflector;
@@ -926,13 +927,9 @@ class ActiveRecord extends Sql implements IteratorAggregate
 				$field_info = array('type'=>$this->calculated_columns[$field]['type']);
 		}
 
-		if ((isset($field_info['type']) && ($field_info['type'] == 'datetime' || $field_info['type'] == 'date' || $field_info['type'] == 'time'))) 
+		if (isset($field_info['type']))
 		{
-			$value = $this->type_cast_date($value, $field);
-		} 
-		elseif (isset($field_info['type'])) 
-		{
-			switch ($field_info['type']) 
+			switch ($field_info['type'])
 			{
 				case 'decimal':
 				    $value = (float)$value;
@@ -950,9 +947,13 @@ class ActiveRecord extends Sql implements IteratorAggregate
 					$value = $value;
 					break;
 				case 'datetime':
+                    $value = $this->type_cast_date($value,$field);
+                    break;
 				case 'date':
+                    $value = $this->type_cast_date($value,$field);
+                    break;
 				case 'time':
-					$value = $this->type_cast_date($value);
+                    $value = $this->type_cast_time($value,$field);
 					break;
 			}
 		}
@@ -986,6 +987,32 @@ class ActiveRecord extends Sql implements IteratorAggregate
 			
 		return null;
 	}
+
+
+    protected function type_cast_time($value, $field)
+    {
+        $is_object = is_object($value);
+
+        if (!$is_object)
+        {
+            $len = strlen($value);
+            if (!$len)
+                return null;
+
+            /*
+             * Do not convert dates to object during saving for validatable fields. The Validation object
+             * will process dates instead of model.
+             */
+            if ($this->model_state == self::state_saving && $this->validation->has_rule_for($field))
+                return $value;
+
+            return new Time($value);
+        }
+        elseif ($value instanceof Time)
+            return $value->to_sql_time();
+
+        return null;
+    }
 
 	/* Triggers */
 

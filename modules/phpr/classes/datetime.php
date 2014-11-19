@@ -74,6 +74,9 @@ class DateTime
 			$this->int_value = self::get_current_datetime();
 		else
 		{
+            if (strlen($datetime) == 10)
+                $datetime.=' 00:00:00';
+
 			$obj = DateTime_Format::parse_datetime($datetime, self::universal_datetime_format, $timezone);
 			if ($obj === false)
 				throw new ApplicationException("Can not parse date/time string: ".$datetime);

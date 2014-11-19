@@ -9,6 +9,7 @@ use Phpr;
 
 class TimeZone
 {
+    public static $timezones_array = null;
 
     public static function is_valid_timezone($time_zone) {
         try{
@@ -21,23 +22,28 @@ class TimeZone
 
     public static function get_timezone_list()
     {
-        static $timezones = null;
 
-        if ($timezones === null) {
-            $timezones = array();
-            $offsets =  array();
-            $now = new \DateTime();
+        if (self::$timezones_array === null) {
+            self::$timezones_array = Phpr::$session->get('Phpr_TimeZone::get_timezone_list', null);
 
-            foreach (\DateTimeZone::listIdentifiers() as $timezone) {
-                $now->setTimezone(new \DateTimeZone($timezone));
-                $offsets[] = $offset = $now->getOffset();
-                $timezones[$timezone] = '(' . self::format_GMT_offset($offset) . ') ' . self::format_timezone_name($timezone);
+
+            if (self::$timezones_array  === null) {
+                self::$timezones_array = array();
+                $offsets = array();
+                $now = new \DateTime();
+
+                foreach (\DateTimeZone::listIdentifiers() as $timezone) {
+                    $now->setTimezone(new \DateTimeZone($timezone));
+                    $offsets[] = $offset = $now->getOffset();
+                    self::$timezones_array[$timezone] = '(' . self::format_GMT_offset($offset) . ') ' . self::format_timezone_name($timezone);
+                }
+
+                array_multisort($offsets, self::$timezones_array );
+                Phpr::$session->set('Phpr_TimeZone::get_timezone_list', self::$timezones_array );
             }
-
-            array_multisort($offsets, $timezones);
         }
 
-        return $timezones;
+        return self::$timezones_array ;
     }
 
     protected function format_GMT_offset($offset)

@@ -47,6 +47,7 @@ class Cron
 		catch (Exception $ex)
 		{            
 			echo $ex->getMessage();
+            Phpr::$events->fire_event('phpr:on_execute_cron_exception',$ex);
 		}
 	}
 

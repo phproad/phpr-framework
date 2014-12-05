@@ -12,6 +12,9 @@ class TimeZone
     public static $timezones_array = null;
 
     public static function is_valid_timezone($time_zone) {
+       if(empty($time_zone)){
+           return FALSE;
+       }
         try{
             new \DateTimeZone($time_zone);
         }catch(Exception $e){

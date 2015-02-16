@@ -1,6 +1,6 @@
 <?php namespace Net;
 
-require_once(PATH_SYSTEM."/modules/net/vendor/phpmailer/class.phpmailer.php");
+require_once(PATH_SYSTEM."/modules/net/vendor/phpmailer/PHPMailerAutoload.php");
 use PHPMailer;
 
 use Phpr\SystemException;

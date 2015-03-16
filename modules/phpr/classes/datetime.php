@@ -68,7 +68,7 @@ class DateTime
 	{
         try {
 
-            if (is_a('DateTimeZone', $timezone)) {
+            if (is_a($timezone,'DateTimeZone')) {
                 $this->timezone = $timezone;
             }
 

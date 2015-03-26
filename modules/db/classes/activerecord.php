@@ -395,6 +395,7 @@ class ActiveRecord extends Sql implements IteratorAggregate
 		// @TODO: handle $include (eager associations)
 
 		$data = $this->fetch_all($this->build_sql());
+
 		$result = $this->_find_fill($data, $form_context);
 
 		if ($caching_case)
@@ -475,7 +476,6 @@ class ActiveRecord extends Sql implements IteratorAggregate
 	public function get_all_deferred($name, $deferred_session_key)
 	{
 		$object = $this->get_deferred($name, $deferred_session_key);
-
 		$data = $object->find_all_internal();
 		$data->relation = $name;
 		$data->parent = $this;
@@ -921,6 +921,7 @@ class ActiveRecord extends Sql implements IteratorAggregate
 	protected function type_cast_field($field, $value) 
 	{
 		$field_info = $this->field($field);
+
 		if (!isset($field_info['type']))
 		{
 			if (array_key_exists($field, $this->calculated_columns) && isset($this->calculated_columns[$field]['type']))
@@ -932,19 +933,24 @@ class ActiveRecord extends Sql implements IteratorAggregate
 			switch ($field_info['type'])
 			{
 				case 'decimal':
-				    $value = (float)$value;
+				    $value = is_numeric($value)? (float)$value : null;
 				    break;
 				case 'int':
+                    break;
 				case 'smallint':
+                    break;
 				case 'mediumint':
+                    break;
 				case 'bigint':
+                    break;
 				case 'double':
+                    break;
 				case 'float':
-					$value = $value;
+                    $value = is_numeric($value)? (float)$value : null;
 					break;
 				case 'bool':
+                    break;
 				case 'tinyint':
-					$value = $value;
 					break;
 				case 'datetime':
                     $value = $this->type_cast_date($value,$field);

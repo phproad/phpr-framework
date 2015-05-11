@@ -3,7 +3,6 @@
     $date_end = null;
     $date_search_active = strlen($list_date_search_interval);
     if($date_search_active){
-    trace_log('search active '.$list_date_search_interval);
         $dates = json_decode($list_date_search_interval);
         $date_start = $dates->start;
         $date_end = $dates->end;

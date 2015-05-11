@@ -49,10 +49,6 @@
 		?>
 		<td <?=$cell_style ?> class="<?=$this->list_cell_class($column) ?> <?=$url ? 'link' : null ?>" <?=$cell_on_click_handler ?>>
 			<?
-			if(empty($column->db_name)){
-				trace_log($column);
-				trace_log($this->list_cell_individual_partial);
-			}
 				if (!array_key_exists($column->db_name, $this->list_cell_individual_partial)):
 			?>
 				<?

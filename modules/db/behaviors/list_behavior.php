@@ -6,6 +6,7 @@ use Phpr\User_Parameters;
 use Phpr\Pagination;
 use Phpr\SystemException;
 use Phpr\ApplicationException;
+use Phpr\DateTime;
 use Db\Helper as Db_Helper;
 use File\Upload;
 use File\Csv;
@@ -42,6 +43,10 @@ class List_Behavior extends Controller_Behavior
 	public $list_search_prompt = null;
 	public $list_search_fields = array();
 	public $list_search_custom_func = null;
+
+    public $list_date_search_enabled = false;
+    public $list_date_search_column = null;
+
 
 	public $list_no_interaction = false;
 	public $list_no_js_declarations = false;
@@ -96,8 +101,11 @@ class List_Behavior extends Controller_Behavior
 		$this->add_event_handler('on_list_toggle_node');
 		$this->add_event_handler('on_list_reload');
 		$this->add_event_handler('on_list_search');
+        $this->add_event_handler('on_list_date_search');
 		$this->add_event_handler('on_list_search_cancel');
 		$this->add_event_handler('on_list_goto_node');
+
+        $this->_controller->list_search_partial = $this->get_behaviour_dir('partials/_list_search.html');
 	}
 
 	//
@@ -108,8 +116,13 @@ class List_Behavior extends Controller_Behavior
 	{
 		$phpr_url = Phpr::$config->get('PHPR_URL', 'phpr');
 
-		if (!$this->list_load_indicator)
+
+        $this->_controller->add_css($this->get_behaviour_url('assets/stylesheets/css/daterangepicker.css?'.module_build('core')));
+
+
+        if (!$this->list_load_indicator)
 			$this->list_load_indicator = $phpr_url.'/assets/images/loading_50.gif';
+
 	}
 
 	//
@@ -560,6 +573,18 @@ class List_Behavior extends Controller_Behavior
 		return $sorting_column;
 	}
 
+    public function get_behaviour_dir($endpoint=null){
+        return PATH_SYSTEM.'/modules/db/behaviors/list_behavior/'.$endpoint;
+    }
+
+    public function get_behaviour_url($endpoint=null){
+        return '/framework/modules/db/behaviors/list_behavior/'.$endpoint;
+    }
+
+
+
+
+
 	// Event handlers
 	//
 	
@@ -705,7 +730,15 @@ class List_Behavior extends Controller_Behavior
 
 		$this->display_table();
 	}
-	
+
+    public function on_list_date_search()
+    {
+        $interval_string = trim(post('date_interval'));
+        $interval = json_decode(trim($interval_string));
+        Phpr::$session->set($this->list_get_name().'_date_search', $interval_string);
+        $this->display_table();
+    }
+
 	public function on_list_search_cancel()
 	{
 		Phpr::$session->set($this->list_get_name().'_search', '');
@@ -957,7 +990,9 @@ class List_Behavior extends Controller_Behavior
 		$this->view_data['list_load_indicator'] = $this->_controller->list_load_indicator;
 		$this->view_data['list_tree_level'] = 0;
 		$this->view_data['list_search_string'] = Phpr::$session->get($this->list_get_name().'_search');
-	}
+        $this->view_data['list_date_search_interval'] = Phpr::$session->get($this->list_get_name().'_date_search');
+
+    }
 	
 	protected function configure_sliding_list_data($model)
 	{
@@ -1074,29 +1109,28 @@ class List_Behavior extends Controller_Behavior
 		{
 			if (!$this->_controller->list_search_fields)
 				throw new ApplicationException('List search is enabled, but search fields are not specified in the list settings. Please use $list_search_fields public controller field to define an array of fields to search in.');
-			
+
 			if (!strlen($search_string) && !$this->_controller->list_search_show_empty_query)
 			{
 				$first_field = $this->_controller->list_search_fields[0];
 				$model->where($first_field.' != '.$first_field);
-			} 
+			}
 			else if (strlen($search_string))
 			{
 				$this->_controller->list_display_as_tree = false;
-				
+
 				if ($this->_controller->list_display_as_sliding_list)
 				{
 					$this->view_data['list_display_path_column'] = true;
 					$this->view_data['list_model_parent_field'] = $model->act_as_tree_parent_key;
 				}
-				
+
 				$this->_controller->list_display_as_sliding_list = false;
-				
 				if (strlen($this->_controller->list_search_custom_func))
 				{
 					$func = $this->_controller->list_search_custom_func;
 					$this->_controller->$func($model, $search_string);
-				} 
+				}
 				else
 				{
 					$words = explode(' ', $search_string);
@@ -1116,7 +1150,7 @@ class List_Behavior extends Controller_Behavior
 					foreach ($this->_controller->list_search_fields as $field)
 					{
 						$field_name = $field;
-						
+
 						$field = str_replace('@', $model->table_name.'.', $field);
 
 						if ($field_name == 'id' || $field_name == '@id')
@@ -1130,7 +1164,41 @@ class List_Behavior extends Controller_Behavior
 				}
 			}
 		}
-		
+
+        // Apply date search
+        $interval_string = Phpr::$session->get($this->list_get_name().'_date_search');
+        if ($this->_controller->list_date_search_enabled) {
+
+            if (!$this->_controller->list_date_search_column)
+                $this->_controller->list_date_search_column = 'created_at';
+
+           if (strlen($interval_string)) {
+               //validate dates
+               $valid_dates = true;
+               $interval = json_decode($interval_string);
+               $date_start = DateTime::parse($interval->start,'%Y-%m-%d');
+               $date_end = DateTime::parse($interval->end,'%Y-%m-%d');
+
+
+               if($date_start && $date_end) {
+                   $this->_controller->list_display_as_tree = false;
+
+                   if ($this->_controller->list_display_as_sliding_list) {
+                       $this->view_data['list_display_path_column'] = true;
+                       $this->view_data['list_model_parent_field'] = $model->act_as_tree_parent_key;
+                   }
+                   $this->_controller->list_display_as_sliding_list = false;
+
+                   $column = $this->_controller->list_date_search_column;
+                   $start_sql = $date_start->to_sql_date();
+                   $end_sql = $date_end->to_sql_date();
+
+                   $query = "$model->table_name.$column >= '$start_sql' AND $model->table_name.$column <= '$end_sql'";
+
+                   $model->where($query);
+               }
+            }
+        }
 		return $model;
 	}
 }

@@ -86,20 +86,29 @@ class Deferred_Binding extends ActiveRecord
 			if (!$this->is_bind)
 				return;
 
+
 			$master_class_name = $this->master_class_name;
 			$master_object = new $master_class_name();
 			$master_object->define_columns();
 
+
+
 			if (!array_key_exists($this->master_relation_name, $master_object->has_models))
 				return;
+
+
+
 
 			if (($type = $master_object->has_models[$this->master_relation_name]) !== 'has_many')
 				return;
 
+
+
 			$related = $master_object->related($this->master_relation_name);
 			$related_obj  = $related->find($this->detail_key_value);
-			if (!$related_obj)
-				return;
+			if (!$related_obj) {
+              return;
+            }
 
 			$has_primary_key = false;
 			$has_foreign_key = false;
@@ -107,7 +116,8 @@ class Deferred_Binding extends ActiveRecord
 
 			if (!array_key_exists('delete', $options) || !$options['delete'])
 				return;
-			
+
+
 			if (!$has_foreign_key)
 				$options['foreign_key'] = Inflector::foreign_key($master_object->table_name, $related_obj->primary_key);
 

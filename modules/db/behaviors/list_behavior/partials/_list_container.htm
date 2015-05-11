@@ -1,6 +1,14 @@
 <?
 	$show_toolbar = $this->list_control_panel || ($this->list_search_enabled && !$this->list_no_interaction);
 ?>
+
+<?
+if($this->list_date_search_enabled){
+$this->display_partial($this->get_behaviour_dir('partials/_list_date_search.htm'));
+}
+?>
+
+
 <? if ($show_toolbar): ?>
 	<div class="navbar scroll-toolbar">
 		<div class="navbar-inner">
@@ -45,63 +53,10 @@
 					</ul>
 				<? endif ?>
 
-				<? if ($this->list_search_enabled): ?>
-					<?
-						$search_control_id = $this->list_get_element_id('search_control');
-						$search_field_id = $this->list_get_element_id('search_field');
-						
-						$search_active = strlen($list_search_string);
-					?>
-
-					<!-- List search -->
-					<div class="navbar-form list-search <?= $search_active ? null : 'inactive' ?>" id="<?=h($search_control_id) ?>">
-						<i class="icon-search"></i>
-						<input type="text" name="search_field" class="search-field" value="<?= $search_active ? h($list_search_string) : h($this->list_search_prompt) ?>" id="<?=h($search_field_id) ?>" />
-						<i class="icon-remove search-cancel"></i>
-					</div>
-					
-					<script type="text/javascript">
-						<?
-							$form_id = $this->list_get_form_id();
-							$list_form = $this->list_no_form ? "jQuery('#".$search_control_id."').closest('form')" : "jQuery('#".$form_id."')";
-						?>
-						var searchHandler = jQuery('#<?=h($search_control_id) ?>').searchControl({ defaultText: '<?= $this->list_search_prompt ?>' });
-							
-							searchHandler.on('send', function(){
-								return <?= $list_form ?>.phpr().post('<?= $this->get_event_handler('on_list_search') ?>', {
-									update: '#<?= $this->list_get_container_id() ?>', 
-									data: {
-										search_string: jQuery('#<?= $search_field_id ?>').val()
-									}, 
-									success: function() {
-										jQuery('#<?= $this->list_get_container_id() ?>').trigger('listUpdated');
-									}, 
-									loadIndicator: {
-										injectInElement: true, 
-										element: '#<?= $this->list_get_container_id() ?>', 
-										src: '<?= $list_load_indicator ?>', 
-										hideOnSuccess: true
-									}
-								}).send();
-							});
-
-							searchHandler.on('cancel', function(){
-								return <?= $list_form ?>.phpr().post('<?= $this->get_event_handler('on_list_search_cancel') ?>', {
-									update: '#<?= $this->list_get_container_id() ?>', 
-									success: function() {
-										jQuery('#<?= $this->list_get_container_id() ?>').trigger('listUpdated');
-									}, 
-									loadIndicator: {
-										injectInElement: true, 
-										element: '#<?= $this->list_get_container_id() ?>', 
-										src: '<?= $list_load_indicator ?>', 
-										hideOnSuccess: true
-									}
-								}).send();
-							});
-						
-					</script>
-				<? endif ?>
+				<? if ($this->list_search_enabled){
+                    $this->display_partial($this->get_behaviour_dir('partials/_list_search.htm'));
+                }
+				?>
 	
 		<? endif ?>
 

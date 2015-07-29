@@ -2804,4 +2804,22 @@ class ActiveRecord extends Sql implements IteratorAggregate
 			$destination->{$form_element->db_name} = $this->{$form_element->db_name};
 		}
 	}
+
+	/**
+	 * Output array of all model columns and values, calculated and custom.
+	 */
+
+	public function to_array(){
+		$columns = $this->columns();
+		$data = array();
+		foreach($columns as $column){
+			$column_name = $column->name;
+			$val = $this->$column_name;
+			if(is_object($val) && method_exists($val, '__toString')){
+				$val = $val->__toString();
+			}
+			$data[$column_name] = $val;
+		}
+		return $data;
+	}
 }

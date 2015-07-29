@@ -19,3 +19,4 @@
 #19|1.0.19 Add table for model logging
 #20|1.0.20 Added (int) typecasting to decimal field in ActiveRecord::type_cast_field()
 #21|1.0.21 Updated list behaviour to allow for date range searches.
+#22|1.0.22 Added to_array() function to activerecord.

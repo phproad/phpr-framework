@@ -766,7 +766,7 @@ class Form_Behavior extends Controller_Behavior
 				$flash_set = true;;
 			}
 
-			if (post('redirect', false))
+			if (post('redirect', 1))
 			{
 				$redirect_url = Util::any($this->_controller->form_edit_save_redirect, $this->_controller->form_redirect);
 

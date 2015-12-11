@@ -10,7 +10,7 @@
 	<? if ($form_file_list->count): ?>
 		<? foreach ($form_file_list as $file): ?>
 			<a href="<?=$base_url.'/'.urlencode($file->disk_name) ?>" target="_blank"><img src="<?=$file->get_thumbnail_path($field_definition->image_thumb_size, $field_definition->image_thumb_size) ?>" alt="<?=h($file->name) ?>"/></a>
-			<a href="javascript:;" onclick="return $(this).phpr().send('<?=$this->get_event_handler('on_delete_file') ?>', {
+			<a href="javascript:;" onclick="return $(this).phpr().post('<?=$this->get_event_handler('on_delete_file') ?>', {
 				data: { db_name: '<?=$db_name ?>', file_id: '<?=$file->id ?>' }, 
 				confirm: 'Do you really want to delete this file?', 
 				update: '#<?=$list_container_id ?>', 

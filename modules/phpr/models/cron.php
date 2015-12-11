@@ -34,21 +34,52 @@ class Cron
 		return $interval;
 	}
 
-	public static function execute_cron()
-	{
-		try
-		{
-			// Jobs are one off executions
-			self::execute_cronjobs();
+	public static function catch_fatal_errors(){
+		// This storage is freed on error (case of allowed memory exhausted)
+		$GLOBALS['reserved_memory'] = str_repeat('*', 1024 * 1024);
 
-			// Tables are regular executions
-			self::execute_crontabs();
+		register_shutdown_function(function() {
+			$GLOBALS['reserved_memory'] = null;
+			$error = error_get_last();
+
+			if ($error['type'] == 1) {
+				$ex = new SystemException(json_encode($error));
+				Phpr::$events->fire_event('phpr:on_execute_cron_exception',$ex);
+			}
+		});
+	}
+
+	public static function execute_cron($tabs=true, $jobs=true)
+	{
+		self::catch_fatal_errors();
+
+		//JOBS
+		try {
+			if($jobs) {
+				// Jobs are one off executions
+				self::execute_cronjobs();
+				Phpr::$events->fire_event('phpr:on_after_execute_cronjobs');
+			}
 		}
-		catch (Exception $ex)
-		{            
+		catch (Exception $ex) {
 			echo $ex->getMessage();
             Phpr::$events->fire_event('phpr:on_execute_cron_exception',$ex);
 		}
+
+		//TABS
+		try {
+			if($tabs) {
+				// Tabs are regular executions
+				self::execute_crontabs();
+				Phpr::$events->fire_event('phpr:on_after_execute_crontabs');
+			}
+		}
+		catch (Exception $ex) {
+			echo $ex->getMessage();
+			Phpr::$events->fire_event('phpr:on_execute_cron_exception',$ex);
+		}
+
+
 	}
 
 	// Usage: 

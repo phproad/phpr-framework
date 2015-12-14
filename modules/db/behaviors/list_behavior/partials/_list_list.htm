@@ -35,5 +35,10 @@
 		) ?>
 	</div>
 <? endif ?>
-<input type="hidden" class="list_load_indicator" value="<?= $list_load_indicator ?> "/>
+<input type="hidden" class="list_load_indicator" value="<?= $list_load_indicator ?>"/>
+
+<? if(!$this->list_no_form): ?>
+<input type="hidden" name="list_name" value="<?= $this->list_name ?>"/>
+<? endif ?>
+
 <script type="text/javascript"> realignPopups(); </script>

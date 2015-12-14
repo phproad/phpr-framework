@@ -5,6 +5,7 @@ use ReflectionObject;
 
 use Phpr;
 use Phpr\DateTime;
+use Phpr\Time;
 use Phpr\Util;
 use Phpr\Validation;
 use Phpr\Inflector;
@@ -394,6 +395,7 @@ class ActiveRecord extends Sql implements IteratorAggregate
 		// @TODO: handle $include (eager associations)
 
 		$data = $this->fetch_all($this->build_sql());
+
 		$result = $this->_find_fill($data, $form_context);
 
 		if ($caching_case)
@@ -474,7 +476,6 @@ class ActiveRecord extends Sql implements IteratorAggregate
 	public function get_all_deferred($name, $deferred_session_key)
 	{
 		$object = $this->get_deferred($name, $deferred_session_key);
-
 		$data = $object->find_all_internal();
 		$data->relation = $name;
 		$data->parent = $this;
@@ -920,40 +921,45 @@ class ActiveRecord extends Sql implements IteratorAggregate
 	protected function type_cast_field($field, $value) 
 	{
 		$field_info = $this->field($field);
+
 		if (!isset($field_info['type']))
 		{
 			if (array_key_exists($field, $this->calculated_columns) && isset($this->calculated_columns[$field]['type']))
 				$field_info = array('type'=>$this->calculated_columns[$field]['type']);
 		}
 
-		if ((isset($field_info['type']) && ($field_info['type'] == 'datetime' || $field_info['type'] == 'date' || $field_info['type'] == 'time'))) 
+		if (isset($field_info['type']))
 		{
-			$value = $this->type_cast_date($value, $field);
-		} 
-		elseif (isset($field_info['type'])) 
-		{
-			switch ($field_info['type']) 
+			switch ($field_info['type'])
 			{
 				case 'decimal':
-				    $value = (int)$value;
+				    $value = is_numeric($value)? (float)$value : null;
 				    break;
 				case 'int':
-				//case 'tinyint':
+                    break;
 				case 'smallint':
+                    break;
 				case 'mediumint':
+                    break;
 				case 'bigint':
+                    break;
 				case 'double':
+                    break;
 				case 'float':
-					$value = $value;
+                    $value = is_numeric($value)? (float)$value : null;
 					break;
 				case 'bool':
+                    break;
 				case 'tinyint':
-					$value = $value;
 					break;
 				case 'datetime':
+                    $value = $this->type_cast_date($value,$field);
+                    break;
 				case 'date':
+                    $value = $this->type_cast_date($value,$field);
+                    break;
 				case 'time':
-					$value = $this->type_cast_date($value);
+                    $value = $this->type_cast_time($value,$field);
 					break;
 			}
 		}
@@ -987,6 +993,32 @@ class ActiveRecord extends Sql implements IteratorAggregate
 			
 		return null;
 	}
+
+
+    protected function type_cast_time($value, $field)
+    {
+        $is_object = is_object($value);
+
+        if (!$is_object)
+        {
+            $len = strlen($value);
+            if (!$len)
+                return null;
+
+            /*
+             * Do not convert dates to object during saving for validatable fields. The Validation object
+             * will process dates instead of model.
+             */
+            if ($this->model_state == self::state_saving && $this->validation->has_rule_for($field))
+                return $value;
+
+            return new Time($value);
+        }
+        elseif ($value instanceof Time)
+            return $value->to_sql_time();
+
+        return null;
+    }
 
 	/* Triggers */
 
@@ -2771,5 +2803,23 @@ class ActiveRecord extends Sql implements IteratorAggregate
 		
 			$destination->{$form_element->db_name} = $this->{$form_element->db_name};
 		}
+	}
+
+	/**
+	 * Output array of all model columns and values, calculated and custom.
+	 */
+
+	public function to_array(){
+		$columns = $this->columns();
+		$data = array();
+		foreach($columns as $column){
+			$column_name = $column->name;
+			$val = $this->$column_name;
+			if(is_object($val) && method_exists($val, '__toString')){
+				$val = $val->__toString();
+			}
+			$data[$column_name] = $val;
+		}
+		return $data;
 	}
 }

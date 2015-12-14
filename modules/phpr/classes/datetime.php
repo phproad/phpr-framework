@@ -65,18 +65,36 @@ class DateTime
 	 * If this parameter is omitted, the default time zone will be used.
 	 */
 	public function __construct($datetime = null, $timezone = null)
-	{ 
-		$this->timezone = ($timezone === null) 
-			? new DateTimeZone(date_default_timezone_get()) 
-			: $timezone;
+	{
+        try {
 
-		if ($datetime === null)
-			$this->int_value = self::get_current_datetime();
-		else
-		{
-			$obj = DateTime_Format::parse_datetime($datetime, self::universal_datetime_format, $timezone);
-			if ($obj === false)
-				throw new ApplicationException("Can not parse date/time string: ".$datetime);
+            if (is_a($timezone,'DateTimeZone')) {
+                $this->timezone = $timezone;
+            }
+
+            if (is_string($timezone) && !empty($timezone)) {
+                $this->timezone = new DateTimeZone($timezone);
+            }
+
+            if (empty($this->timezone)) {
+                $default_tz = \Phpr::$config->get('TIMEZONE', date_default_timezone_get());
+                $this->timezone = new DateTimeZone($default_tz);
+            }
+        } catch (Exception $e){
+            $this->timezone = null;
+        }
+
+		if ($datetime === null) {
+            $this->int_value = self::get_current_datetime();
+        } else {
+            if (strlen($datetime) == 10) {
+                $datetime .= ' 00:00:00';
+            }
+
+			$obj = DateTime_Format::parse_datetime($datetime, self::universal_datetime_format, $this->timezone);
+			if ($obj === false) {
+                throw new ApplicationException("Can not parse date/time string: " . $datetime);
+            }
 
 			$this->int_value = $obj->get_integer();
 		}

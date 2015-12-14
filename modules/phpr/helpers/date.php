@@ -3,7 +3,8 @@
 use DateTimeZone;
 
 use Phpr;
-use Phpr\DateTime;
+use Phpr\TimeZone;
+use Phpr\DateTime as DateTime;
 use Phpr\DateTime_Interval;
 use Phpr\SystemException;
 
@@ -86,9 +87,16 @@ class Date
 	{
 		if (!$date_obj)
 			return null;
-			
+
+        $date_string = $date_obj->__toString();
+        if (empty($date_string)) {
+            return null;
+        }
+
 		$timezone_obj = self::get_user_timezone();
-		$date_obj->set_timezone($timezone_obj);
+        if(is_object($timezone_obj)) {
+            $date_obj->set_timezone($timezone_obj);
+        }
 		unset($timezone_obj);
 		
 		return $date_obj->format($format);
@@ -114,17 +122,27 @@ class Date
 		if (self::$user_timezone !== null)
 			return self::$user_timezone;
 
-		$timezone = Phpr::$config->get('TIMEZONE');
-		try
-		{
-			return self::$user_timezone = new DateTimeZone($timezone);
-		}
-		catch (Exception $Ex)
-		{
-			throw new SystemException('Invalid time zone specified in config.php: '.$timezone.'. Please refer this document for the list of correct time zones: http://docs.php.net/timezones.');
-		}
+        $user = Phpr::$security->get_user();
+        if($user && !empty($user->time_zone) && is_string($user->time_zone)) {
+            if (TimeZone::is_valid_timezone($user->time_zone)) {
+                $timezone = new \DateTimeZone($user->time_zone);
+                self::$user_timezone = $timezone;
+                return $timezone;
+            }
+        }
+
+        try {
+            $timezone = Phpr::$config->get('TIMEZONE');
+            $timezone = new \DateTimeZone($timezone);
+            self::$user_timezone = $timezone;
+            return $timezone;
+        }
+        catch (Exception $Ex) {
+            throw new SystemException('Invalid time zone specified in config.php: '.$timezone.'. Please refer this document for the list of correct time zones: http://docs.php.net/timezones.');
+        }
 	}
-	
+
+
 	/**
 	 * Returns true if the $date_obj represents today date
 	 * @param Phpr\DateTime $date_obj Specifies a date object in GMT timezone

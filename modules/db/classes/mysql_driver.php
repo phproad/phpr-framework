@@ -121,7 +121,7 @@ class MySQL_Driver extends Driver_Base
 		$this->connect();
 
 		// Execute the statement
-		// 
+		//
 		$handle = @mysql_query($sql, Db::$connection);
 
 		// If error, generate exception

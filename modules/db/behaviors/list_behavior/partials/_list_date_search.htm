@@ -1,0 +1,81 @@
+<?
+    $date_start = null;
+    $date_end = null;
+    $date_search_active = strlen($list_date_search_interval);
+    if($date_search_active){
+        $dates = json_decode($list_date_search_interval);
+        $date_start = $dates->start;
+        $date_end = $dates->end;
+    }
+?>
+<div id="interval_container">
+    <input id="phpr_list_date_search_input" name="phpr_list_date_search_input"/>
+    <div class="interval_selector" id="report_interval_selector">
+        <div>
+            <span class="type">Dates</span>
+            <span id="list_date_interval_text" class="interval"><?= $date_search_active ? "$date_start - $date_end" : 'All'?></span>
+        </div>
+        <a id="list_date_search_trigger" class="trigger"><i class="calendar_button"></i></a>
+    </div>
+</div>
+
+<?
+$form_id = $this->list_get_form_id();
+$list_form = $this->list_no_form ? "jQuery('#".$search_control_id."').closest('form')" : "jQuery('#".$form_id."')";
+?>
+<script>
+    $(document).ready(function(){
+        $("#phpr_list_date_search_input").bind("change paste keyup", function() {
+            if(!jQuery(this).val()){
+                console.log('close emppty');
+                update_list();
+                update_date_display();
+            }
+        });
+
+
+            $("#phpr_list_date_search_input").daterangepicker({
+                datepickerOptions : {
+                    numberOfMonths : 2
+                },
+                onChange: function() {
+                    console.log('change');
+                    update_list();
+                }
+            });
+
+        function update_date_display() {
+            if (!jQuery('#phpr_list_date_search_input').val()) {
+                $('#list_date_interval_text').html('All');
+            } else {
+                var range = jQuery.parseJSON(jQuery('#phpr_list_date_search_input').val());
+                $('#list_date_interval_text').html(range.start + ' - ' + range.end);
+            }
+        }
+
+        function update_list(){
+            return <?= $list_form ?>.phpr().post('<?= $this->get_event_handler('on_list_date_search') ?>', {
+                update: '#<?= $this->list_get_container_id() ?>',
+                data: {
+                    date_interval: jQuery('#phpr_list_date_search_input').val()
+                },
+                success: function() {
+                    jQuery('#<?= $this->list_get_container_id() ?>').trigger('listUpdated');
+                    update_date_display();
+                },
+                loadIndicator: {
+                    injectInElement: true,
+                    element: '#<?= $this->list_get_container_id() ?>',
+                    src: '<?= $list_load_indicator ?>',
+                    hideOnSuccess: true
+                }
+            }).send();
+        }
+
+        $("#list_date_search_trigger").click(function () { $("#phpr_list_date_search_input").daterangepicker("open"); return false; });
+
+    });
+
+</script>
+
+<div style="clear:right;"></div>

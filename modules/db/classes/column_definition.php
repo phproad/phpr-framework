@@ -4,6 +4,7 @@ use Phpr;
 use Phpr\Inflector;
 use Phpr\DateTime;
 use Phpr\Date;
+use Phpr\Time;
 use Phpr\Html;
 use Phpr\SystemException;
 
@@ -389,7 +390,7 @@ class Column_Definition
 						return $value ? $value->format($this->_datetime_format) : null;
 				}
 			case db_time:
-				return Date::display($value, $this->_time_format);
+				return Time::display($value, $this->_time_format);
 			default:
 				return $value;
 		}

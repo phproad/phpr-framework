@@ -259,27 +259,27 @@
 .ui-grid table.ui-grid-body tr td.popup-button-container input.cell-editor {
   padding-right: 23px !important;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-active .chzn-single {
+.ui-grid table.ui-grid-body tr td .chosen-container-active .chosen-single {
   box-shadow: none;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-single {
+.ui-grid table.ui-grid-body tr td .chosen-container-single {
   font-size: inherit;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop {
+.ui-grid table.ui-grid-body tr td .chosen-container-single .chosen-drop {
   border: none;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop .chzn-results li {
+.ui-grid table.ui-grid-body tr td .chosen-container-single .chosen-drop .chosen-results li {
   color: #333;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop .chzn-results li:hover,
-.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop .chzn-results li.highlighted {
+.ui-grid table.ui-grid-body tr td .chosen-container-single .chosen-drop .chosen-results li:hover,
+.ui-grid table.ui-grid-body tr td .chosen-container-single .chosen-drop .chosen-results li.highlighted {
   color: #fff;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-drop .chzn-search input {
+.ui-grid table.ui-grid-body tr td .chosen-container-single .chosen-drop .chosen-search input {
   padding: 5px !important;
   border: 1px solid #333 !important;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-single {
+.ui-grid table.ui-grid-body tr td .chosen-container-single .chosen-single {
   border: none;
   background: white;
   font-size: inherit;
@@ -287,14 +287,14 @@
   line-height: 100%;
   color: #333;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-single span {
+.ui-grid table.ui-grid-body tr td .chosen-container-single .chosen-single span {
   padding: 8px 0 0 4px;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-single div {
+.ui-grid table.ui-grid-body tr td .chosen-container-single .chosen-single div {
   background: transparent;
   border-left: none;
 }
-.ui-grid table.ui-grid-body tr td .chzn-container-single .chzn-single div b:hover {
+.ui-grid table.ui-grid-body tr td .chosen-container-single .chosen-single div b:hover {
   background-position: 0 1px;
 }
 .ui-grid table.ui-grid-body tr td.cell-checkbox .checkbox {
@@ -378,11 +378,11 @@
 .ui-grid .ui-grid-select-container {
   position: absolute;
 }
-.ui-grid .ui-grid-select-container .chzn-container {
+.ui-grid .ui-grid-select-container .chosen-container {
   font-size: 11px !important;
   line-height: 28px !important;
 }
-.ui-grid .ui-grid-select-container .chzn-container .chzn-single {
+.ui-grid .ui-grid-select-container .chosen-container .chosen-single {
   height: 27px !important;
   line-height: 27px  !important;
   -webkit-box-shadow: none;
@@ -392,7 +392,7 @@
   -moz-border-radius: 0;
   border-radius: 0;
 }
-.ui-grid .ui-grid-select-container .chzn-container .chzn-single div {
+.ui-grid .ui-grid-select-container .chosen-container .chosen-single div {
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
   border-radius: 0;

@@ -823,7 +823,7 @@
 			grid._disableRowMenu(cell);
 			grid._pauseScrolling();
 
-			var container = selectContainer.find('.chzn-container');
+			var container = selectContainer.find('.chosen-container');
 			container.css('height', (cell.height()+2)+'px');
 			
 			container.bind('keydown', function(ev){
@@ -875,7 +875,7 @@
 			$(document).unbind('.gridDropdown');
 			editor.parent().remove();
 			this.editorVisible(cell, false);
-			cell.find('.chzn-container').remove();
+			cell.find('.chosen-container').remove();
 			cell.css('overflow', '');
 
 			var self = this;

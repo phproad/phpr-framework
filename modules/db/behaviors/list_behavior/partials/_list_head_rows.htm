@@ -29,7 +29,7 @@
 		<th class="link <?=$this->list_cell_class($column) ?> <?=(!$can_sort)?'no-sort':''?>">
 			<? if ($can_sort): ?>
 				<a href="javascript:;" onclick="return $(this).phpr().post('<?=$this->get_event_handler('on_list_column_click') ?>', {
-					data: { column_name: '<?=$column->db_name ?>' }, 
+					data: { column_name: '<?=$column->db_name ?>', list_name: '<?=$this->list_name?>' }, 
 					update: '#<?=$this->list_get_container_id() ?>', 
 					customIndicator: LightLoadingIndicator, 
 					success: function(){ jQuery('#<?=$this->list_get_container_id() ?>').trigger('listUpdated'); }

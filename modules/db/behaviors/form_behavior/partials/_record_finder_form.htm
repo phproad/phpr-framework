@@ -37,8 +37,10 @@
 							update: '#<?= $this->form_get_record_finder_container_id(get_class($model), post('db_name')) ?>',
 							loadIndicator: { show: true, injectInElement: true },
 							success: function() {
-								$(window).trigger('phpr_recordfinder_update', ['<?= $column_name ?>']);
 								cancelPopup();
+							},
+							complete: function(){
+								$(window).trigger('phpr_recordfinder_update', ['<?= $column_name ?>']);
 							}
 						}).send();
 						

@@ -26,7 +26,7 @@
 							<? foreach ($form_elements as $tab_caption => $elements): ?>
 									<li <?=array_key_exists($tab_caption, $form_model->form_tab_ids) ? 'id="'.$form_model->form_tab_ids[$tab_caption].'"' : null ?> 
 										class="<?= $index == 0 ? 'active' : null ?> <?=(array_key_exists($tab_caption, $form_model->form_tab_visibility) && !$form_model->form_tab_visibility[$tab_caption]) ? 'hidden' : null ?>">
-										<a href="#<?='tab_'.($index+1) ?>" onclick="return false">
+										<a href="#<?=array_key_exists($tab_caption, $form_model->form_tab_ids) ? $form_model->form_tab_ids[$tab_caption] : 'tab_'.($index+1) ?>" onclick="return false">
 											<?=h($tab_caption) ?>
 										</a>
 									</li>

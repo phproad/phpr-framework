@@ -1,30 +1,45 @@
 <? 
-	$options = $this->form_field_get_options($form_field->db_name, $this->view_data['form_model']); 
-	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
+	$options = $this->form_field_get_options($form_field->db_name, $this->view_data['form_model']);
+$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
 ?>
 
 <select autocomplete="off" <? if ($form_field->disabled) echo 'disabled="disabled"' ?> id="<?=$this->form_get_element_id($form_model_class.'_'.$db_name) ?>" name="<?=$form_model_class ?>[<?=$db_name?>]">
-	<? if ($form_field->empty_option !== null): ?>
-		<option value=""><?=h($form_field->empty_option) ?></option>
-	<? endif ?>
-	
-	<? 
+<? if ($form_field->empty_option !== null): ?>
+<option value=""><?=h($form_field->empty_option) ?></option>
+<? endif ?>
+
+<?
 		$field_name = $form_field->db_name;
-		foreach ($options as $value=>$name): 
-			$level = 0;
-			if (is_array($name))
-			{
-				if (!array_key_exists('level', $name))
-				{
-					$keys = array_keys($name);
-					$name = !count($keys) ? $value : $keys[0];
-				} else
-				{
-					$level = $name['level'];
-					$name = $name[0];
+foreach ($options as $value=>$name):
+$level = 0;
+if (is_array($name))
+{
+$keys = array_keys($name);
+if (array_key_exists('level', $name))
+{
+$level = $name['level'];
+$name = $name[0];
+} else if (!count($keys)) {
+$level = $name['level'];
+$name = $name[0];
+} else {
+$opt_title = $value;
+$opt_values = $name;
+?>
+<optgroup label="<?=$opt_title?>">
+	<?
+					foreach($opt_values as $opt_value => $opt_name){
+	?>
+	<option <?=Phpr_Form::option_state( $opt_value, $form_model->$db_name ) ?> value="<?=h($opt_value) ?>"><?=$form_field->options_html_encode ? h($opt_name) : $opt_name ?></option>
+	<?
+					}
+	?>
+</optgroup>
+<?
+					continue;
 				}
 			}
 	?>
-		<option <?=Phpr_Form::option_state( $value, $form_model->$db_name ) ?> value="<?=h($value) ?>"><?=str_repeat('&nbsp;&nbsp;&nbsp;', $level) ?><?=$form_field->options_html_encode ? h($name) : $name ?></option>
-	<? endforeach ?>
+<option <?=Phpr_Form::option_state( $value, $form_model->$db_name ) ?> value="<?=h($value) ?>"><?=str_repeat('&nbsp;&nbsp;&nbsp;', $level) ?><?=$form_field->options_html_encode ? h($name) : $name ?></option>
+<? endforeach ?>
 </select>

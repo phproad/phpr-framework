@@ -1,6 +1,6 @@
 <?
 	$list_container_id = $this->form_get_element_id('form_attachments_container_'.get_class($form_model).'_'.$db_name); 
-	$base_url = $form_field->file_download_base_url ? $form_field->file_download_base_url : '/admin/files/get/';
+	$base_url = $form_field->file_download_base_url ? $form_field->file_download_base_url : url('/admin/files/get/');
 	// $base_url = root_url('uploaded/public');
 ?>
 
@@ -9,7 +9,7 @@
 		<ul>
 			<? foreach ($form_file_list as $file): ?>
 				<li>
-					<a href="<?=$base_url.$file->id.'/'.urlencode($file->name) ?>" target="_blank" class="file-link">
+					<a href="<?=$base_url.$file->id.'/'.urlencode($file->name).'/' ?>" target="_blank" class="file-link">
 						<i class="icon-save"></i> <?=h($file->name) ?>
 					</a> 
 					<span class="file-size">(<?=File::size_from_bytes($file->size) ?>)</span> | 

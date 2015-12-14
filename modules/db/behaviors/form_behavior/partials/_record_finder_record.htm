@@ -1,4 +1,6 @@
-<? 
+<?
+ // @TODO apply external style and cancel handler to element class 'recordfinder-cancel'
+
 	$db_name = $this->form_get_field_db_name($form_field->db_name, $this->view_data['form_model']);
 	
 	$id = $this->form_get_element_id($form_model_class.'_'.$db_name);
@@ -21,7 +23,8 @@
 
 <div class="record-reference <?=$target_record ? null : 'empty' ?>">
 	<? if ($target_record): ?>
-		<?=h($target_record->$display_name_field) ?>
+    <i class="icon-remove recordfinder-cancel" style="cursor: pointer" onclick="$('#<?=$id?>').removeAttr('value');$(this).parent().closest('div').html('<?=h($prompt)?>');"></i>
+    <?=h($target_record->$display_name_field) ?>
 		<? if ($display_description_field && strlen($target_record->$display_description_field)): ?>
 			<small><?=h($target_record->$display_description_field) ?></small>
 		<? endif ?>

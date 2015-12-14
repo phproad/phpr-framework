@@ -135,14 +135,21 @@ class Error_Log
 		
 		if (!class_exists('\File\Log') && !Phpr::$class_loader->load('\File\Log'))
 			echo $message;
-		
-		if ((Phpr::$config->get('LOG_TO_DB') || $this->log_file_name == null) && Db::$connection && !self::$disable_db_logging && $log_to_db)
-		{
-			if (!class_exists('Trace_Log_Record') && !Phpr::$class_loader->load('Trace_Log_Record'))
-				return;
-			
-			$record_id = Trace_Log_Record::add('ERROR', $message, $details)->id;
-		}
+
+        if ((Phpr::$config->get('LOG_TO_DB') || $this->log_file_name == null) && !self::$disable_db_logging && $log_to_db)
+        {
+
+            if(!Db::$connection) {
+                Db::sql()->driver()->connect();
+            }
+
+            if(Db::$connection) {
+                if (!class_exists('Phpr\\Trace_Log_Record') && !Phpr::$class_loader->load('Phpr\\Trace_Log_Record'))
+                    return;
+
+                $record_id = Trace_Log_Record::add('ERROR', $message, $details)->id;
+            }
+        }
 		
 		if (Phpr::$config->get('ENABLE_ERROR_STRING', true))
 			$message .= ($details) ? ' Encoded details: ' . $details : '';

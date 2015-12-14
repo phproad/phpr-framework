@@ -197,7 +197,9 @@ class Request
 
 	public function get_hostname()
 	{
-		return isset($_SERVER["SERVER_NAME"]) ? $_SERVER["SERVER_NAME"] : null;
+		$server_name = isset($_SERVER["SERVER_NAME"]) ? $_SERVER["SERVER_NAME"] : null;
+		$host_name = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : null;
+		return $server_name ? $server_name : $host_name;
 	}
 
 	public function get_protocol()
